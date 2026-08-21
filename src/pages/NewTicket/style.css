@@ -1,0 +1,128 @@
+/* Container principal (fundo claro) */
+.new-ticket-container {
+  min-height: 100vh;
+  background-color: #f9fafb; /* Tailwind gray-50 */
+  padding: 2rem 1rem; /* py-8 px-4 */
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Cartão do formulário centralizado */
+.new-ticket-card {
+  max-width: 42rem; /* max-w-2xl */
+  margin: 0 auto; /* mx-auto */
+  background-color: #ffffff;
+  border-radius: 0.75rem; /* rounded-xl */
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); /* shadow */
+  padding: 1.5rem; /* p-6 */
+  border: 1px solid #e5e7eb; /* border-gray-200 */
+}
+
+/* Título da página */
+.new-ticket-title {
+  font-size: 1.25rem; /* text-xl */
+  font-weight: 700; /* font-bold */
+  margin-bottom: 1.5rem; /* mb-6 */
+  color: #1f2937; /* text-gray-800 */
+  margin-top: 0;
+}
+
+/* Layout do formulário */
+.new-ticket-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* space-y-4 */
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Rótulos dos campos */
+.form-label {
+  display: block;
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500; /* font-medium */
+  color: #374151; /* text-gray-700 */
+  margin-bottom: 0.25rem; /* equivalente ao mt-1 visualmente */
+}
+
+/* Campos de Input, Textarea e Select */
+.form-control {
+  width: 100%;
+  border: 1px solid #d1d5db; /* border-gray-300 */
+  border-radius: 0.5rem; /* rounded-lg */
+  padding: 0.625rem; /* p-2.5 */
+  box-sizing: border-box;
+  background-color: #ffffff;
+  color: #111827;
+  font-family: inherit;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.form-control:focus {
+  border-color: #3b82f6; /* focus:border-blue-500 */
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); /* focus:ring-blue-500 */
+}
+
+/* Grid para campos lado a lado (Prioridade e Equipamento) */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)); /* grid-cols-2 */
+  gap: 1rem; /* gap-4 */
+}
+
+/* Container dos botões */
+.form-actions {
+  display: flex;
+  justify-content: flex-end; /* justify-end */
+  gap: 0.75rem; /* space-x-3 */
+  padding-top: 1rem; /* pt-4 */
+}
+
+/* Botão Cancelar */
+.btn-cancel {
+  padding: 0.5rem 1rem; /* px-4 py-2 */
+  border: 1px solid #d1d5db; /* border */
+  border-radius: 0.5rem; /* rounded-lg */
+  color: #4b5563; /* text-gray-600 */
+  background-color: transparent;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 1rem;
+}
+
+.btn-cancel:hover {
+  background-color: #f3f4f6; /* hover:bg-gray-100 */
+}
+
+/* Botão Criar Chamado */
+.btn-submit {
+  padding: 0.5rem 1rem; /* px-4 py-2 */
+  background-color: #2563eb; /* bg-blue-600 */
+  color: #ffffff;
+  border: none;
+  border-radius: 0.5rem; /* rounded-lg */
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 1rem;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background-color: #1d4ed8; /* hover:bg-blue-700 */
+}
+
+.btn-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 640px) {
+  .form-grid {
+    grid-template-columns: 1fr; /* Volta para uma coluna no mobile */
+  }
+}

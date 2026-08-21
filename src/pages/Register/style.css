@@ -1,0 +1,118 @@
+/* Container principal escuro */
+.register-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #111827; /* bg-gray-900 */
+  padding: 0 1rem;
+  font-family: system-ui, -apple-system, sans-serif;
+  box-sizing: border-box;
+}
+
+/* Cartão centralizado do formulário */
+.register-card {
+  max-width: 28rem; /* max-w-md */
+  width: 100%;
+  background-color: #1f2937; /* bg-gray-800 */
+  border-radius: 0.75rem; /* rounded-xl */
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); /* shadow-2xl */
+  padding: 2rem; /* p-8 */
+  border: 1px solid #374151; /* border-gray-700 */
+}
+
+/* Título */
+.register-title {
+  font-size: 1.5rem; /* text-2xl */
+  font-weight: 700; /* font-bold */
+  color: #3b82f6; /* text-blue-500 */
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 1.5rem; /* mb-6 */
+}
+
+/* Alerta de erro */
+.register-error {
+  background-color: rgba(239, 68, 68, 0.1); /* bg-red-500/10 */
+  border: 1px solid #ef4444; /* border-red-500 */
+  color: #f87171; /* text-red-400 */
+  padding: 0.75rem; /* p-3 */
+  border-radius: 0.25rem; /* rounded */
+  margin-bottom: 1rem; /* mb-4 */
+  font-size: 0.875rem; /* text-sm */
+}
+
+/* Layout do formulário */
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* space-y-4 */
+}
+
+/* Inputs e Select */
+.form-control {
+  width: 100%;
+  padding: 0.625rem; /* p-2.5 */
+  background-color: #374151; /* bg-gray-700 */
+  border: 1px solid #4b5563; /* border-gray-600 */
+  border-radius: 0.25rem; /* rounded */
+  color: #ffffff; /* text-white */
+  font-family: inherit;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.form-control::placeholder {
+  color: #9ca3af;
+}
+
+.form-control:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #3b82f6;
+}
+
+/* Ajuste específico para o select no modo escuro */
+.form-select option {
+  background-color: #374151;
+  color: #ffffff;
+}
+
+/* Botão de Cadastrar */
+.btn-submit {
+  width: 100%;
+  background-color: #2563eb; /* bg-blue-600 */
+  color: #ffffff;
+  font-weight: 700; /* font-bold */
+  padding: 0.625rem; /* py-2.5 */
+  border: none;
+  border-radius: 0.5rem; /* rounded-lg */
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+.btn-submit:hover {
+  background-color: #1d4ed8; /* hover:bg-blue-700 */
+}
+
+/* Rodapé (Link para login) */
+.register-footer {
+  margin-top: 1rem; /* mt-4 */
+  text-align: center;
+  font-size: 0.875rem; /* text-sm */
+  color: #9ca3af; /* text-gray-400 */
+}
+
+.register-link {
+  color: #60a5fa; /* text-blue-400 */
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.register-link:hover {
+  text-decoration: underline; /* hover:underline */
+}
