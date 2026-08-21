@@ -1,39 +1,27 @@
-import { createContext, useState, useEffect, useContext } from 'react';
-import api from '../services/api';
+import { createContext, useState, useContext } from 'react';
 
 const AuthContext = createContext({});
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function loadStorageData() {
-      const storedToken = localStorage.getItem('@GLPI:token');
-      const storedUser = localStorage.getItem('@GLPI:user');
-
-      if (storedToken && storedUser) {
-        setUser(JSON.parse(storedUser));
-      }
-      setLoading(false);
-    }
-    loadStorageData();
-  }, []);
+  // Já iniciamos com um usuário preenchido para pular a tela de login!
+  const [user, setUser] = useState({
+    id: 1,
+    name: 'Administrador do Sistema',
+    email: 'admin@glpidesk.com',
+    role: 'N1' 
+  });
+  
+  // O loading já começa falso para a tela abrir na mesma hora
+  const [loading, setLoading] = useState(false);
 
   const login = async (email, password) => {
-    const response = await api.post('/auth/login', { email, password });
-    const { user, token } = response.data;
-
-    localStorage.setItem('@GLPI:token', token);
-    localStorage.setItem('@GLPI:user', JSON.stringify(user));
-
-    setUser(user);
+    // Mantemos a função aqui para o futuro, caso precise
+    const mockUser = { id: 1, name: 'Usuário Teste', email, role: 'N1' };
+    setUser(mockUser);
   };
 
   const logout = () => {
-    localStorage.removeItem('@GLPI:token');
-    localStorage.removeItem('@GLPI:user');
-    setUser(null);
+    setUser(null); // Se você clicar no botão "Sair" lá no Header, ele te joga pro Login
   };
 
   return (
