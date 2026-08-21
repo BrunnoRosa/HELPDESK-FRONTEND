@@ -1,0 +1,7 @@
+.details-container { display: flex; gap: 2rem; }
+.details-main { flex: 2; background: #fff; padding: 2rem; border-radius: 8px; border: 1px solid #e5e7eb; }
+.details-desc { color: #4b5563; line-height: 1.6; margin-top: 1rem; white-space: pre-wrap; }
+.details-sidebar { flex: 1; }
+.info-box { background: #fff; padding: 1.5rem; border-radius: 8px; border: 1px solid #e5e7eb; }
+.info-box p { margin: 0 0 1rem 0; color: #374151; }
+.btn-escalate { width: 100%; background: #f59e0b; color: #fff; padding: 0.8rem; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
