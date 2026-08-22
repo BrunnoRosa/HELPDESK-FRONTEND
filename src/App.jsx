@@ -1,55 +1,42 @@
-import { AuthProvider, useAuth } from './context/AuthContext';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+
+// Importação dos componentes de estrutura
+import Layout from './components/Layout';
+import Protected from './components/Protected';
+
+// Importação das Páginas
 import Login from './pages/Login';
-import Register from './pages/Register'; // <-- Adicione esta linha!
+import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import NewTicket from './pages/NewTicket';
 import TicketDetails from './pages/TicketDetails';
 
-function PrivateRoute({ children }) {
-  const { signed, loading } = useAuth();
-  if (loading) return <div className="p-8 text-center">Carregando...</div>;
-  return signed ? children : <Navigate to="/login" />;
-}
-
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <BrowserRouter>
+      <AuthProvider>
         <Routes>
-          <Route path="/register" element={<Register />} />
+          {/* Rotas Públicas (Telas limpas, sem menu lateral) */}
           <Route path="/login" element={<Login />} />
-          {/* Rota do Painel Principal */}
-       <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/register" element={<Register />} />
 
-        {/* Redireciona a raiz "/" diretamente para o "/dashboard" */}
-        {/*<Route path="/" element={<Navigate to="/dashboard" replace />} />*/}
-          <Route
-            path="/"
+          {/* Rotas Privadas (Envelopadas pelo Layout) */}
+          <Route 
+            path="/" 
             element={
-              <PrivateRoute>
-                <Dashboard />
-              </PrivateRoute>
+              <Protected>
+                <Layout />
+              </Protected>
             }
-          />
-          <Route
-            path="/novo-chamado"
-            element={
-              <PrivateRoute>
-                <NewTicket />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/chamados/:id"
-            element={
-              <PrivateRoute>
-                <TicketDetails />
-              </PrivateRoute>
-            }
-          />
+          >
+            {/* O Outlet do Layout vai renderizar essas telas aqui: */}
+            <Route index element={<Dashboard />} />
+            <Route path="novo-chamado" element={<NewTicket />} />
+            <Route path="ticket/:id" element={<TicketDetails />} />
+          </Route>
         </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }

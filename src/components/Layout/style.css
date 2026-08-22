@@ -1,0 +1,18 @@
+.layout-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f3f4f6; /* Fundo cinza claro para o sistema todo */
+}
+
+.layout-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.layout-content {
+  padding: 2rem;
+  /* A margem esquerda de 260px compensa o tamanho do menu lateral 
+     que criamos no passo anterior */
+  margin-left: 260px; 
+}
