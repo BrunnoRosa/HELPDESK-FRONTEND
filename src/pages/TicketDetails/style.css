@@ -1,7 +1,225 @@
-.details-container { display: flex; gap: 2rem; }
-.details-main { flex: 2; background: #fff; padding: 2rem; border-radius: 8px; border: 1px solid #e5e7eb; }
-.details-desc { color: #4b5563; line-height: 1.6; margin-top: 1rem; white-space: pre-wrap; }
-.details-sidebar { flex: 1; }
-.info-box { background: #fff; padding: 1.5rem; border-radius: 8px; border: 1px solid #e5e7eb; }
-.info-box p { margin: 0 0 1rem 0; color: #374151; }
-.btn-escalate { width: 100%; background: #f59e0b; color: #fff; padding: 0.8rem; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+/* =========================================
+   TICKET DETAILS - STYLE
+   Baseado no tema dark (#0f172a / #1e293b)
+========================================= */
+
+/* Container Principal */
+.details-container {
+  display: flex;
+  gap: 1.5rem;
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  color: #fff;
+  align-items: flex-start;
+}
+
+/* Área Principal (Esquerda) */
+.details-main {
+  flex: 2; /* Ocupa cerca de 65-70% do espaço */
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Sidebar (Direita) */
+.details-sidebar {
+  flex: 1; /* Ocupa cerca de 30-35% do espaço */
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Caixas / Cards de fundo */
+.ticket-section, 
+.info-box, 
+.actions-box {
+  background: #1e293b;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #334155;
+}
+
+/* Cabeçalho do Chamado */
+.ticket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1e293b;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #334155;
+}
+
+.ticket-header h2 {
+  color: #3b82f6; /* Azul do tema */
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+/* Títulos das seções internas */
+.ticket-section h3, 
+.info-box h3, 
+.actions-box h3 {
+  color: #cbd5e1;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #334155;
+  padding-bottom: 0.5rem;
+}
+
+/* Textos gerais */
+.details-desc {
+  color: #94a3b8;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.info-box p {
+  color: #94a3b8;
+  margin-bottom: 0.8rem;
+  font-size: 0.95rem;
+}
+
+.info-box p strong {
+  color: #cbd5e1;
+}
+
+.info-box hr {
+  border: 0;
+  border-top: 1px solid #334155;
+  margin: 1rem 0;
+}
+
+/* Badges de Prioridade */
+.badge {
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.priority-alta { background-color: #ef4444; color: #fff; } /* Vermelho */
+.priority-média { background-color: #f59e0b; color: #fff; } /* Amarelo/Laranja */
+.priority-baixa { background-color: #3b82f6; color: #fff; } /* Azul */
+
+/* Evidências Fotográficas (Galeria) */
+.evidence-gallery {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.evidence-img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 2px solid #334155;
+  transition: transform 0.2s ease;
+}
+
+.evidence-img:hover {
+  transform: scale(1.05);
+  border-color: #3b82f6;
+}
+
+/* Histórico de Atendimento */
+.history-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.history-section li {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  margin-bottom: 0.8rem;
+  padding-left: 1rem;
+  border-left: 2px solid #3b82f6; /* Detalhe lateral azul */
+}
+
+.history-section li strong {
+  color: #fff;
+  display: block;
+  font-size: 0.85rem;
+  margin-bottom: 0.2rem;
+}
+
+/* Botões de Ação */
+.btn-escalate, 
+.btn-resolve {
+  width: 100%;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  transition: background-color 0.2s ease;
+}
+
+.btn-escalate:last-child,
+.btn-resolve:last-child {
+  margin-bottom: 0;
+}
+
+/* Botão de Escalonar - Laranja escuro para alertar transição */
+.btn-escalate {
+  background: #ea580c; 
+  color: #fff;
+}
+
+.btn-escalate:hover {
+  background: #c2410c;
+}
+
+/* Botão de Resolver - Verde para sucesso */
+.btn-resolve {
+  background: #10b981; 
+  color: #fff;
+}
+
+.btn-resolve:hover {
+  background: #059669;
+}
+
+/* Destaque para o status */
+.status-text {
+  color: #fff;
+  background: #334155;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+/* Mensagem de carregamento */
+.loading-message {
+  text-align: center;
+  color: #3b82f6;
+  font-size: 1.2rem;
+  margin-top: 3rem;
+}
+
+/* =========================================
+   RESPONSIVIDADE (Tablets e Celulares)
+========================================= */
+@media (max-width: 768px) {
+  .details-container {
+    flex-direction: column;
+  }
+  
+  .details-main, 
+  .details-sidebar {
+    flex: none;
+    width: 100%;
+  }
+
+  .ticket-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}

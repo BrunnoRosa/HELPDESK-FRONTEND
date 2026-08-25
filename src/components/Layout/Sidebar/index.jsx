@@ -31,6 +31,15 @@ export default function Sidebar() {
           Novo Chamado
         </Link>
 
+        {/* --- NOVO ITEM ADICIONADO AQUI --- */}
+        {/* Usamos startsWith porque a URL será /ticket/1, /ticket/2, etc. */}
+        <Link 
+          to="/ticket/1" 
+          className={`nav-item ${location.pathname.startsWith('/ticket') ? 'active' : ''}`}
+        >
+          Detalhes do Chamado
+        </Link>
+
         {/* Exemplo de menu restrito: Apenas N2 e N3 veem a área de relatórios/gestão */}
         {(user?.role === 'N2' || user?.role === 'N3') && (
           <Link 
