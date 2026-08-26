@@ -3,25 +3,23 @@ import { createContext, useState, useContext } from 'react';
 const AuthContext = createContext({});
 
 export function AuthProvider({ children }) {
-  // Já iniciamos com um usuário preenchido para pular a tela de login!
+  // Alterado a role de 'N1' para 'CLIENTE' para liberar as telas do Cliente
   const [user, setUser] = useState({
     id: 1,
-    name: 'Administrador do Sistema',
-    email: 'admin@glpidesk.com',
-    role: 'N1' 
+    name: 'Camila Viana',
+    email: 'camila@glpidesk.com',
+    role: 'CLIENTE' // <- Mude de 'N1' para 'CLIENTE'
   });
   
-  // O loading já começa falso para a tela abrir na mesma hora
   const [loading, setLoading] = useState(false);
 
   const login = async (email, password) => {
-    // Mantemos a função aqui para o futuro, caso precise
-    const mockUser = { id: 1, name: 'Usuário Teste', email, role: 'N1' };
+    const mockUser = { id: 1, name: 'Usuário Teste', email, role: 'CLIENTE' };
     setUser(mockUser);
   };
 
   const logout = () => {
-    setUser(null); // Se você clicar no botão "Sair" lá no Header, ele te joga pro Login
+    setUser(null);
   };
 
   return (

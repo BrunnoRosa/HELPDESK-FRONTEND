@@ -1,0 +1,161 @@
+/* Estrutura Principal do Dashboard */
+.dashboard-container {
+  max-width: 1000px;
+  margin: 1.5rem auto;
+  padding: 0 1rem;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-header h2 {
+  font-size: 1.6rem;
+  color: #111827;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.dashboard-header p {
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.btn-novo-chamado {
+  background-color: #2563eb;
+  color: #ffffff;
+  padding: 0.65rem 1.25rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-novo-chamado:hover {
+  background-color: #1d4ed8;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+/* Tabela e Contêiner Responsivo */
+.table-container {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+}
+
+.chamados-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.chamados-table th {
+  background-color: #f9fafb;
+  color: #374151;
+  font-weight: 600;
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.chamados-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #f3f4f6;
+  color: #1f2937;
+  vertical-align: middle;
+}
+
+.chamados-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.chamados-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Botão Ver Detalhes */
+.btn-detalhes {
+  display: inline-block;
+  background: #f3f4f6;
+  color: #374151;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+  border: 1px solid #d1d5db;
+}
+
+.btn-detalhes:hover {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+/* Badges / Etiquetas de Estado e Prioridade */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* Estilos de Status */
+.status-aberto {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+}
+
+.status-andamento {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-resolvido {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+/* Estilos de Prioridade */
+.badge-baixa {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+.badge-normal {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.badge-alta {
+  background-color: #ffedd5;
+  color: #c2410c;
+}
+
+.badge-critica {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+/* Responsividade para Celulares */
+@media (max-width: 640px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .btn-novo-chamado {
+    width: 100%;
+    text-align: center;
+  }
+}
