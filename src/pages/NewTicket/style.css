@@ -1,9 +1,0 @@
-.form-page { background: #fff; padding: 2rem; border-radius: 8px; border: 1px solid #e5e7eb; max-width: 800px; }
-.ticket-form { display: flex; flex-direction: column; margin-top: 1.5rem; }
-.ticket-form label { font-weight: 600; color: #374151; margin-bottom: 0.5rem; font-size: 0.9rem; }
-.ticket-form input, .ticket-form textarea, .ticket-form select {
-  padding: 0.8rem; border: 1px solid #d1d5db; border-radius: 4px; margin-bottom: 1.5rem; width: 100%;
-}
-.form-actions { display: flex; gap: 1rem; justify-content: flex-end; }
-.btn-cancel { padding: 0.8rem 1.5rem; background: #fff; border: 1px solid #d1d5db; border-radius: 4px; cursor: pointer; }
-.btn-submit { padding: 0.8rem 1.5rem; background: #2563eb; color: #fff; border: none; border-radius: 4px; cursor: pointer; }

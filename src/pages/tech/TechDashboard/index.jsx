@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import api from '../../services/api';
-import ChamadoCard from '../../components/ChamadoCard';
+import api from '../../../services/api';
+import ChamadoCard from '../../../components/ChamadoCard';
 import './style.css';
 
 export default function Dashboard() {
