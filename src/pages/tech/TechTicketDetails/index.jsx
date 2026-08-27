@@ -29,6 +29,13 @@ export default function TechTicketDetails() {
     }, 400);
   }, [id]);
 
+  const executarAcao = (acao) => {
+    setTicket(prev => ({
+      ...prev,
+      historico: [...prev.historico, { data: new Date().toLocaleString(), usuario: user.name, acao: `Ferramenta utilizada: ${acao}` }]
+    }));
+  };
+
   const handleEscalar = (proximoNivel) => {
     if (!window.confirm(`Escalonar para ${proximoNivel}?`)) return;
     setTicket(prev => ({
@@ -102,6 +109,7 @@ export default function TechTicketDetails() {
             <h3>Informações Gerais</h3>
             <p><strong>Status:</strong> {ticket.status}</p>
             <p><strong>Nível Atual:</strong> {ticket.nivelSuporte}</p>
+            <p><strong>Seu Perfil:</strong> {user?.role}</p>
             <p><strong>Prioridade:</strong> <span className={`badge-prio ${ticket.prioridade.toLowerCase()}`}>{ticket.prioridade}</span></p>
             <hr/>
             <p><strong>Cliente:</strong> {ticket.solicitante}</p>
@@ -111,15 +119,40 @@ export default function TechTicketDetails() {
 
           {ticket.status !== 'Resolvido' && (
             <div className="card action-card">
-              <h3>Ações de Suporte</h3>
-              <button onClick={handleResolver} className="btn-resolver">Marcar como Resolvido</button>
+              <h3>Ferramentas de Suporte</h3>
               
-              {user?.role === 'N1' && ticket.nivelSuporte === 'N1' && (
-                <button onClick={() => handleEscalar('N2')} className="btn-escalar">Escalonar para N2 (Especializado)</button>
+              {/* N1 - Visível para todos os técnicos */}
+              <div className="tool-group">
+                <span className="tool-label">N1: Soluções Básicas</span>
+                <button onClick={() => executarAcao('Reset de Senha')} className="btn-tool n1">Reset de Senha</button>
+                <button onClick={() => executarAcao('Acesso Remoto')} className="btn-tool n1">Acesso Remoto Básico</button>
+                {user?.role === 'N1' && ticket.nivelSuporte === 'N1' && (
+                  <button onClick={() => handleEscalar('N2')} className="btn-escalar">Escalonar para N2</button>
+                )}
+              </div>
+
+              {/* N2 - Visível para N2 e N3 */}
+              {(user?.role === 'N2' || user?.role === 'N3') && (
+                <div className="tool-group">
+                  <span className="tool-label">N2: Especializado</span>
+                  <button onClick={() => executarAcao('Análise de Logs')} className="btn-tool n2">Analisar Logs de Rede</button>
+                  <button onClick={() => executarAcao('Reiniciar IIS')} className="btn-tool n2">Reiniciar Servidor (IIS)</button>
+                  {user?.role === 'N2' && ticket.nivelSuporte === 'N2' && (
+                    <button onClick={() => handleEscalar('N3')} className="btn-escalar">Escalonar para N3</button>
+                  )}
+                </div>
               )}
-              {user?.role === 'N2' && ticket.nivelSuporte === 'N2' && (
-                <button onClick={() => handleEscalar('N3')} className="btn-escalar">Escalonar para N3 (Engenharia)</button>
+
+              {/* N3 - Visível apenas para N3 */}
+              {user?.role === 'N3' && (
+                <div className="tool-group">
+                  <span className="tool-label">N3: Engenharia</span>
+                  <button onClick={() => executarAcao('Query BD')} className="btn-tool n3">Executar Query no BD</button>
+                  <button onClick={() => executarAcao('Deploy de Patch')} className="btn-tool n3">Aplicar Patch / Deploy</button>
+                </div>
               )}
+
+              <button onClick={handleResolver} className="btn-resolver">Marcar como Resolvido</button>
             </div>
           )}
         </div>
