@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext'; // <-- Adicionamos o useAuth aqui
+import TechReports from './pages/tech/TechReports';
 
 // Importação dos componentes de estrutura
 import Layout from './components/Layout';
@@ -17,6 +18,15 @@ import ClientTicketDetails from './pages/cliente/ClienteTicketDetails';
 // Importação das Páginas - Técnico
 import TechDashboard from './pages/tech/TechDashboard';
 import TechTicketDetails from './pages/tech/TechTicketDetails';
+
+// --- NOVO: Componente que decide qual Dashboard abrir ---
+function IndexRouter() {
+  const { user } = useAuth();
+  // Se for N1, N2 ou N3, é técnico. Se não, é cliente.
+  const isTech = user?.role === 'N1' || user?.role === 'N2' || user?.role === 'N3';
+  
+  return isTech ? <TechDashboard /> : <ClienteDashboard />;
+}
 
 export default function App() {
   return (
@@ -36,14 +46,17 @@ export default function App() {
               </Protected>
             }
           >
+            {/* O "index" agora carrega o nosso roteador inteligente */}
+            <Route index element={<IndexRouter />} />
+            
             {/* Visão do Cliente */}
-            <Route index element={<ClienteDashboard />} />
             <Route path="cliente/novo-chamado" element={<NewTicket />} />
             <Route path="cliente/chamado/:id" element={<ClientTicketDetails />} />
 
-            {/* Visão do Técnico */}
+           {/* Visão do Técnico */}
             <Route path="tecnico/dashboard" element={<TechDashboard />} />
             <Route path="tecnico/chamado/:id" element={<TechTicketDetails />} />
+            <Route path="tecnico/relatorios" element={<TechReports />} />
           </Route>
 
           {/* Redirecionamento caso a rota não exista */}

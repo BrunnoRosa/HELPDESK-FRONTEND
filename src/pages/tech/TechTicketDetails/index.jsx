@@ -1,146 +1,128 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import api from '../../../services/api';
 import { useAuth } from '../../../context/AuthContext';
 import './style.css';
 
-export default function TicketDetails() {
+export default function TechTicketDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const [ticket, setTicket] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [novoComentario, setNovoComentario] = useState('');
 
   useEffect(() => {
-    async function loadTicket() {
-      try {
-        const response = await api.get(`/tickets/${id}`);
-        setTicket(response.data);
-      } catch (error) {
-        alert('Chamado não encontrado');
-        navigate('/');
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadTicket();
-  }, [id, navigate]);
+    setTimeout(() => {
+      setTicket({
+        id: id,
+        titulo: "Erro 500 no ERP",
+        prioridade: "Alto",
+        descricao: "Sistema trava completamente após inserir a senha e apertar Enter.",
+        status: "Aberto",
+        nivelSuporte: "N1",
+        solicitante: "Maria Souza",
+        empresa: "Tech Corp - Setor Financeiro",
+        equipamento: { nome: "Desktop Dell Optiplex", patrimonio: "004512" },
+        historico: [
+          { data: "26/08/2026 09:00", usuario: "Sistema", acao: "Chamado aberto." }
+        ]
+      });
+    }, 400);
+  }, [id]);
 
-  // Função dinâmica para escalonar para qualquer nível
-  const handleEscalate = async (nextLevel) => {
-    if (!window.confirm(`Tem certeza que deseja escalonar para ${nextLevel}?`)) return;
-    
-    try {
-      await api.patch(`/tickets/${id}/escalate`, { level: nextLevel });
-      alert(`Chamado escalonado para ${nextLevel}!`);
-      // Atualiza o estado local para refletir a mudança sem precisar recarregar a página
-      setTicket((prev) => ({ ...prev, supportLevel: nextLevel }));
-    } catch (error) {
-      alert('Erro ao escalonar o chamado.');
-    }
+  const handleEscalar = (proximoNivel) => {
+    if (!window.confirm(`Escalonar para ${proximoNivel}?`)) return;
+    setTicket(prev => ({
+      ...prev,
+      nivelSuporte: proximoNivel,
+      historico: [...prev.historico, { data: new Date().toLocaleString(), usuario: user.name, acao: `Escalonado para ${proximoNivel}` }]
+    }));
   };
 
-  // Função para resolver/fechar o chamado
-  const handleResolve = async () => {
-    if (!window.confirm('Confirmar resolução deste chamado?')) return;
-
-    try {
-      await api.patch(`/tickets/${id}/resolve`);
-      alert('Chamado resolvido com sucesso!');
-      setTicket((prev) => ({ ...prev, status: 'Resolvido' }));
-    } catch (error) {
-      alert('Erro ao resolver o chamado.');
-    }
+  const handleResolver = () => {
+    if (!window.confirm('Resolver chamado?')) return;
+    setTicket(prev => ({
+      ...prev,
+      status: "Resolvido",
+      historico: [...prev.historico, { data: new Date().toLocaleString(), usuario: user.name, acao: "Chamado resolvido." }]
+    }));
   };
 
-  if (loading) return <p className="loading-message">Carregando detalhes do chamado...</p>;
-  if (!ticket) return null;
+  const addComentario = () => {
+    if (!novoComentario) return;
+    setTicket(prev => ({
+      ...prev,
+      historico: [...prev.historico, { data: new Date().toLocaleString(), usuario: user.name, acao: novoComentario }]
+    }));
+    setNovoComentario('');
+  };
+
+  if (!ticket) return <p className="loading-text">Carregando...</p>;
 
   return (
-    <div className="details-container">
-      <div className="details-main">
-        {/* CABEÇALHO DO CHAMADO */}
-        <div className="ticket-header">
-          <h2>{ticket.title}</h2>
-          <span className={`badge priority-${ticket.priority?.toLowerCase()}`}>
-            Prioridade: {ticket.priority} {/* Ex: Alta, Média, Baixa */}
-          </span>
-        </div>
-
-        {/* DESCRIÇÃO E DADOS TÉCNICOS */}
-        <div className="ticket-section">
-          <h3>Descrição do Incidente</h3>
-          <p className="details-desc">{ticket.description}</p>
-        </div>
-
-        {/* EVIDÊNCIAS FOTOGRÁFICAS (Req. 2 e 9) */}
-        {ticket.attachments && ticket.attachments.length > 0 && (
-          <div className="ticket-section">
-            <h3>Evidências (Fotos)</h3>
-            <div className="evidence-gallery">
-              {ticket.attachments.map((foto, index) => (
-                <img key={index} src={foto.url} alt={`Evidência ${index + 1}`} className="evidence-img" />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* HISTÓRICO DE ATENDIMENTO (Req. 2) */}
-        <div className="ticket-section history-section">
-          <h3>Histórico de Atendimento</h3>
-          <ul>
-            {ticket.history?.map((log, index) => (
-              <li key={index}>
-                <strong>{new Date(log.date).toLocaleString()}</strong> - {log.user}: {log.action}
-              </li>
-            ))}
-          </ul>
-        </div>
+    <div className="ticket-details-page">
+      <div className="header-actions">
+        <button onClick={() => navigate('/')} className="btn-voltar">← Voltar</button>
+        <h2>Chamado #{ticket.id} - {ticket.titulo}</h2>
       </div>
 
-      <div className="details-sidebar">
-        {/* INFORMAÇÕES GERAIS */}
-        <div className="info-box">
-          <h3>Detalhes</h3>
-          <p><strong>Status:</strong> <span className="status-text">{ticket.status}</span></p>
-          <p><strong>Nível Atual:</strong> {ticket.supportLevel}</p>
-          <hr />
-          
-          {/* IDENTIFICAÇÃO DO SOLICITANTE (Req. 9) */}
-          <p><strong>Solicitante:</strong> {ticket.requesterName}</p>
-          <p><strong>Empresa/Setor:</strong> {ticket.company}</p>
-          <hr />
+      <div className="details-grid">
+        <div className="main-content">
+          <div className="card">
+            <h3>Descrição e Evidências</h3>
+            <p>{ticket.descricao}</p>
+            <div className="evidence-box">
+              <p className="evidence-title">print_erro_500.png</p>
+              <div className="evidence-img-placeholder">[Imagem do Erro Anexada]</div>
+            </div>
+          </div>
 
-          {/* INFORMAÇÕES DO EQUIPAMENTO (Req. 9) */}
-          <p><strong>Equipamento:</strong> {ticket.equipment?.name}</p>
-          <p><strong>Patrimônio/Tag:</strong> {ticket.equipment?.tag}</p>
-        </div>
-
-        {/* AÇÕES DE ATENDIMENTO (Req. 10) */}
-        {ticket.status !== 'Resolvido' && (
-          <div className="actions-box">
-            <h3>Ações</h3>
-            
-            {/* Botão de Resolver (Todos os níveis podem resolver) */}
-            <button onClick={handleResolve} className="btn-resolve">
-              Marcar como Resolvido
-            </button>
-
-            {/* Escalonamento N1 -> N2 */}
-            {user?.role === 'N1' && ticket.supportLevel === 'N1' && (
-              <button onClick={() => handleEscalate('N2')} className="btn-escalate">
-                Escalonar para N2 (Especializado)
-              </button>
-            )}
-
-            {/* Escalonamento N2 -> N3 */}
-            {user?.role === 'N2' && ticket.supportLevel === 'N2' && (
-              <button onClick={() => handleEscalate('N3')} className="btn-escalate">
-                Escalonar para N3 (Engenharia)
-              </button>
+          <div className="card">
+            <h3>Histórico de Atendimento</h3>
+            <ul className="timeline">
+              {ticket.historico.map((log, i) => (
+                <li key={i}><strong>{log.data}</strong> - {log.usuario}: {log.acao}</li>
+              ))}
+            </ul>
+            {ticket.status !== 'Resolvido' && (
+              <div className="add-comment">
+                <input 
+                  type="text" 
+                  value={novoComentario} 
+                  onChange={e => setNovoComentario(e.target.value)} 
+                  placeholder="Adicionar nota de atendimento..."
+                />
+                <button onClick={addComentario}>Enviar</button>
+              </div>
             )}
           </div>
-        )}
+        </div>
+
+        <div className="sidebar-content">
+          <div className="card info-card">
+            <h3>Informações Gerais</h3>
+            <p><strong>Status:</strong> {ticket.status}</p>
+            <p><strong>Nível Atual:</strong> {ticket.nivelSuporte}</p>
+            <p><strong>Prioridade:</strong> <span className={`badge-prio ${ticket.prioridade.toLowerCase()}`}>{ticket.prioridade}</span></p>
+            <hr/>
+            <p><strong>Cliente:</strong> {ticket.solicitante}</p>
+            <p><strong>Empresa:</strong> {ticket.empresa}</p>
+            <p><strong>Equipamento:</strong> {ticket.equipamento.nome} ({ticket.equipamento.patrimonio})</p>
+          </div>
+
+          {ticket.status !== 'Resolvido' && (
+            <div className="card action-card">
+              <h3>Ações de Suporte</h3>
+              <button onClick={handleResolver} className="btn-resolver">Marcar como Resolvido</button>
+              
+              {user?.role === 'N1' && ticket.nivelSuporte === 'N1' && (
+                <button onClick={() => handleEscalar('N2')} className="btn-escalar">Escalonar para N2 (Especializado)</button>
+              )}
+              {user?.role === 'N2' && ticket.nivelSuporte === 'N2' && (
+                <button onClick={() => handleEscalar('N3')} className="btn-escalar">Escalonar para N3 (Engenharia)</button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

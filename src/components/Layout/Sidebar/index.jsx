@@ -4,7 +4,10 @@ import './style.css';
 
 export default function Sidebar() {
   const { user } = useAuth();
-  const location = useLocation(); // Ajuda a saber em qual tela estamos para pintar o menu ativo
+  const location = useLocation();
+
+  // Verifica se o usuário é técnico
+  const isTech = user?.role === 'N1' || user?.role === 'N2' || user?.role === 'N3';
 
   return (
     <aside className="sidebar">
@@ -16,36 +19,20 @@ export default function Sidebar() {
       <nav className="sidebar-nav">
         <span className="nav-label">MENU PRINCIPAL</span>
         
-        <Link 
-          to="/" 
-          className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}
-        >
+        <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
           Dashboard
         </Link>
 
-        {/* Todos podem abrir chamados, mas no futuro você pode restringir se quiser */}
-        <Link 
-          to="/novo-chamado" 
-          className={`nav-item ${location.pathname === '/novo-chamado' ? 'active' : ''}`}
-        >
-          Novo Chamado
-        </Link>
+        {/* Clientes veem a opção de abrir chamados */}
+        {!isTech && (
+          <Link to="/cliente/novo-chamado" className={`nav-item ${location.pathname === '/cliente/novo-chamado' ? 'active' : ''}`}>
+            Novo Chamado
+          </Link>
+        )}
 
-        {/* --- NOVO ITEM ADICIONADO AQUI --- */}
-        {/* Usamos startsWith porque a URL será /ticket/1, /ticket/2, etc. */}
-        <Link 
-          to="/ticket/1" 
-          className={`nav-item ${location.pathname.startsWith('/ticket') ? 'active' : ''}`}
-        >
-          Detalhes do Chamado
-        </Link>
-
-        {/* Exemplo de menu restrito: Apenas N2 e N3 veem a área de relatórios/gestão */}
+        {/* Apenas Técnicos N2 e N3 veem a área de relatórios e SLAs */}
         {(user?.role === 'N2' || user?.role === 'N3') && (
-          <Link 
-            to="/relatorios" 
-            className={`nav-item ${location.pathname === '/relatorios' ? 'active' : ''}`}
-          >
+          <Link to="/tecnico/relatorios" className={`nav-item ${location.pathname === '/tecnico/relatorios' ? 'active' : ''}`}>
             Relatórios e SLA
           </Link>
         )}

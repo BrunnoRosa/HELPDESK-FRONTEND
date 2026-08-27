@@ -4,11 +4,11 @@ const AuthContext = createContext({});
 
 export function AuthProvider({ children }) {
   // Alterado a role de 'N1' para 'CLIENTE' para liberar as telas do Cliente
-  const [user, setUser] = useState({
+const [user, setUser] = useState({
     id: 1,
-    name: 'Camila Viana',
-    email: 'camila@glpidesk.com',
-    role: 'CLIENTE' // <- Mude de 'N1' para 'CLIENTE'
+    name: 'Técnico Suporte',
+    email: 'tecnico@empresa.com',
+    role: 'N2' // O 'N2' avisa ao sistema que você é da equipe técnica
   });
   
   const [loading, setLoading] = useState(false);
