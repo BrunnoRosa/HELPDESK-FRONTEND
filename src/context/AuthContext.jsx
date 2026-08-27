@@ -3,18 +3,21 @@ import { createContext, useState, useContext } from 'react';
 const AuthContext = createContext({});
 
 export function AuthProvider({ children }) {
-  // Alterado a role de 'N1' para 'CLIENTE' para liberar as telas do Cliente
-const [user, setUser] = useState({
+  // Lê o perfil do arquivo .env.local da máquina que está rodando
+  const perfilAutomatico = import.meta.env.VITE_MEU_PERFIL || 'CLIENTE';
+
+  const [user, setUser] = useState({
     id: 1,
-    name: 'Técnico Suporte',
-    email: 'tecnico@empresa.com',
-    role: 'N2' // O 'N2' avisa ao sistema que você é da equipe técnica
+    name: perfilAutomatico === 'CLIENTE' ? 'Cliente Teste' : 'Técnico Suporte',
+    email: perfilAutomatico === 'CLIENTE' ? 'cliente@empresa.com' : 'tecnico@empresa.com',
+    role: perfilAutomatico
   });
-  
+
   const [loading, setLoading] = useState(false);
 
   const login = async (email, password) => {
-    const mockUser = { id: 1, name: 'Usuário Teste', email, role: 'CLIENTE' };
+    // Simula login mantendo o perfil da máquina
+    const mockUser = { id: 1, name: 'Usuário', email, role: perfilAutomatico };
     setUser(mockUser);
   };
 
