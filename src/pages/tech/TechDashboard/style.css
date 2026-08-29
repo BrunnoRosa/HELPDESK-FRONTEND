@@ -1,3 +1,6 @@
+/* ==========================================
+   1. BASE E CABEÇALHO (HELPDESK-FRONT)
+   ========================================== */
 .dashboard-content {
   padding: 2rem;
   background-color: #f8fafc;
@@ -8,21 +11,63 @@
   margin-bottom: 2rem;
 }
 
-.dashboard-header h2 {
+.dashboard-header .page-title {
   color: #0f172a;
   font-size: 1.8rem;
   margin-bottom: 0.5rem;
 }
 
-.dashboard-header p {
+.dashboard-header .page-subtitle {
   color: #64748b;
 }
 
+/* ==========================================
+   2. MÉTRICAS E ESTATÍSTICAS (frontend)
+   ========================================== */
+.dashboard__stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.dashboard__stats article {
+  background: #fff;
+  border: 1px solid #e4e7ec;
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+
+.dashboard__stats strong,
+.dashboard__stats span {
+  display: block;
+}
+
+.dashboard__stats strong {
+  font-size: 30px;
+  margin-bottom: 6px;
+  color: #1e293b;
+}
+
+.dashboard__stats span {
+  color: #667085;
+  font-size: 0.9rem;
+}
+
+/* Regra extra para destacar os chamados urgentes (Alto) */
+.dashboard__stats .stat-urgente strong {
+  color: #b91c1c; 
+}
+
+/* ==========================================
+   3. TABELA OPERACIONAL (HELPDESK-FRONT)
+   ========================================== */
 .table-wrapper {
   background: #ffffff;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  overflow: hidden;
+  overflow-x: auto; /* Permite scroll horizontal em telas pequenas */
 }
 
 .tech-table {
@@ -52,6 +97,9 @@
   background-color: #f8fafc;
 }
 
+/* ==========================================
+   4. COMPONENTES DE INTERFACE (HELPDESK-FRONT)
+   ========================================== */
 .status-badge {
   background-color: #e2e8f0;
   color: #475569;
@@ -80,4 +128,19 @@
 
 .btn-action:hover {
   text-decoration: underline;
+}
+
+/* ==========================================
+   5. RESPONSIVIDADE (frontend adaptado)
+   ========================================== */
+@media (max-width: 900px) {
+  .dashboard__stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .dashboard__stats {
+    grid-template-columns: 1fr;
+  }
 }
