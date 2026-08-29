@@ -3,44 +3,49 @@ import { useNavigate } from 'react-router-dom';
 import './style.css';
 
 export default function NewTicket() {
-  const [empresa, setEmpresa] = useState('');
-  const [equipamento, setEquipamento] = useState('');
-  const [titulo, setTitulo] = useState('');
-  const [descricao, setDescricao] = useState('');
-  const [prioridade, setPrioridade] = useState('NORMAL');
+  const [formData, setFormData] = useState({
+    empresa: '',
+    equipamento: '',
+    titulo: '',
+    ocorrencia: 'INCIDENTE',
+    descricao: ''
+  });
+  
   const [arquivo, setArquivo] = useState(null);
+  const [erro, setErro] = useState('');
+  const [salvando, setSalvando] = useState(false);
 
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setErro('');
+    setSalvando(true);
 
     try {
-      // 1. Cria o objeto com os dados preenchidos no formulário
+      await new Promise(resolve => setTimeout(resolve, 800));
+
       const novoChamado = {
-        id: Date.now(), // Gera um ID único numérico
-        empresa,
-        equipamento,
-        titulo,
-        descricao,
-        prioridade,
+        id: Date.now(),
+        ...formData,
         status: 'NOVO',
         createdAt: new Date().toLocaleDateString('pt-BR')
       };
 
-      // 2. Busca os chamados existentes no localStorage ou inicia uma lista vazia
       const chamadosSalvos = JSON.parse(localStorage.getItem('@glpi:tickets')) || [];
-
-      // 3. Adiciona o novo chamado no início da lista
       chamadosSalvos.unshift(novoChamado);
-
-      // 4. Salva a lista atualizada no localStorage
       localStorage.setItem('@glpi:tickets', JSON.stringify(chamadosSalvos));
 
-      alert('Chamado criado com sucesso! (Salvo localmente)');
-      navigate('/');
+      navigate('/cliente');
     } catch (error) {
-      alert('Erro ao salvar chamado. Tente novamente.');
+      setErro('Erro ao salvar chamado. Verifique seus dados e tente novamente.');
+    } finally {
+      setSalvando(false);
     }
   };
 
@@ -50,14 +55,17 @@ export default function NewTicket() {
         <h2>Abrir Novo Chamado</h2>
         <p className="subtitle">Preencha os dados abaixo, incluindo informações do equipamento e evidências fotográficas.</p>
 
+        {erro && <div className="error-box">{erro}</div>}
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Solicitante (Setor/Empresa)</label>
             <input 
               type="text" 
+              name="empresa"
               placeholder="Ex: Setor Financeiro" 
-              value={empresa}
-              onChange={(e) => setEmpresa(e.target.value)}
+              value={formData.empresa}
+              onChange={handleChange}
               required
             />
           </div>
@@ -66,9 +74,10 @@ export default function NewTicket() {
             <label>Equipamento (Patrimônio ou Modelo)</label>
             <input 
               type="text" 
+              name="equipamento"
               placeholder="Ex: Desktop Samsung (Patrimônio 090988)" 
-              value={equipamento}
-              onChange={(e) => setEquipamento(e.target.value)}
+              value={formData.equipamento}
+              onChange={handleChange}
               required
             />
           </div>
@@ -77,9 +86,10 @@ export default function NewTicket() {
             <label>Título / Problema Principal</label>
             <input 
               type="text" 
+              name="titulo"
               placeholder="Ex: Sistema ERP travando no login" 
-              value={titulo}
-              onChange={(e) => setTitulo(e.target.value)}
+              value={formData.titulo}
+              onChange={handleChange}
               required
             />
           </div>
@@ -87,27 +97,27 @@ export default function NewTicket() {
           <div className="form-group">
             <label>Descrição Detalhada</label>
             <textarea 
+              name="descricao"
               rows="4"
               placeholder="Descreva o problema com o máximo de detalhes possível..."
-              value={descricao}
-              onChange={(e) => setDescricao(e.target.value)}
+              value={formData.descricao}
+              onChange={handleChange}
               required
             />
           </div>
 
           <div className="form-row">
             <div className="form-group">
-              <label>Prioridade</label>
-              <select value={prioridade} onChange={(e) => setPrioridade(e.target.value)}>
-                <option value="BAIXA">Baixa</option>
-                <option value="NORMAL">Normal</option>
-                <option value="ALTA">Alta</option>
-                <option value="CRÍTICA">Crítica</option>
+              <label>Ocorrência</label>
+              <select name="ocorrencia" value={formData.ocorrencia} onChange={handleChange}>
+                <option value="INCIDENTE">Incidente (Falha)</option>
+                <option value="REQUISICAO">Requisição (Novo Acesso/Equipamento)</option>
+                <option value="DUVIDA">Dúvida</option>
               </select>
             </div>
 
             <div className="form-group">
-              <label>Anexar Evidência (Foto/Print)</label>
+              <label>Anexar Evidência</label>
               <input 
                 type="file" 
                 accept="image/*"
@@ -117,11 +127,11 @@ export default function NewTicket() {
           </div>
 
           <div className="form-actions">
-            <button type="button" className="btn-cancel" onClick={() => navigate('/')}>
+            <button type="button" className="btn-cancel" onClick={() => navigate('/cliente')} disabled={salvando}>
               Cancelar
             </button>
-            <button type="submit" className="btn-submit">
-              Criar Chamado
+            <button type="submit" className="btn-submit" disabled={salvando}>
+              {salvando ? 'Salvando...' : 'Criar Chamado'}
             </button>
           </div>
         </form>

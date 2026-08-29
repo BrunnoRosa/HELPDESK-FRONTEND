@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import './style.css';
 
@@ -12,7 +12,7 @@ export default function ClienteDashboard() {
   ];
 
   useEffect(() => {
-    // 1. Busca os dados salvos no localStorage
+    // Busca os dados salvos no localStorage
     const salvos = JSON.parse(localStorage.getItem('@glpi:tickets'));
 
     if (salvos && salvos.length > 0) {
@@ -32,6 +32,23 @@ export default function ClienteDashboard() {
     }
   }, []);
 
+  // -------------------------------------------------------------------------
+  // NOVA FUNCIONALIDADE MESCLADA DO 'frontend'
+  // Cálculos de estatísticas baseados apenas nos chamados do cliente atual
+  // Utilizamos useMemo para não recalcular a não ser que os chamados mudem
+  // -------------------------------------------------------------------------
+  const estatisticas = useMemo(() => {
+    return {
+      total: meusChamados.length,
+      // Considera 'em fluxo' qualquer um que não esteja resolvido ou fechado
+      emFluxo: meusChamados.filter(c => !['RESOLVIDO', 'FECHADO'].includes(c.status)).length,
+      // Verifica chamados que requerem atenção imediata (Alta ou Crítica)
+      urgentes: meusChamados.filter(c => ['ALTA', 'CRÍTICA'].includes(c.prioridade)).length,
+      resolvidos: meusChamados.filter(c => c.status === 'RESOLVIDO').length
+    };
+  }, [meusChamados]);
+
+  // Helpers para estilização de badges (Mantidos do HELPDESK-FRONT)
   const getClassePrioridade = (prioridade) => {
     switch (prioridade) {
       case 'BAIXA': return 'badge-baixa';
@@ -64,6 +81,27 @@ export default function ClienteDashboard() {
         </Link>
       </div>
 
+      {/* SESSÃO DE ESTATÍSTICAS (Implementada a partir do 'frontend') */}
+      <div className="dashboard__stats">
+        <article>
+          <strong>{estatisticas.total}</strong>
+          <span>Total de chamados</span>
+        </article>
+        <article>
+          <strong>{estatisticas.emFluxo}</strong>
+          <span>Em andamento</span>
+        </article>
+        <article>
+          <strong>{estatisticas.urgentes}</strong>
+          <span>Prioridade Alta</span>
+        </article>
+        <article>
+          <strong>{estatisticas.resolvidos}</strong>
+          <span>Resolvidos</span>
+        </article>
+      </div>
+
+      {/* LISTAGEM EM TABELA (Mantida do HELPDESK-FRONT) */}
       <div className="table-container">
         <table className="chamados-table">
           <thead>

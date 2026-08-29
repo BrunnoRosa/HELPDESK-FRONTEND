@@ -1,10 +1,8 @@
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import './style.css';
 
 export default function ChamadoCard({ ticket }) {
-  const navigate = useNavigate();
-
-  // Função para formatar a data
+  // Função para formatar a data mantida para consistência de exibição
   const formatDate = (dateString) => {
     if (!dateString) return 'Data não informada';
     const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' };
@@ -12,36 +10,32 @@ export default function ChamadoCard({ ticket }) {
   };
 
   return (
-    <div className="chamado-card">
-      <div className="card-header">
-        <h4 className="card-title" title={ticket.title}>
-          #{ticket.id} - {ticket.title}
-        </h4>
+    <article className="chamado-card">
+      <div className="chamado-card__top">
+        <span className="chamado-card__id">#{ticket.id}</span>
         <span className={`status-badge status-${ticket.status?.toLowerCase() || 'aberto'}`}>
           {ticket.status || 'ABERTO'}
         </span>
       </div>
-
-      <div className="card-body">
-        <p><strong>Solicitante:</strong> {ticket.requester?.name || 'Não informado'}</p>
-        <p>
-          <strong>Prioridade:</strong> 
-          <span className={`priority-text priority-${ticket.priority?.toLowerCase()}`}>
-            {ticket.priority || 'Normal'}
-          </span>
-        </p>
-        <p><strong>Nível de Suporte:</strong> <span className="level-badge">{ticket.supportLevel || 'N1'}</span></p>
+      
+      <h3 title={ticket.title}>{ticket.title}</h3>
+      
+      {/* Exibe a descrição caso exista, ou fallback para o solicitante (padrão antigo) */}
+      <p className="chamado-card__desc">
+        {ticket.description || `Solicitante: ${ticket.requester?.name || 'Não informado'}`}
+      </p>
+      
+      <div className="chamado-card__meta">
+        <span className={`priority-text priority-${ticket.priority?.toLowerCase()}`}>
+          {ticket.priority || 'Normal'}
+        </span>
+        <span className="level-badge">{ticket.supportLevel || 'N1'}</span>
+        <span className="card-date">{formatDate(ticket.createdAt)}</span>
       </div>
-
-      <div className="card-footer">
-        <span className="card-date">Criado em: {formatDate(ticket.createdAt)}</span>
-        <button 
-          className="btn-details"
-          onClick={() => navigate(`/ticket/${ticket.id}`)}
-        >
-          Ver Detalhes
-        </button>
-      </div>
-    </div>
+      
+      <Link className="chamado-card__link" to={`/ticket/${ticket.id}`}>
+        Ver Detalhes
+      </Link>
+    </article>
   );
 }
