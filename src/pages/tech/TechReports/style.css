@@ -1,69 +1,184 @@
+/* ==========================================
+   1. BASE E CABEÇALHO (HELPDESK-FRONT)
+   ========================================== */
 .reports-page {
-    padding: 2rem;
-    background: #f8fafc;
-    min-height: 100vh;
+  padding: 2rem;
+  background: #f8fafc;
+  min-height: 100vh;
 }
 
 .reports-header {
-    margin-bottom: 2rem;
+  margin-bottom: 2rem;
 }
 
+.page-title {
+  margin: 0;
+  color: #1e293b;
+  font-size: 1.8rem;
+}
+
+.page-subtitle {
+  color: #64748b;
+  margin-top: 0.5rem;
+}
+
+/* ==========================================
+   2. RELATÓRIOS E LOGS (HELPDESK-FRONT)
+   ========================================== */
 .reports-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 1.5rem;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
 }
 
 .logs-section {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px; /* Suavizado para combinar com o frontend */
+  border: 1px solid #e4e7ec;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .logs-section h3 {
-    font-size: 1.1rem;
-    color: #1e293b;
-    margin-bottom: 1rem;
-    border-bottom: 1px solid #e2e8f0;
-    padding-bottom: 0.5rem;
+  font-size: 1.1rem;
+  color: #1e293b;
+  margin-top: 0;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0.5rem;
 }
 
 .logs-table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: left;
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
 }
 
 .logs-table th,
 .logs-table td {
-    padding: 1rem;
-    border-bottom: 1px solid #e2e8f0;
+  padding: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.95rem;
+}
+
+.status-badge {
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
 }
 
 .status-ok {
-    color: #10b981;
-    font-weight: bold;
+  color: #065f46;
+  background-color: #d1fae5;
+  font-weight: bold;
 }
 
 .status-warn {
-    color: #f59e0b;
-    font-weight: bold;
+  color: #92400e;
+  background-color: #fef3c7;
+  font-weight: bold;
 }
 
 .norm-list {
-    list-style: none;
-    padding: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .norm-list li {
-    padding: 0.75rem 0;
-    border-bottom: 1px dashed #e2e8f0;
-    font-size: 0.9rem;
-    color: #334155;
-    line-height: 1.4;
+  padding: 0.75rem 0;
+  border-bottom: 1px dashed #e2e8f0;
+  font-size: 0.9rem;
+  color: #334155;
+  line-height: 1.5;
+}
+
+.norm-list li:last-child {
+  border-bottom: none;
 }
 
 .norm-list li strong {
-    color: #0f172a;
+  color: #0f172a;
+}
+
+/* Divisor entre os relatórios e a busca ativa */
+.section-divider {
+  margin: 2.5rem 0;
+  border: none;
+  border-top: 1px solid #cbd5e1;
+}
+
+/* ==========================================
+   3. FILTROS E BUSCA (Adaptação do frontend)
+   ========================================== */
+.advanced-query-section h3 {
+  color: #1e293b;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.chamados__filters {
+  display: grid;
+  grid-template-columns: 1fr 240px;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.chamados__filters input,
+.chamados__filters select {
+  width: 100%;
+  border: 1px solid #d0d5dd;
+  border-radius: 10px;
+  background: #fff;
+  padding: 11px 12px;
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
+.chamados__filters input:focus,
+.chamados__filters select:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+/* ==========================================
+   4. GRID DE RESULTADOS (frontend)
+   ========================================== */
+.chamados__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.no-results {
+  color: #64748b;
+  font-style: italic;
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* ==========================================
+   5. RESPONSIVIDADE (Mesclada)
+   ========================================== */
+@media (max-width: 900px) {
+  .chamados__grid { 
+    grid-template-columns: repeat(2, 1fr); 
+  }
+}
+
+@media (max-width: 768px) {
+  .reports-grid {
+    grid-template-columns: 1fr;
+  }
+  .reports-page {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 650px) {
+  .chamados__filters,
+  .chamados__grid { 
+    grid-template-columns: 1fr; 
+  }
 }
