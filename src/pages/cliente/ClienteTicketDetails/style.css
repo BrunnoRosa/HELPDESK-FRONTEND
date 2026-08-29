@@ -1,170 +1,303 @@
-/* Página de Detalhes do Chamado */
+/* Animações e Transições Globais */
 .details-container {
   max-width: 900px;
-  margin: 1.5rem auto;
-  padding: 0 1rem;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  animation: fadeIn 0.4s ease-out;
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Botão Voltar */
 .btn-back {
   background: none;
   border: none;
-  color: #2563eb;
+  color: #667085; /* Cor baseada no padrão de texto secundário do frontend */
   font-weight: 600;
   cursor: pointer;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   font-size: 0.95rem;
-  padding: 0;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .btn-back:hover {
-  text-decoration: underline;
+  background-color: #f3f4f6;
+  color: #1f2937;
+  text-decoration: none;
 }
 
+/* Cartões Base - Mesclando com o estilo do 'frontend' */
 .details-card, .comments-card {
   background: #ffffff;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  padding: 2rem;
+  border-radius: 14px; /* Raio de borda suave alinhado ao frontend */
+  border: 1px solid #e4e7ec; /* Cor de borda padronizada do frontend */
+  padding: 24px; /* Espaçamento mais generoso do frontend */
   margin-bottom: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  transition: box-shadow 0.3s ease;
 }
 
+.details-card:hover, .comments-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+}
+
+/* Cabeçalho do Chamado */
 .details-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 20px; /* Alinhamento e espaçamento inspirados no '.detalhe__heading' */
   border-bottom: 1px solid #f3f4f6;
-  padding-bottom: 1.25rem;
+  padding-bottom: 1.5rem;
   margin-bottom: 1.5rem;
 }
 
 .ticket-id {
   font-size: 0.85rem;
-  color: #6b7280;
-  font-weight: 600;
+  color: #667085; /* Cor secundária utilizada no frontend */
+  font-weight: 700; /* Peso da fonte inspirado no '.detalhe__id' */
   text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .details-header h2 {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   color: #111827;
-  margin-top: 0.25rem;
+  margin-top: 0.5rem;
+  font-weight: 800;
+  line-height: 1.2;
 }
 
 .badges-group {
   display: flex;
   gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
+/* Grid de Dados (Informações do Chamado) */
 .details-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.25rem;
+  gap: 16px;
   margin-bottom: 1.5rem;
-  background: #f9fafb;
-  padding: 1rem;
-  border-radius: 8px;
+}
+
+.info-item {
+  background: #f8fafc; /* Fundo idêntico aos blocos de dados do frontend */
+  padding: 16px;
+  border-radius: 9px; /* Curvatura alinhada aos elementos do frontend */
+  border: 1px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.info-item:hover {
+  border-color: #e2e8f0;
 }
 
 .info-item label, .details-section label {
   display: block;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #6b7280;
+  font-size: 0.75rem;
+  font-weight: 700; /* Peso alinhado aos labels do frontend */
+  color: #667085; /* Cor de label alinhada ao frontend */
   text-transform: uppercase;
-  margin-bottom: 0.25rem;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
 }
 
 .info-item p {
   color: #1f2937;
-  font-weight: 600;
+  font-weight: 700; /* Destaque para os dados como no 'dd' do frontend */
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Seção de Descrição */
+.details-section {
+  margin-top: 1.5rem;
 }
 
 .description-text {
-  color: #374151;
-  line-height: 1.6;
-  background: #ffffff;
-  padding: 0.75rem;
-  border-radius: 6px;
-  border: 1px solid #f3f4f6;
+  color: #344054; /* Cor de leitura confortável do frontend */
+  line-height: 1.55; /* Altura de linha baseada no '.detalhe__history' */
+  background: #f9fafb;
+  padding: 1.25rem;
+  border-radius: 9px;
+  border: 1px solid #e4e7ec;
+  white-space: pre-wrap; /* Preserva quebras de linha digitadas pelo usuário, inspirado no frontend */
+  font-family: inherit; 
+  font-size: 0.95rem;
 }
 
+/* Evidência (Imagem) com Feedback Interativo */
 .evidence-container {
-  margin-top: 0.5rem;
-  border-radius: 8px;
+  margin-top: 0.75rem;
+  border-radius: 9px;
   overflow: hidden;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e4e7ec;
   max-width: 100%;
+  position: relative;
 }
 
 .evidence-container img {
   width: 100%;
-  max-height: 350px;
+  max-height: 400px;
   object-fit: cover;
   display: block;
+  transition: transform 0.4s ease;
 }
 
-/* Seção de Comentários / Histórico */
+.evidence-container:hover img {
+  transform: scale(1.03); /* Efeito sutil de zoom in (UX de engajamento) */
+}
+
+/* Seção de Comentários / Chat */
 .comments-card h3 {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   color: #111827;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
 }
 
 .comments-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
 }
 
+/* Layout estilo "Balão de Chat" para melhorar a UX */
 .comment-item {
-  padding: 1rem;
-  border-radius: 8px;
+  padding: 1.25rem;
+  border-radius: 12px;
   border: 1px solid #e5e7eb;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.comment-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.03);
 }
 
 .comment-item.tech {
   background-color: #f0f9ff;
   border-color: #bae6fd;
+  align-self: flex-start;
+  width: 90%;
+  border-bottom-left-radius: 4px; /* Aspecto visual de fala de terceiros */
 }
 
 .comment-item.client {
-  background-color: #f9fafb;
+  background-color: #ffffff;
+  border-color: #e4e7ec;
+  align-self: flex-end;
+  width: 90%;
+  border-bottom-right-radius: 4px; /* Aspecto visual da própria fala */
 }
 
 .comment-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
   font-size: 0.85rem;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  padding-bottom: 0.5rem;
 }
 
 .comment-header strong {
   color: #1f2937;
+  font-weight: 700;
 }
 
 .comment-header span {
-  color: #9ca3af;
+  color: #667085;
+  font-size: 0.8rem;
 }
 
+/* Formulário de Comentário e Inputs */
 .comment-form {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 12px; /* Espaçamento de formulário alinhado ao frontend */
+  background: #f8fafc;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #e4e7ec;
 }
 
 .comment-form textarea {
   width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
+  border: 1px solid #d0d5dd; /* Borda de input padronizada do frontend */
+  border-radius: 9px; /* Curvatura de inputs do frontend */
+  padding: 12px 14px; /* Padding interno confortável inspirado no frontend */
+  background: #fff; /* Fundo branco alinhado ao frontend */
   font-size: 0.95rem;
   resize: vertical;
+  min-height: 100px;
+  transition: all 0.2s ease;
+  color: #1f2937;
+  font-family: inherit;
 }
 
+/* UX: Feedback claro de estado de foco (Acessibilidade) */
 .comment-form textarea:focus {
   outline: none;
   border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+.comment-form textarea:disabled {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+  color: #9ca3af;
+}
+
+/* Estilo para botão de submit (caso você use uma classe .btn-submit no JSX) */
+.btn-submit {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background-color: #1d4ed8;
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+  transform: translateY(-1px);
+}
+
+.btn-submit:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+.btn-submit:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Notificação de Erro */
+.error-box {
+  background-color: #fef2f2;
+  border: 1px solid #f87171;
+  color: #991b1b;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 600;
+  animation: fadeIn 0.3s ease-out;
 }
