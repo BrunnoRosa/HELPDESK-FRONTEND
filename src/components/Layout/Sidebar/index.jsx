@@ -3,10 +3,10 @@ import { useAuth } from '../../../context/AuthContext';
 import './style.css';
 
 export default function Sidebar() {
-  const { user } = useAuth();
+  // 1. ACRESCENTADO: Puxamos a função logout do contexto
+  const { user, logout } = useAuth();
   const location = useLocation();
 
-  // Verifica se o usuário é técnico
   const isTech = user?.role === 'N1' || user?.role === 'N2' || user?.role === 'N3' || user?.role === 'admin';
 
   return (
@@ -40,7 +40,6 @@ export default function Sidebar() {
           Dashboard
         </Link>
 
-        {/* Clientes veem a opção de abrir chamados */}
         {!isTech && (
           <Link to="/cliente/novo-chamado" className={`nav-item ${location.pathname === '/cliente/novo-chamado' ? 'active' : ''}`}>
             <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -51,7 +50,6 @@ export default function Sidebar() {
           </Link>
         )}
 
-        {/* Técnicos N2, N3 e Admin veem relatórios e SLAs */}
         {(user?.role === 'N2' || user?.role === 'N3' || user?.role === 'admin') && (
           <Link to="/tecnico/relatorios" className={`nav-item ${location.pathname === '/tecnico/relatorios' ? 'active' : ''}`}>
             <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -65,7 +63,6 @@ export default function Sidebar() {
 
         <span className="nav-label" style={{ marginTop: '1.5rem' }}>Configurações</span>
 
-        {/* Aba de Perfil liberada para TODOS os usuários */}
         <Link to="/perfil" className={`nav-item ${location.pathname === '/perfil' ? 'active' : ''}`}>
           <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -75,15 +72,27 @@ export default function Sidebar() {
         </Link>
       </nav>
 
-      {/* Rodapé com identificação rápida do usuário */}
+      {/* Rodapé com identificação e Logout */}
       <div className="sidebar-footer">
-        <div className="user-avatar">
-          {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+        {/* 2. ACRESCENTADO: Uma div wrapper para agrupar avatar e textos */}
+        <div className="user-profile-wrapper">
+          <div className="user-avatar">
+            {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+          </div>
+          <div className="user-info">
+            <span className="user-name">{user?.name || 'Usuário'}</span>
+            <span className="user-role">{user?.role || 'CLIENTE'}</span>
+          </div>
         </div>
-        <div className="user-info">
-          <span className="user-name">{user?.name || 'Usuário Logado'}</span>
-          <span className="user-role">{user?.role || 'Acesso Limitado'}</span>
-        </div>
+
+        {/* 3. ACRESCENTADO: Botão de sair com ícone */}
+        <button onClick={logout} className="btn-sidebar-logout" title="Sair do sistema">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+        </button>
       </div>
     </aside>
   );
