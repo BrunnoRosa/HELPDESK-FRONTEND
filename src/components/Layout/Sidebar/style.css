@@ -18,9 +18,8 @@
   flex-direction: column;
   border-right: 1px solid var(--sidebar-border);
   
-  /* A MUDANÇA FOI NESTA LINHA ABAIXO */
+  /* Mantém a sidebar fixa para não empurrar o resto do site */
   position: fixed; 
-  
   top: 0;
   left: 0;
   z-index: 100;
@@ -136,14 +135,23 @@
   border-radius: 0 4px 4px 0;
 }
 
-/* Rodapé do Usuário (Perfil Rápido) */
+/* Rodapé do Usuário (Perfil Rápido + Botão Sair) */
 .sidebar-footer {
   padding: 1.25rem 1.5rem;
   border-top: 1px solid var(--sidebar-border);
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between; /* Mantém o perfil à esquerda e o botão de sair à direita */
   background-color: rgba(0, 0, 0, 0.2);
+  margin-top: auto;
+}
+
+/* Agrupa o Avatar e os Textos para o layout funcionar perfeitamente */
+.user-profile-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow: hidden;
 }
 
 .user-avatar {
@@ -164,7 +172,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 2px; /* É AQUI QUE VOCÊ CONTROLA A DISTÂNCIA. Se quiser mais junto, coloque 0 */
+  gap: 2px;
   overflow: hidden;
 }
 
@@ -175,14 +183,39 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  line-height: 1.1; /* Diminui o espaçamento natural da fonte */
+  line-height: 1.1;
 }
 
 .user-role {
   color: #6b7280;
-  font-size: 0.72rem; /* Diminuí um pouquinho para dar mais contraste com o nome */
+  font-size: 0.72rem;
   text-transform: uppercase;
   font-weight: 700;
   letter-spacing: 0.5px;
-  line-height: 1.1; /* Diminui o espaçamento natural da fonte */
+  line-height: 1.1;
+}
+
+/* Botão de Logout com Ícone */
+.btn-sidebar-logout {
+  background: transparent;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0; /* Evita que o botão seja esmagado pelo nome longo */
+}
+
+.btn-sidebar-logout:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.btn-sidebar-logout svg {
+  width: 18px;
+  height: 18px;
 }

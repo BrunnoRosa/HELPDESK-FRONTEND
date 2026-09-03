@@ -1,67 +1,23 @@
 .main-header {
   height: 70px;
   background-color: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e4e7ec; /* Cor de borda padronizada do novo layout */
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 2rem;
   
-  /* Faz o header respeitar o tamanho da sidebar */
+  /* Faz o header respeitar o tamanho da sidebar fixa perfeitamente */
   margin-left: 260px; 
+  
+  /* Sombra muito sutil para dar acabamento */
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.02);
 }
 
-.header-breadcrumbs h3 {
+.header-breadcrumbs h2 {
   margin: 0;
-  color: #374151;
-  font-size: 1.125rem;
-  font-weight: 600;
-}
-
-.header-user-area {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.user-name {
-  color: #4b5563;
-  font-weight: 500;
-  font-size: 0.9rem;
-}
-
-/* Badges coloridas dependendo do Nível */
-.role-badge {
-  padding: 0.25rem 0.5rem;
-  border-radius: 9999px;
-  font-size: 0.7rem;
+  color: #111827;
+  font-size: 1.25rem;
   font-weight: 700;
-}
-
-.role-cliente { background-color: #f3f4f6; color: #4b5563; }
-.role-n1 { background-color: #dbeafe; color: #1e40af; }
-.role-n2 { background-color: #fef08a; color: #854d0e; }
-.role-n3 { background-color: #fee2e2; color: #991b1b; }
-
-.btn-logout {
-  background-color: transparent;
-  color: #ef4444;
-  border: 1px solid #ef4444;
-  padding: 0.4rem 1rem;
-  border-radius: 0.375rem;
-  font-weight: 600;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-logout:hover {
-  background-color: #ef4444;
-  color: #ffffff;
+  letter-spacing: -0.5px;
 }
