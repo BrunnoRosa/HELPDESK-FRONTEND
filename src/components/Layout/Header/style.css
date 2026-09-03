@@ -1,0 +1,23 @@
+.main-header {
+  height: 70px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e4e7ec; /* Cor de borda padronizada do novo layout */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  
+  /* Faz o header respeitar o tamanho da sidebar fixa perfeitamente */
+  margin-left: 260px; 
+  
+  /* Sombra muito sutil para dar acabamento */
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.02);
+}
+
+.header-breadcrumbs h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
