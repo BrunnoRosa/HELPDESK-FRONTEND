@@ -1,13 +1,14 @@
 import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '../../../context/AuthContext';
+import { useAuth } from "../../../context/AuthContext";
 import './style.css';
 
 export default function Sidebar() {
-  // 1. ACRESCENTADO: Puxamos a função logout do contexto
   const { user, logout } = useAuth();
   const location = useLocation();
 
-  const isTech = user?.role === 'N1' || user?.role === 'N2' || user?.role === 'N3' || user?.role === 'admin';
+  const role = user?.role || user?.perfil || 'CLIENTE';
+  const isAdmin = role === 'ADMIN';
+  const isTech = ['N1', 'N2', 'N3', 'TECNICO_N1', 'TECNICO_N2', 'TECNICO_N3'].includes(role) || isAdmin;
 
   return (
     <aside className="sidebar">
@@ -40,6 +41,20 @@ export default function Sidebar() {
           Dashboard
         </Link>
 
+        {/* Link exclusivo do Administrador */}
+        {isAdmin && (
+          <Link to="/admin/dashboard" className={`nav-item ${location.pathname === '/admin/dashboard' ? 'active' : ''}`}>
+            <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            Painel Admin
+          </Link>
+        )}
+
+        {/* Apenas clientes vêem o atalho para criação de novo chamado */}
         {!isTech && (
           <Link to="/cliente/novo-chamado" className={`nav-item ${location.pathname === '/cliente/novo-chamado' ? 'active' : ''}`}>
             <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -50,7 +65,8 @@ export default function Sidebar() {
           </Link>
         )}
 
-        {(user?.role === 'N2' || user?.role === 'N3' || user?.role === 'admin') && (
+        {/* Relatórios acessíveis por N2, N3 e Admin */}
+        {['N2', 'N3', 'TECNICO_N2', 'TECNICO_N3', 'ADMIN'].includes(role) && (
           <Link to="/tecnico/relatorios" className={`nav-item ${location.pathname === '/tecnico/relatorios' ? 'active' : ''}`}>
             <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path>
@@ -74,18 +90,16 @@ export default function Sidebar() {
 
       {/* Rodapé com identificação e Logout */}
       <div className="sidebar-footer">
-        {/* 2. ACRESCENTADO: Uma div wrapper para agrupar avatar e textos */}
         <div className="user-profile-wrapper">
           <div className="user-avatar">
-            {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+            {user?.name ? user.name.charAt(0).toUpperCase() : (user?.nome ? user.nome.charAt(0).toUpperCase() : 'U')}
           </div>
           <div className="user-info">
-            <span className="user-name">{user?.name || 'Usuário'}</span>
-            <span className="user-role">{user?.role || 'CLIENTE'}</span>
+            <span className="user-name">{user?.name || user?.nome || 'Usuário'}</span>
+            <span className="user-role">{role}</span>
           </div>
         </div>
 
-        {/* 3. ACRESCENTADO: Botão de sair com ícone */}
         <button onClick={logout} className="btn-sidebar-logout" title="Sair do sistema">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>

@@ -11,24 +11,32 @@ export default function TechReports() {
   const [erro, setErro] = useState('');
   const [loading, setLoading] = useState(true);
 
-  // Carrega os dados reais da API ao montar o componente
   useEffect(() => {
     Promise.all([chamadoApi.listar(), atendimentoApi.listar()])
       .then(([listaChamados, listaAtendimentos]) => {
-        setChamados(listaChamados);
-        setAtendimentos(listaAtendimentos);
+        setChamados(Array.isArray(listaChamados) ? listaChamados : []);
+        setAtendimentos(Array.isArray(listaAtendimentos) ? listaAtendimentos : []);
       })
-      .catch((error) => setErro(error.message || "Erro ao carregar os relatórios."))
+      .catch((error) => setErro(error.message || 'Erro ao carregar os relatórios.'))
       .finally(() => setLoading(false));
   }, []);
 
-  // Mescla e filtra os chamados com base na busca e status selecionado
-  const porChamado = useMemo(() => Object.fromEntries(atendimentos.map((item) => [item.chamadoId, item])), [atendimentos]);
-  
+  const porChamado = useMemo(() => {
+    return Object.fromEntries(
+      atendimentos.map((item) => [item.chamadoId || item.id, item])
+    );
+  }, [atendimentos]);
+
   const filtrados = chamados.filter((chamado) => {
-    const texto = `${chamado.id} ${chamado.tituloChamado} ${chamado.descricaoChamado}`.toLowerCase();
+    const titulo = chamado.tituloChamado || chamado.titulo || '';
+    const descricao = chamado.descricaoChamado || chamado.descricao || '';
+    const texto = `${chamado.id} ${titulo} ${descricao}`.toLowerCase();
+    
     const correspondeBusca = texto.includes(busca.toLowerCase());
-    const correspondeStatus = status === 'TODOS' || porChamado[chamado.id]?.status === status;
+    
+    const statusAtendimento = porChamado[chamado.id]?.status || chamado.status || 'ABERTO';
+    const correspondeStatus = status === 'TODOS' || statusAtendimento === status;
+    
     return correspondeBusca && correspondeStatus;
   });
 
@@ -41,7 +49,6 @@ export default function TechReports() {
 
       {erro && <div className="error-box">{erro}</div>}
 
-      {/* BLOCO 1: MANTIDO DO SEU PROJETO (Guia de Manutenção e ISO) */}
       <div className="reports-grid">
         <div className="logs-section">
           <h3>Calendário de Manutenção Base</h3>
@@ -85,10 +92,9 @@ export default function TechReports() {
 
       <hr className="section-divider" />
 
-      {/* BLOCO 2: IMPLEMENTADO DO FRONTEND (Busca e Listagem Ativa) */}
       <div className="advanced-query-section">
         <h3>Consulta Avançada de Chamados</h3>
-        
+
         <div className="chamados__filters">
           <input 
             type="text"

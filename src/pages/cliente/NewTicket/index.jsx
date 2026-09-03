@@ -1,21 +1,21 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { chamadoApi } from "../../../services/api";
+import { useAuth } from "../../../context/AuthContext";
 import './style.css';
 
 export default function NewTicket() {
-  const [formData, setFormData] = useState({
-    empresa: '',
-    equipamento: '',
-    titulo: '',
-    ocorrencia: 'INCIDENTE',
-    descricao: ''
-  });
-  
-  const [arquivo, setArquivo] = useState(null);
-  const [erro, setErro] = useState('');
-  const [salvando, setSalvando] = useState(false);
-
+  const { user } = useAuth();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
+  const [formData, setFormData] = useState({
+    tituloChamado: '',
+    ocorrenciaChamado: '',
+    prioridadeChamado: 'Médio',
+    empresa: user?.name || user?.nome || ''
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,118 +24,105 @@ export default function NewTicket() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErro('');
-    setSalvando(true);
+    if (!formData.tituloChamado || !formData.ocorrenciaChamado) {
+      toast.warn('Preencha o título e a descrição da ocorrência.');
+      return;
+    }
 
+    setLoading(true);
     try {
-      await new Promise(resolve => setTimeout(resolve, 800));
-
-      const novoChamado = {
-        id: Date.now(),
-        ...formData,
-        status: 'NOVO',
-        createdAt: new Date().toLocaleDateString('pt-BR')
+      const payload = {
+        tituloChamado: formData.tituloChamado,
+        ocorrenciaChamado: formData.ocorrenciaChamado,
+        descricaoChamado: `Aberto por: ${user?.name || user?.nome || 'Cliente'} (${user?.email || 'N/A'})`,
+        prioridadeChamado: formData.prioridadeChamado,
+        statusChamado: 'Aberto',
+        empresa: formData.empresa
       };
 
-      const chamadosSalvos = JSON.parse(localStorage.getItem('@glpi:tickets')) || [];
-      chamadosSalvos.unshift(novoChamado);
-      localStorage.setItem('@glpi:tickets', JSON.stringify(chamadosSalvos));
-
-      navigate('/cliente');
+      await chamadoApi.criar(payload);
+      toast.success('Chamado aberto com sucesso!');
+      navigate('/');
     } catch (error) {
-      setErro('Erro ao salvar chamado. Verifique seus dados e tente novamente.');
+      toast.error(error.message || 'Erro ao abrir chamado. Tente novamente.');
     } finally {
-      setSalvando(false);
+      setLoading(false);
     }
   };
 
   return (
-    <div className="new-ticket-container">
-      <div className="new-ticket-card">
+    <div className="new-ticket-page" style={{ maxWidth: '700px', margin: '0 auto' }}>
+      <div className="page-header" style={{ marginBottom: '20px' }}>
         <h2>Abrir Novo Chamado</h2>
-        <p className="subtitle">Preencha os dados abaixo, incluindo informações do equipamento e evidências fotográficas.</p>
-
-        {erro && <div className="error-box">{erro}</div>}
-
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Solicitante (Setor/Empresa)</label>
-            <input 
-              type="text" 
-              name="empresa"
-              placeholder="Ex: Setor Financeiro" 
-              value={formData.empresa}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Equipamento (Patrimônio ou Modelo)</label>
-            <input 
-              type="text" 
-              name="equipamento"
-              placeholder="Ex: Desktop Samsung (Patrimônio 090988)" 
-              value={formData.equipamento}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Título / Problema Principal</label>
-            <input 
-              type="text" 
-              name="titulo"
-              placeholder="Ex: Sistema ERP travando no login" 
-              value={formData.titulo}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Descrição Detalhada</label>
-            <textarea 
-              name="descricao"
-              rows="4"
-              placeholder="Descreva o problema com o máximo de detalhes possível..."
-              value={formData.descricao}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
-              <label>Ocorrência</label>
-              <select name="ocorrencia" value={formData.ocorrencia} onChange={handleChange}>
-                <option value="INCIDENTE">Incidente (Falha)</option>
-                <option value="REQUISICAO">Requisição (Novo Acesso/Equipamento)</option>
-                <option value="DUVIDA">Dúvida</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label>Anexar Evidência</label>
-              <input 
-                type="file" 
-                accept="image/*"
-                onChange={(e) => setArquivo(e.target.files[0])}
-              />
-            </div>
-          </div>
-
-          <div className="form-actions">
-            <button type="button" className="btn-cancel" onClick={() => navigate('/cliente')} disabled={salvando}>
-              Cancelar
-            </button>
-            <button type="submit" className="btn-submit" disabled={salvando}>
-              {salvando ? 'Salvando...' : 'Criar Chamado'}
-            </button>
-          </div>
-        </form>
+        <p>Descreva o problema ou solicitação técnica detalhadamente.</p>
       </div>
+
+      <form onSubmit={handleSubmit} className="card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div>
+          <label style={{ display: 'block', fontWeight: '600', marginBottom: '6px' }}>
+            Título / Resumo da Ocorrência *
+          </label>
+          <input 
+            type="text" 
+            name="tituloChamado" 
+            value={formData.tituloChamado} 
+            onChange={handleChange} 
+            placeholder="Ex: Erro ao acessar o sistema financeiro" 
+            required 
+            style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc' }}
+          />
+        </div>
+
+        <div>
+          <label style={{ display: 'block', fontWeight: '600', marginBottom: '6px' }}>
+            Grau de Urgência Estimado
+          </label>
+          <select 
+            name="prioridadeChamado" 
+            value={formData.prioridadeChamado} 
+            onChange={handleChange}
+            style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc' }}
+          >
+            <option value="Baixo">Baixo (Dúvida / Solicitação Simples)</option>
+            <option value="Médio">Médio (Problema isolado)</option>
+            <option value="Alto">Alto (Sistema inoperante / Urgente)</option>
+          </select>
+        </div>
+
+        <div>
+          <label style={{ display: 'block', fontWeight: '600', marginBottom: '6px' }}>
+            Descrição Detalhada do Problema *
+          </label>
+          <textarea 
+            name="ocorrenciaChamado" 
+            rows="6" 
+            value={formData.ocorrenciaChamado} 
+            onChange={handleChange} 
+            placeholder="Informe mensagens de erro, horário que ocorreu ou passos para reproduzir..." 
+            required 
+            style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc' }}
+          />
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '10px' }}>
+          <button 
+            type="button" 
+            onClick={() => navigate('/')} 
+            className="btn-action"
+            style={{ backgroundColor: '#64748b', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: '4px', cursor: 'pointer' }}
+          >
+            Cancelar
+          </button>
+          <button 
+            type="submit" 
+            className="btn-primary" 
+            disabled={loading}
+            style={{ padding: '10px 18px', borderRadius: '4px' }}
+          >
+            {loading ? 'Enviando...' : 'Criar Chamado'}
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

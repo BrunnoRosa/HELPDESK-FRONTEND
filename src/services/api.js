@@ -1,12 +1,14 @@
 import axios from 'axios';
 
-// Mantém a instância do Axios do seu projeto, apontando para a porta do backend
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080', // Ajuste para a porta do seu backend atual
+const API = axios.create({
+  baseURL: 'http://localhost:8080',
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-// Injeta o token nas requisições (seu padrão)
-api.interceptors.request.use((config) => {
+API.interceptors.request.use((config) => {
+  // Ajustado para buscar a chave exata salva pela sua aplicação
   const token = localStorage.getItem('@GLPI:token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -14,55 +16,52 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Trata as respostas e erros (padrão do frontend)
-api.interceptors.response.use(
-  (response) => response.data, // Retorna diretamente o body (data)
-  (error) => {
-    // Se o token expirar (401), limpa o storage e emite evento
-    if (error.response?.status === 401) {
-      localStorage.removeItem('@GLPI:token');
-      localStorage.removeItem('@GLPI:user');
-      window.dispatchEvent(new Event('helpdesk-auth-expired'));
-    }
-    
-    // Formatação de erros do backend
-    const message = error.response?.data?.Mensagem || error.response?.data?.message || 'Erro ao processar a requisição';
-    const validation = error.response?.data?.erros ? `: ${Object.values(error.response.data.erros).join(' | ')}` : '';
-    
-    return Promise.reject(new Error(`${message}${validation}`));
-  }
-);
-
-// Mantém o export default para retrocompatibilidade com telas antigas
-export default api;
-
-// ==========================================
-// EXPORTAÇÕES DE ROTAS (Requisitadas pelas novas telas)
-// ==========================================
-
 export const authApi = {
-  login: (payload) => api.post('/auth/login', payload),
-  register: (payload) => api.post('/auth/register', payload)
+  login: async (credentials) => {
+    const response = await API.post('/auth/login', credentials);
+    return response.data;
+  },
+  registrar: async (userData) => {
+    const response = await API.post('/auth/register', userData); 
+    return response.data;
+  },
 };
 
 export const chamadoApi = {
-  listar: () => api.get('/chamados'),
-  buscar: (id) => api.get(`/chamados/${id}`),
-  criar: (payload) => api.post('/chamados', payload),
-  atualizar: (id, payload) => api.put(`/chamados/${id}`, payload),
-  deletar: (id) => api.delete(`/chamados/${id}`)
+  listar: async () => {
+    const response = await API.get('/chamados');
+    return response.data;
+  },
+  buscar: async (id) => {
+    const response = await API.get(`/chamados/${id}`);
+    return response.data;
+  },
+  criar: async (chamado) => {
+    const response = await API.post('/chamados', chamado);
+    return response.data;
+  },
 };
 
 export const atendimentoApi = {
-  listar: () => api.get('/atendimentos'),
-  buscarPorChamado: (chamadoId) => api.get(`/atendimentos/chamado/${chamadoId}`),
-  atualizar: (payload) => api.put('/atendimentos', payload)
+  listar: async () => {
+    const response = await API.get('/atendimentos');
+    return response.data;
+  },
+  buscarPorChamado: async (chamadoId) => {
+    const response = await API.get(`/atendimentos/chamado/${chamadoId}`);
+    return response.data;
+  },
+  responder: async (dados) => {
+    const response = await API.post('/atendimentos', dados);
+    return response.data;
+  }
 };
 
 export const adminApi = {
-  listarUsuarios: () => api.get('/admin/usuarios'),
-  listarTecnicos: () => api.get('/admin/tecnicos'),
-  atualizarPerfil: (id, perfil) => api.put(`/admin/usuarios/${id}/perfil`, { perfil }),
-  deletarUsuario: (id) => api.delete(`/admin/usuarios/${id}`),
-  resumo: () => api.get('/admin/relatorios/resumo')
+  listarUsuarios: async () => {
+    const response = await API.get('/admin/usuarios');
+    return response.data;
+  },
 };
+
+export default API;

@@ -1,65 +1,87 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext'; // <-- Adicionamos o useAuth aqui
-import TechReports from './pages/tech/TechReports';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-// Importação dos componentes de estrutura
+// Contexto (arquivo AuthContext.jsx dentro de src/context/)
+import { AuthProvider, useAuth } from './context/AuthContext';
+
+// Componentes de Estrutura
 import Layout from './components/Layout';
-import Protected from './components/Protected';
+import ProtectedRoute from './components/ProtectedRoute';
 
-// Importação das Páginas - Auth
+// Páginas - Autenticação
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 
-// Importação das Páginas - Cliente
+// Páginas - Cliente
 import ClienteDashboard from './pages/cliente/ClienteDashboard';
 import NewTicket from './pages/cliente/NewTicket';
-import ClientTicketDetails from './pages/cliente/ClienteTicketDetails';
+import ClienteTicketDetails from './pages/cliente/ClienteTicketDetails';
 
-// Importação das Páginas - Técnico
+// Páginas - Técnico
 import TechDashboard from './pages/tech/TechDashboard';
 import TechTicketDetails from './pages/tech/TechTicketDetails';
+import TechReports from './pages/tech/TechReports';
 
-// --- NOVO: Componente que decide qual Dashboard abrir ---
+// Páginas - Administração
+import AdminDashboard from './pages/admin/AdminDashboard';
+
+// Componente que direciona o usuário para o seu Dashboard conforme o Perfil/Role
 function IndexRouter() {
   const { user } = useAuth();
-  // Se for N1, N2 ou N3, é técnico. Se não, é cliente.
-  const isTech = user?.role === 'N1' || user?.role === 'N2' || user?.role === 'N3';
+  const role = user?.role || user?.perfil;
+
+  if (role === 'ADMIN') {
+    return <AdminDashboard />;
+  }
+
+  const isTech = ['N1', 'N2', 'N3', 'TECNICO_N1', 'TECNICO_N2', 'TECNICO_N3'].includes(role);
   
-  return isTech ? <TechDashboard /> : <ClienteDashboard />;
+  if (isTech) {
+    return <TechDashboard />;
+  }
+
+  return <ClienteDashboard />;
 }
 
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        {/* Notificações do Toastify */}
+        <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
+
         <Routes>
           {/* Rotas Públicas */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {/* Rotas Privadas (Envelopadas pelo Layout) */}
+          {/* Rotas Privadas */}
           <Route 
             path="/" 
             element={
-              <Protected>
+              <ProtectedRoute>
                 <Layout />
-              </Protected>
+              </ProtectedRoute>
             }
           >
-            {/* O "index" agora carrega o nosso roteador inteligente */}
+            {/* O "index" carrega o roteador inteligente conforme o perfil */}
             <Route index element={<IndexRouter />} />
             
             {/* Visão do Cliente */}
             <Route path="cliente/novo-chamado" element={<NewTicket />} />
-            <Route path="cliente/chamado/:id" element={<ClientTicketDetails />} />
+            <Route path="cliente/chamado/:id" element={<ClienteTicketDetails />} />
 
-           {/* Visão do Técnico */}
+            {/* Visão do Técnico */}
             <Route path="tecnico/dashboard" element={<TechDashboard />} />
             <Route path="tecnico/chamado/:id" element={<TechTicketDetails />} />
             <Route path="tecnico/relatorios" element={<TechReports />} />
+
+            {/* Visão do Administrador */}
+            <Route path="admin/dashboard" element={<AdminDashboard />} />
           </Route>
 
-          {/* Redirecionamento caso a rota não exista */}
+          {/* Redirecionamento de rotas desconhecidas */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </AuthProvider>

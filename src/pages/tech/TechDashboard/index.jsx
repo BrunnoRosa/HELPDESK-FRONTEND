@@ -1,39 +1,67 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { chamadoApi } from '../../../services/api';
 import './style.css';
 
 export default function TechDashboard() {
-  // Estado original mantido com dados simulados para facilitar o desenvolvimento
-  const [chamados, setChamados] = useState([
-    { id: 101, cliente: "Tech Corp - Setor Financeiro", titulo: "Erro 500 no ERP", status: "Aberto", prioridade: "Alto", data: "26/08/2026" },
-    { id: 102, cliente: "Logística SA", titulo: "Impressora offline", status: "Em Andamento", prioridade: "Médio", data: "25/08/2026" },
-    { id: 103, cliente: "Clínica Vida", titulo: "Mouse com duplo clique", status: "Aberto", prioridade: "Baixo", data: "26/08/2026" },
-    { id: 104, cliente: "Advocacia Lima", titulo: "Falha no backup diário", status: "Aberto", prioridade: "Alto", data: "24/08/2026" },
-  ]);
+  const [chamados, setChamados] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Função original para edição rápida na tabela
-  const alterarPrioridade = (id, novaPrioridade) => {
-    setChamados(chamados.map(chamado => 
-      chamado.id === id ? { ...chamado, prioridade: novaPrioridade } : chamado
-    ));
+  useEffect(() => {
+    carregarChamados();
+  }, []);
+
+  const carregarChamados = async () => {
+    try {
+      setLoading(true);
+      const data = await chamadoApi.listar();
+      setChamados(Array.isArray(data) ? data : []);
+    } catch (error) {
+      toast.error(error.message || 'Erro ao carregar a lista de chamados.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Cores dinâmicas para o seletor de prioridade
+  const alterarPrioridade = async (id, novaPrioridade) => {
+    try {
+      const chamadoAlvo = chamados.find((c) => c.id === id);
+      if (!chamadoAlvo) return;
+
+      await chamadoApi.atualizar(id, {
+        ...chamadoAlvo,
+        prioridadeChamado: novaPrioridade
+      });
+
+      setChamados((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, prioridadeChamado: novaPrioridade } : c))
+      );
+      toast.success(`Prioridade do chamado #${id} alterada para ${novaPrioridade}.`);
+    } catch (error) {
+      toast.error(error.message || 'Erro ao alterar prioridade.');
+    }
+  };
+
   const getCorSelect = (prioridade) => {
-    if (prioridade === 'Alto') return '#b91c1c'; // Vermelho
-    if (prioridade === 'Médio') return '#b45309'; // Laranja
-    return '#047857'; // Verde
+    const prio = (prioridade || '').toLowerCase();
+    if (prio === 'alto' || prio === 'alta') return '#b91c1c';
+    if (prio === 'médio' || prio === 'medio' || prio === 'media') return '#b45309';
+    return '#047857';
   };
 
-  // LÓGICA IMPORTADA DO 'frontend': Cálculo dinâmico de estatísticas usando useMemo
   const stats = useMemo(() => {
     return {
       total: chamados.length,
-      emFluxo: chamados.filter(c => c.status === 'Aberto' || c.status === 'Em Andamento').length,
-      urgentes: chamados.filter(c => c.prioridade === 'Alto').length,
-      resolvidos: chamados.filter(c => c.status === 'Resolvido').length
+      emFluxo: chamados.filter((c) => ['Aberto', 'Em Andamento', 'NOVO', 'EM_ANDAMENTO'].includes(c.status || c.statusChamado)).length,
+      urgentes: chamados.filter((c) => ['Alto', 'ALTA', 'CRITICA', 'CRÍTICA'].includes(c.prioridadeChamado || c.prioridade)).length,
+      resolvidos: chamados.filter((c) => ['Resolvido', 'RESOLVIDO'].includes(c.status || c.statusChamado)).length
     };
   }, [chamados]);
+
+  if (loading) {
+    return <div className="dashboard-content"><p className="loading-text">Carregando painel operacional...</p></div>;
+  }
 
   return (
     <div className="dashboard-content">
@@ -42,7 +70,6 @@ export default function TechDashboard() {
         <p className="page-subtitle">Visão consolidada do atendimento técnico N1, N2 e N3.</p>
       </div>
 
-      {/* SESSÃO IMPORTADA DO 'frontend': Cards de métricas */}
       <div className="dashboard__stats">
         <article>
           <strong>{stats.total}</strong>
@@ -62,7 +89,6 @@ export default function TechDashboard() {
         </article>
       </div>
 
-      {/* SESSÃO MANTIDA DO 'HELPDESK-FRONT': Tabela operacional de alta produtividade */}
       <div className="table-wrapper">
         <table className="tech-table">
           <thead>
@@ -77,32 +103,41 @@ export default function TechDashboard() {
             </tr>
           </thead>
           <tbody>
-            {chamados.map((chamado) => (
-              <tr key={chamado.id}>
-                <td><strong>#{chamado.id}</strong></td>
-                <td>{chamado.cliente}</td>
-                <td>{chamado.titulo}</td>
-                <td><span className="status-badge">{chamado.status}</span></td>
-                <td>
-                  <select 
-                    className="priority-select"
-                    style={{ borderColor: getCorSelect(chamado.prioridade), color: getCorSelect(chamado.prioridade) }}
-                    value={chamado.prioridade}
-                    onChange={(e) => alterarPrioridade(chamado.id, e.target.value)}
-                  >
-                    <option value="Baixo">Baixo</option>
-                    <option value="Médio">Médio</option>
-                    <option value="Alto">Alto</option>
-                  </select>
-                </td>
-                <td>{chamado.data}</td>
-                <td>
-                  <Link to={`/tecnico/chamado/${chamado.id}`} className="btn-action">
-                    Atender
-                  </Link>
-                </td>
+            {chamados.length === 0 ? (
+              <tr>
+                <td colSpan="7" style={{ textAlign: 'center' }}>Nenhum chamado na fila.</td>
               </tr>
-            ))}
+            ) : (
+              chamados.map((chamado) => {
+                const prioAtual = chamado.prioridadeChamado || chamado.prioridade || 'Médio';
+                return (
+                  <tr key={chamado.id}>
+                    <td><strong>#{chamado.id}</strong></td>
+                    <td>{chamado.cliente || chamado.solicitanteNome || chamado.empresa || 'N/A'}</td>
+                    <td>{chamado.tituloChamado || chamado.titulo}</td>
+                    <td><span className="status-badge">{chamado.statusChamado || chamado.status}</span></td>
+                    <td>
+                      <select 
+                        className="priority-select"
+                        style={{ borderColor: getCorSelect(prioAtual), color: getCorSelect(prioAtual) }}
+                        value={prioAtual}
+                        onChange={(e) => alterarPrioridade(chamado.id, e.target.value)}
+                      >
+                        <option value="Baixo">Baixo</option>
+                        <option value="Médio">Médio</option>
+                        <option value="Alto">Alto</option>
+                      </select>
+                    </td>
+                    <td>{chamado.dataCriacao || chamado.data || new Date().toLocaleDateString('pt-BR')}</td>
+                    <td>
+                      <Link to={`/tecnico/chamado/${chamado.id}`} className="btn-action">
+                        Atender
+                      </Link>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>

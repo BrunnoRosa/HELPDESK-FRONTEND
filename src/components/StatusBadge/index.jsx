@@ -3,9 +3,9 @@ import './style.css';
 
 const LABELS = {
   ABERTO: 'Aberto',
-  EM_TRIAGEM: 'Em triagem',
-  EM_ATENDIMENTO: 'Em atendimento',
-  PENDENTE_EVIDENCIA: 'Pendente evidência',
+  EM_TRIAGEM: 'Em Triagem',
+  EM_ATENDIMENTO: 'Em Atendimento',
+  PENDENTE_EVIDENCIA: 'Pendente Evidência',
   RESOLVIDO: 'Resolvido',
   FECHADO: 'Fechado'
 };
@@ -13,9 +13,8 @@ const LABELS = {
 export default function StatusBadge({ status }) {
   if (!status) return null;
   
-  // Normaliza o texto para evitar erros caso a API envie 'Aberto' ou 'ABERTO'
-  const normalizedStatus = status.toUpperCase();
-  const badgeClass = status.toLowerCase();
+  const normalizedStatus = String(status).toUpperCase();
+  const badgeClass = normalizedStatus.toLowerCase().replace('_', '-');
 
   return (
     <span className={`status-badge status-badge--${badgeClass}`}>
