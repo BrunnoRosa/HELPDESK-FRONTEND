@@ -11,15 +11,20 @@ export function AuthProvider({ children }) {
   
   const [loading, setLoading] = useState(false);
 
-  // Função de login que será chamada após o sucesso da api.login()
-  const login = (backendData) => {
-    // Garante compatibilidade mapeando os dados da API para o padrão do HELPDESK-FRONT
-    const token = backendData.token;
+  // Recebe o LoginResponseDTO já retornado pela API e normaliza o usuário
+  // para o formato esperado pelos componentes React.
+  const login = (loginResponse) => {
+    const { token, id, nome, email, perfil } = loginResponse;
+
+    if (!token) {
+      throw new Error('A resposta de login não contém um token.');
+    }
+
     const mappedUser = {
-      id: backendData.id || backendData.usuario?.id,
-      name: backendData.nome || backendData.usuario?.nome || 'Usuário',
-      email: backendData.email || backendData.usuario?.email,
-      role: backendData.perfil || backendData.usuario?.perfil || 'CLIENTE',
+      id,
+      name: nome,
+      email,
+      role: perfil,
     };
 
     localStorage.setItem('@GLPI:token', token);

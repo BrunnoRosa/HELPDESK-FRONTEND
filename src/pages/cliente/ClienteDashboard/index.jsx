@@ -1,35 +1,23 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { chamadoApi } from '../../../services/api';
 import './style.css';
 
 export default function ClienteDashboard() {
   const [meusChamados, setMeusChamados] = useState([]);
-
-  // Lista padrão para exibição caso o localStorage esteja vazio
-  const chamadosIniciais = [
-    { id: 1, titulo: "Sistema ERP travando no login", equipamento: "Patrimônio 004512", status: "ABERTO", prioridade: "ALTA", data: "24/08/2026" },
-    { id: 2, titulo: "Impressora mastigando papel", equipamento: "Imp. HP LaserJet", status: "EM ANDAMENTO", prioridade: "NORMAL", data: "23/08/2026" },
-  ];
+  const [erro, setErro] = useState('');
 
   useEffect(() => {
-    // Busca os dados salvos no localStorage
-    const salvos = JSON.parse(localStorage.getItem('@glpi:tickets'));
+    const carregarChamados = async () => {
+      try {
+        const response = await chamadoApi.listar();
+        setMeusChamados(Array.isArray(response) ? response : []);
+      } catch (error) {
+        setErro(error.message || 'Não foi possível carregar os chamados.');
+      }
+    };
 
-    if (salvos && salvos.length > 0) {
-      // Mapeia os dados do formulário para garantir compatibilidade com as colunas da tabela
-      const formatados = salvos.map(item => ({
-        id: item.id,
-        titulo: item.titulo,
-        equipamento: item.equipamento || 'N/A',
-        status: item.status || 'NOVO',
-        prioridade: item.prioridade,
-        data: item.createdAt || new Date().toLocaleDateString('pt-BR')
-      }));
-
-      setMeusChamados(formatados);
-    } else {
-      setMeusChamados(chamadosIniciais);
-    }
+    carregarChamados();
   }, []);
 
   // -------------------------------------------------------------------------
@@ -40,11 +28,9 @@ export default function ClienteDashboard() {
   const estatisticas = useMemo(() => {
     return {
       total: meusChamados.length,
-      // Considera 'em fluxo' qualquer um que não esteja resolvido ou fechado
-      emFluxo: meusChamados.filter(c => !['RESOLVIDO', 'FECHADO'].includes(c.status)).length,
-      // Verifica chamados que requerem atenção imediata (Alta ou Crítica)
-      urgentes: meusChamados.filter(c => ['ALTA', 'CRÍTICA'].includes(c.prioridade)).length,
-      resolvidos: meusChamados.filter(c => c.status === 'RESOLVIDO').length
+      urgentes: meusChamados.filter(c => ['ALTA', 'URGENTE'].includes(c?.prioridadeChamado)).length,
+      medias: meusChamados.filter(c => c?.prioridadeChamado === 'MEDIA').length,
+      baixas: meusChamados.filter(c => c?.prioridadeChamado === 'BAIXA').length
     };
   }, [meusChamados]);
 
@@ -52,20 +38,10 @@ export default function ClienteDashboard() {
   const getClassePrioridade = (prioridade) => {
     switch (prioridade) {
       case 'BAIXA': return 'badge-baixa';
-      case 'NORMAL': return 'badge-normal';
+      case 'MEDIA': return 'badge-normal';
       case 'ALTA': return 'badge-alta';
-      case 'CRÍTICA': return 'badge-critica';
+      case 'URGENTE': return 'badge-critica';
       default: return 'badge-normal';
-    }
-  };
-
-  const getClasseStatus = (status) => {
-    switch (status) {
-      case 'NOVO':
-      case 'ABERTO': return 'status-aberto';
-      case 'EM ANDAMENTO': return 'status-andamento';
-      case 'RESOLVIDO': return 'status-resolvido';
-      default: return 'status-aberto';
     }
   };
 
@@ -81,6 +57,8 @@ export default function ClienteDashboard() {
         </Link>
       </div>
 
+      {erro && <div className="error-box">{erro}</div>}
+
       {/* SESSÃO DE ESTATÍSTICAS (Implementada a partir do 'frontend') */}
       <div className="dashboard__stats">
         <article>
@@ -88,16 +66,16 @@ export default function ClienteDashboard() {
           <span>Total de chamados</span>
         </article>
         <article>
-          <strong>{estatisticas.emFluxo}</strong>
-          <span>Em andamento</span>
-        </article>
-        <article>
           <strong>{estatisticas.urgentes}</strong>
-          <span>Prioridade Alta</span>
+          <span>Alta ou urgente</span>
         </article>
         <article>
-          <strong>{estatisticas.resolvidos}</strong>
-          <span>Resolvidos</span>
+          <strong>{estatisticas.medias}</strong>
+          <span>Prioridade média</span>
+        </article>
+        <article>
+          <strong>{estatisticas.baixas}</strong>
+          <span>Prioridade baixa</span>
         </article>
       </div>
 
@@ -107,33 +85,27 @@ export default function ClienteDashboard() {
           <thead>
             <tr>
               <th>ID</th>
-              <th>Título / Incidente</th>
-              <th>Equipamento</th>
-              <th>Status</th>
+              <th>Título</th>
+              <th>Ocorrência</th>
               <th>Prioridade</th>
-              <th>Data</th>
+              <th>Descrição</th>
               <th>Ação</th>
             </tr>
           </thead>
           <tbody>
-            {meusChamados.map((chamado) => (
-              <tr key={chamado.id}>
-                <td><strong>#{chamado.id}</strong></td>
-                <td>{chamado.titulo}</td>
-                <td>{chamado.equipamento}</td>
+            {meusChamados.map((chamado, index) => (
+              <tr key={chamado?.id ?? index}>
+                <td><strong>#{chamado?.id ?? '---'}</strong></td>
+                <td>{chamado?.tituloChamado ?? 'Sem título'}</td>
+                <td>{chamado?.ocorrenciaChamado ?? 'Não informada'}</td>
                 <td>
-                  <span className={`badge ${getClasseStatus(chamado.status)}`}>
-                    {chamado.status}
+                  <span className={`badge ${getClassePrioridade(chamado?.prioridadeChamado)}`}>
+                    {chamado?.prioridadeChamado ?? 'MEDIA'}
                   </span>
                 </td>
+                <td>{chamado?.descricaoChamado ?? 'Descrição não informada.'}</td>
                 <td>
-                  <span className={`badge ${getClassePrioridade(chamado.prioridade)}`}>
-                    {chamado.prioridade}
-                  </span>
-                </td>
-                <td>{chamado.data}</td>
-                <td>
-                  <Link to={`/cliente/chamado/${chamado.id}`} className="btn-detalhes">
+                  <Link to={`/cliente/chamado/${chamado?.id ?? ''}`} className="btn-detalhes">
                     Ver Detalhes
                   </Link>
                 </td>

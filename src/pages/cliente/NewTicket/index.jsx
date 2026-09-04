@@ -1,17 +1,17 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { chamadoApi } from '../../../services/api';
 import './style.css';
 
+const initialFormData = {
+  tituloChamado: '',
+  ocorrenciaChamado: 'INFORMATICA',
+  descricaoChamado: '',
+  prioridadeChamado: 'MEDIA',
+};
+
 export default function NewTicket() {
-  const [formData, setFormData] = useState({
-    empresa: '',
-    equipamento: '',
-    titulo: '',
-    ocorrencia: 'INCIDENTE',
-    descricao: ''
-  });
-  
-  const [arquivo, setArquivo] = useState(null);
+  const [formData, setFormData] = useState(initialFormData);
   const [erro, setErro] = useState('');
   const [salvando, setSalvando] = useState(false);
 
@@ -28,22 +28,11 @@ export default function NewTicket() {
     setSalvando(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 800));
-
-      const novoChamado = {
-        id: Date.now(),
-        ...formData,
-        status: 'NOVO',
-        createdAt: new Date().toLocaleDateString('pt-BR')
-      };
-
-      const chamadosSalvos = JSON.parse(localStorage.getItem('@glpi:tickets')) || [];
-      chamadosSalvos.unshift(novoChamado);
-      localStorage.setItem('@glpi:tickets', JSON.stringify(chamadosSalvos));
-
-      navigate('/cliente');
+      await chamadoApi.criar(formData);
+      setFormData(initialFormData);
+      alert('Chamado criado com sucesso.');
     } catch (error) {
-      setErro('Erro ao salvar chamado. Verifique seus dados e tente novamente.');
+      setErro(error.message || 'Erro ao salvar chamado. Verifique seus dados e tente novamente.');
     } finally {
       setSalvando(false);
     }
@@ -59,36 +48,12 @@ export default function NewTicket() {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Solicitante (Setor/Empresa)</label>
-            <input 
-              type="text" 
-              name="empresa"
-              placeholder="Ex: Setor Financeiro" 
-              value={formData.empresa}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Equipamento (Patrimônio ou Modelo)</label>
-            <input 
-              type="text" 
-              name="equipamento"
-              placeholder="Ex: Desktop Samsung (Patrimônio 090988)" 
-              value={formData.equipamento}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
             <label>Título / Problema Principal</label>
             <input 
               type="text" 
-              name="titulo"
+              name="tituloChamado"
               placeholder="Ex: Sistema ERP travando no login" 
-              value={formData.titulo}
+              value={formData.tituloChamado}
               onChange={handleChange}
               required
             />
@@ -97,10 +62,10 @@ export default function NewTicket() {
           <div className="form-group">
             <label>Descrição Detalhada</label>
             <textarea 
-              name="descricao"
+              name="descricaoChamado"
               rows="4"
               placeholder="Descreva o problema com o máximo de detalhes possível..."
-              value={formData.descricao}
+              value={formData.descricaoChamado}
               onChange={handleChange}
               required
             />
@@ -109,20 +74,24 @@ export default function NewTicket() {
           <div className="form-row">
             <div className="form-group">
               <label>Ocorrência</label>
-              <select name="ocorrencia" value={formData.ocorrencia} onChange={handleChange}>
-                <option value="INCIDENTE">Incidente (Falha)</option>
-                <option value="REQUISICAO">Requisição (Novo Acesso/Equipamento)</option>
-                <option value="DUVIDA">Dúvida</option>
+              <select name="ocorrenciaChamado" value={formData.ocorrenciaChamado} onChange={handleChange}>
+                <option value="INFORMATICA">Informática</option>
+                <option value="IMPRESSORA">Impressora</option>
+                <option value="ELETRICA">Elétrica</option>
+                <option value="CLIMATIZACAO">Climatização</option>
+                <option value="MOBILIA">Mobília</option>
+                <option value="SISTEMAINCENDIO">Sistema de incêndio</option>
               </select>
             </div>
 
             <div className="form-group">
-              <label>Anexar Evidência</label>
-              <input 
-                type="file" 
-                accept="image/*"
-                onChange={(e) => setArquivo(e.target.files[0])}
-              />
+              <label>Prioridade</label>
+              <select name="prioridadeChamado" value={formData.prioridadeChamado} onChange={handleChange}>
+                <option value="BAIXA">Baixa</option>
+                <option value="MEDIA">Média</option>
+                <option value="ALTA">Alta</option>
+                <option value="URGENTE">Urgente</option>
+              </select>
             </div>
           </div>
 

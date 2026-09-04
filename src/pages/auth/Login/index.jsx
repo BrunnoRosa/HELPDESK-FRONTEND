@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
+import { authApi } from '../../../services/api';
 import './style.css';
 
 export default function Login() {
@@ -12,16 +13,15 @@ export default function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      // Se a função login() do contexto falhar por falta de Back-end,
-      // podemos redirecionar diretamente para o Dashboard do cliente durante os testes:
-      if (login) {
-        await login(email, password);
-      }
+      const loginResponse = await authApi.login({
+        email,
+        senha: password,
+      });
+
+      login(loginResponse);
       navigate('/');
     } catch (error) {
-      console.warn('Back-end offline. Redirecionando em modo de teste...');
-      // Redireciona mesmo em caso de erro para você conseguir testar o Front-end
-      navigate('/'); 
+      console.error('Não foi possível realizar o login:', error.message);
     }
   };
 

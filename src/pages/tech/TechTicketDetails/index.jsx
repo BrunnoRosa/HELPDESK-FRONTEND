@@ -39,6 +39,21 @@ export default function TechTicketDetails() {
     carregarDados();
   }, [id]);
 
+  const atualizarAtendimento = async (alteracoes) => {
+    const payload = {
+      chamadoId: atendimento?.chamadoId ?? Number(id),
+      status: alteracoes.status ?? atendimento?.status,
+      nivelSuporte: alteracoes.nivelSuporte ?? atendimento?.nivelSuporte,
+      usuarioVinculado: atendimento?.usuarioVinculado ?? null,
+      equipamentoVinculado: atendimento?.equipamentoVinculado ?? null,
+      tecnicoResponsavelId: atendimento?.tecnicoResponsavelId ?? null,
+    };
+
+    const atendimentoAtualizado = await atendimentoApi.atualizar(payload);
+    setAtendimento(atendimentoAtualizado);
+    return atendimentoAtualizado;
+  };
+
   // Registra comentários ou uso de ferramentas no histórico (descrição)
   const registrarHistorico = async (textoComplementar) => {
     setErro('');
@@ -60,7 +75,10 @@ export default function TechTicketDetails() {
       
       setMensagem('Histórico atualizado com sucesso.');
       setDescricaoAtualizacao('');
-      await carregarDados(); // Recarrega para exibir na tela
+      setChamado((chamadoAtual) => ({
+        ...chamadoAtual,
+        descricaoChamado: novaDescricao,
+      }));
     } catch (error) {
       setErro("Erro ao atualizar histórico: " + error.message);
     }
@@ -79,10 +97,7 @@ export default function TechTicketDetails() {
   const handleEscalar = async (proximoNivel) => {
     if (!window.confirm(`Escalonar para ${proximoNivel}?`)) return;
     try {
-      await atendimentoApi.atualizar({
-        ...atendimento,
-        nivelSuporte: proximoNivel
-      });
+      await atualizarAtendimento({ nivelSuporte: proximoNivel });
       await registrarHistorico(`Chamado escalonado para ${proximoNivel}`);
     } catch (error) {
       setErro("Erro ao escalonar: " + error.message);
@@ -92,10 +107,7 @@ export default function TechTicketDetails() {
   const handleResolver = async () => {
     if (!window.confirm('Marcar chamado como Resolvido?')) return;
     try {
-      await atendimentoApi.atualizar({
-        ...atendimento,
-        status: 'RESOLVIDO'
-      });
+      await atualizarAtendimento({ status: 'RESOLVIDO' });
       await registrarHistorico("Chamado marcado como resolvido.");
     } catch (error) {
       setErro("Erro ao resolver: " + error.message);
