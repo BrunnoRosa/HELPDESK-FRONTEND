@@ -1,0 +1,23 @@
+/* Container que engloba a tela inteira */
+.layout-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f9fafb; /* Cor de fundo padrão do sistema */
+}
+
+/* Container do lado direito (Header + Conteúdo + Footer) */
+.layout-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 100vh;
+}
+
+/* Área de conteúdo expansível */
+.layout-content {
+  flex: 1; /* Isso empurra o Footer para baixo! */
+  padding: 2rem;
+  
+  /* Mantém o conteúdo afastado da Sidebar fixa de 260px */
+  margin-left: 260px; 
+}

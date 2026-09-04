@@ -1,0 +1,144 @@
+/* Card Principal - Estilo Base Frontend com Animações */
+.chamado-card {
+  background: #ffffff;
+  border: 1px solid #e4e7ec;
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 4px 16px rgba(16, 24, 40, 0.04);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  position: relative;
+}
+
+.chamado-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -4px rgba(16, 24, 40, 0.08);
+  border-color: #d0d5dd; /* Resposta tátil visual de hover */
+}
+
+/* Cabeçalho do Card (ID e Status) */
+.chamado-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.chamado-card__id {
+  color: #667085;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* Título e Descrição */
+.chamado-card h3 {
+  margin: 10px 0 8px;
+  color: #111827;
+  font-size: 1.15rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Trunca títulos muito longos */
+}
+
+.chamado-card__desc {
+  min-height: 44px;
+  margin: 0;
+  color: #667085;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* UX: Limita a descrição a 2 linhas */
+  -webkit-box-orient: vertical;
+  flex-grow: 1; /* Empurra o footer para baixo caso haja espaço */
+}
+
+/* Container de Metadados (Tags e Data) */
+.chamado-card__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0;
+  font-size: 12px;
+}
+
+/* Padronização de Badges internos no Meta */
+.chamado-card__meta span {
+  background: #f2f4f7;
+  color: #475467;
+  padding: 5px 10px;
+  border-radius: 7px;
+  font-weight: 600;
+}
+
+/* --- ESTILOS DINÂMICOS DE BADGES --- */
+
+/* Badge de Status (Topo) */
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 9999px; /* Formato de pílula clássico */
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-aberto { background-color: #fef08a; color: #854d0e; }
+.status-em_triagem { background-color: #e9d5ff; color: #6b21a8; }
+.status-em_atendimento { background-color: #bae6fd; color: #0369a1; }
+.status-pendente_evidencia { background-color: #ffedd5; color: #c2410c; }
+.status-resolvido { background-color: #bbf7d0; color: #166534; }
+.status-fechado { background-color: #f3f4f6; color: #4b5563; }
+
+/* Badges de Prioridade (Sobrescrevendo o padrão do Meta) */
+.chamado-card__meta .priority-alta, 
+.chamado-card__meta .priority-crítica { background-color: #fee2e2; color: #dc2626; }
+.chamado-card__meta .priority-média { background-color: #fef3c7; color: #d97706; }
+.chamado-card__meta .priority-baixa, 
+.chamado-card__meta .priority-normal { background-color: #d1fae5; color: #059669; }
+
+/* Badge de Nível de Suporte */
+.chamado-card__meta .level-badge {
+  background-color: #e0e7ff;
+  color: #4338ca;
+}
+
+/* Data de Criação */
+.chamado-card__meta .card-date {
+  background: transparent; /* Remove fundo de tag */
+  padding: 0;
+  color: #9ca3af;
+  font-weight: 500;
+  margin-left: auto; /* Empurra a data para a extremidade direita do card */
+}
+
+/* Link de Ação (Ver Detalhes) */
+.chamado-card__link {
+  display: block;
+  text-align: center;
+  color: #2355d6;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  padding-top: 14px;
+  border-top: 1px solid #f2f4f7;
+  transition: color 0.2s ease, background-color 0.2s ease;
+  border-radius: 0 0 14px 14px; /* Acompanha o raio do card no rodapé */
+}
+
+.chamado-card__link:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.chamado-card__link:focus-visible {
+  outline: 2px solid #2355d6;
+  outline-offset: 4px;
+  border-radius: 4px;
+}
