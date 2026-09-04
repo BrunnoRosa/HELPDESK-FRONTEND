@@ -96,7 +96,7 @@ export default function NewTicket() {
           </div>
 
           <div className="form-actions">
-            <button type="button" className="btn-cancel" onClick={() => navigate('/cliente')} disabled={salvando}>
+            <button type="button" className="btn-cancel" onClick={() => navigate('/')} disabled={salvando}>
               Cancelar
             </button>
             <button type="submit" className="btn-submit" disabled={salvando}>

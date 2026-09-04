@@ -7,7 +7,7 @@ export default function Sidebar() {
   const { user, logout } = useAuth();
   const location = useLocation();
 
-  const isTech = user?.role === 'N1' || user?.role === 'N2' || user?.role === 'N3' || user?.role === 'admin';
+  const isTech = user?.role === 'TECNICO' || user?.role === 'ADMINISTRADOR';
 
   return (
     <aside className="sidebar">
@@ -50,7 +50,7 @@ export default function Sidebar() {
           </Link>
         )}
 
-        {(user?.role === 'N2' || user?.role === 'N3' || user?.role === 'admin') && (
+        {user?.role === 'ADMINISTRADOR' && (
           <Link to="/tecnico/relatorios" className={`nav-item ${location.pathname === '/tecnico/relatorios' ? 'active' : ''}`}>
             <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path>
@@ -81,7 +81,7 @@ export default function Sidebar() {
           </div>
           <div className="user-info">
             <span className="user-name">{user?.name || 'Usuário'}</span>
-            <span className="user-role">{user?.role || 'CLIENTE'}</span>
+            <span className="user-role">{user?.role || 'USUARIO'}</span>
           </div>
         </div>
 

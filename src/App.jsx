@@ -22,8 +22,7 @@ import TechTicketDetails from './pages/tech/TechTicketDetails';
 // --- NOVO: Componente que decide qual Dashboard abrir ---
 function IndexRouter() {
   const { user } = useAuth();
-  // Se for N1, N2 ou N3, é técnico. Se não, é cliente.
-  const isTech = user?.role === 'N1' || user?.role === 'N2' || user?.role === 'N3';
+  const isTech = user?.role === 'TECNICO' || user?.role === 'ADMINISTRADOR';
   
   return isTech ? <TechDashboard /> : <ClienteDashboard />;
 }
