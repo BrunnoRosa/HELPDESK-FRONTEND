@@ -1,20 +1,22 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import api from '../../../services/api';
+import { authApi } from '../../../services/api';
 import './style.css'; 
 
 export default function Register() {
-  const [formData, setFormData] = useState({ name: '', email: '', password: '', role: 'CLIENTE' });
+  const [formData, setFormData] = useState({ nome: '', email: '', senha: '', perfil: 'USUARIO' });
+  const [erro, setErro] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErro('');
     try {
-      await api.post('/users/register', formData);
+      await authApi.register(formData);
       alert('Conta criada com sucesso!');
       navigate('/login');
     } catch (error) {
-      alert('Erro ao criar conta.');
+      setErro(error.message || 'Erro ao criar conta.');
     }
   };
 
@@ -26,8 +28,8 @@ export default function Register() {
         <label>Nome Completo</label>
         <input 
           type="text" 
-          value={formData.name}
-          onChange={(e) => setFormData({...formData, name: e.target.value})} 
+          value={formData.nome}
+          onChange={(e) => setFormData({...formData, nome: e.target.value})} 
           required 
         />
         
@@ -42,21 +44,23 @@ export default function Register() {
         <label>Senha</label>
         <input 
           type="password" 
-          value={formData.password}
-          onChange={(e) => setFormData({...formData, password: e.target.value})} 
+          value={formData.senha}
+          onChange={(e) => setFormData({...formData, senha: e.target.value})} 
+          minLength="6"
           required 
         />
         
         <label>Perfil</label>
         <select 
-          value={formData.role} 
-          onChange={(e) => setFormData({...formData, role: e.target.value})}
+          value={formData.perfil} 
+          onChange={(e) => setFormData({...formData, perfil: e.target.value})}
         >
-          <option value="CLIENTE">Cliente (Solicitante)</option>
-          <option value="N1">Suporte N1 (Triagem)</option>
-          <option value="N2">Suporte N2 (Especializado)</option>
-          <option value="N3">Suporte N3 (Engenharia / Dev)</option>
+          <option value="USUARIO">Cliente (Solicitante)</option>
+          <option value="TECNICO">Suporte técnico</option>
+          <option value="ADMINISTRADOR">Administrador</option>
         </select>
+
+        {erro && <div className="error-box">{erro}</div>}
         
         <button type="submit" className="btn-primary">Registrar</button>
         <div className="auth-links">

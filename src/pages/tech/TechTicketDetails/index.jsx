@@ -8,7 +8,7 @@ import './style.css';
 export default function TechTicketDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth(); // Assume-user.name e user.role (ex: 'N1', 'N2', 'N3')
+  const { user } = useAuth();
   
   // Estados integrados com a API
   const [chamado, setChamado] = useState(null);
@@ -17,6 +17,7 @@ export default function TechTicketDetails() {
   const [erro, setErro] = useState('');
   const [mensagem, setMensagem] = useState('');
   const [loading, setLoading] = useState(true);
+  const [atualizando, setAtualizando] = useState(false);
 
   // Função para buscar dados reais do backend
   const carregarDados = async () => {
@@ -40,6 +41,9 @@ export default function TechTicketDetails() {
   }, [id]);
 
   const atualizarAtendimento = async (alteracoes) => {
+    setErro('');
+    setMensagem('');
+    setAtualizando(true);
     const payload = {
       chamadoId: atendimento?.chamadoId ?? Number(id),
       status: alteracoes.status ?? atendimento?.status,
@@ -49,9 +53,13 @@ export default function TechTicketDetails() {
       tecnicoResponsavelId: atendimento?.tecnicoResponsavelId ?? null,
     };
 
-    const atendimentoAtualizado = await atendimentoApi.atualizar(payload);
-    setAtendimento(atendimentoAtualizado);
-    return atendimentoAtualizado;
+    try {
+      const atendimentoAtualizado = await atendimentoApi.atualizar(payload);
+      setAtendimento(atendimentoAtualizado);
+      return atendimentoAtualizado;
+    } finally {
+      setAtualizando(false);
+    }
   };
 
   // Registra comentários ou uso de ferramentas no histórico (descrição)
@@ -61,15 +69,11 @@ export default function TechTicketDetails() {
     try {
       const dataHora = new Date().toLocaleString();
       const novaLinha = `[${dataHora}] ${user?.name}: ${textoComplementar}`;
-      const novaDescricao = chamado.descricaoChamado 
-        ? `${chamado.descricaoChamado}\n${novaLinha}` 
-        : novaLinha;
-
       await chamadoApi.atualizar(id, {
         id: Number(id),
         tituloChamado: chamado.tituloChamado,
         ocorrenciaChamado: chamado.ocorrenciaChamado,
-        descricaoChamado: novaDescricao,
+        descricaoChamado: novaLinha,
         prioridadeChamado: chamado.prioridadeChamado
       });
       
@@ -77,7 +81,9 @@ export default function TechTicketDetails() {
       setDescricaoAtualizacao('');
       setChamado((chamadoAtual) => ({
         ...chamadoAtual,
-        descricaoChamado: novaDescricao,
+        descricaoChamado: chamadoAtual.descricaoChamado
+          ? `${chamadoAtual.descricaoChamado}\n${novaLinha}`
+          : novaLinha,
       }));
     } catch (error) {
       setErro("Erro ao atualizar histórico: " + error.message);
@@ -97,7 +103,10 @@ export default function TechTicketDetails() {
   const handleEscalar = async (proximoNivel) => {
     if (!window.confirm(`Escalonar para ${proximoNivel}?`)) return;
     try {
-      await atualizarAtendimento({ nivelSuporte: proximoNivel });
+      const status = atendimento.status === 'EM_TRIAGEM'
+        ? 'EM_ATENDIMENTO'
+        : atendimento.status;
+      await atualizarAtendimento({ status, nivelSuporte: proximoNivel });
       await registrarHistorico(`Chamado escalonado para ${proximoNivel}`);
     } catch (error) {
       setErro("Erro ao escalonar: " + error.message);
@@ -112,6 +121,29 @@ export default function TechTicketDetails() {
     } catch (error) {
       setErro("Erro ao resolver: " + error.message);
     }
+  };
+
+  const handleTransicao = async (proximaEtapa) => {
+    if (!proximaEtapa) return;
+
+    try {
+      await atualizarAtendimento(proximaEtapa);
+      await registrarHistorico(proximaEtapa.mensagem);
+    } catch (error) {
+      setErro(`Erro ao atualizar o chamado: ${error.message}`);
+    }
+  };
+
+  const avancarFluxo = () => {
+    const proximaEtapa = {
+      ABERTO: { status: 'EM_TRIAGEM', nivelSuporte: 'N1', mensagem: 'Chamado enviado para triagem.' },
+      EM_TRIAGEM: { status: 'EM_ATENDIMENTO', nivelSuporte: 'N2', mensagem: 'Atendimento iniciado no nível N2.' },
+      EM_ATENDIMENTO: { status: 'PENDENTE_EVIDENCIA', nivelSuporte: atendimento.nivelSuporte, mensagem: 'Chamado colocado como pendente de evidência.' },
+      PENDENTE_EVIDENCIA: { status: 'EM_ATENDIMENTO', nivelSuporte: atendimento.nivelSuporte, mensagem: 'Atendimento retomado após evidência.' },
+      RESOLVIDO: { status: 'FECHADO', nivelSuporte: atendimento.nivelSuporte, mensagem: 'Chamado fechado.' },
+    }[atendimento.status];
+
+    handleTransicao(proximaEtapa);
   };
 
   if (loading) return <p className="loading-text">Carregando detalhes do chamado...</p>;
@@ -182,25 +214,29 @@ export default function TechTicketDetails() {
                 <span className="tool-label">N1: Soluções Básicas</span>
                 <button onClick={() => executarAcao('Reset de Senha')} className="btn-tool n1">Reset de Senha</button>
                 <button onClick={() => executarAcao('Acesso Remoto')} className="btn-tool n1">Acesso Remoto Básico</button>
-                {user?.role === 'N1' && atendimento.nivelSuporte === 'N1' && (
-                  <button onClick={() => handleEscalar('N2')} className="btn-escalar">Escalonar para N2</button>
+                {atendimento.nivelSuporte === 'N1' && atendimento.status === 'EM_TRIAGEM' && (
+                  <button onClick={() => handleEscalar('N2')} className="btn-escalar" disabled={atualizando}>
+                    Escalonar para N2
+                  </button>
                 )}
               </div>
 
               {/* N2 - Especializado */}
-              {(user?.role === 'N2' || user?.role === 'N3') && (
+              {(user?.role === 'TECNICO' || user?.role === 'ADMINISTRADOR') && (
                 <div className="tool-group">
                   <span className="tool-label">N2: Especializado</span>
                   <button onClick={() => executarAcao('Análise de Logs')} className="btn-tool n2">Analisar Logs de Rede</button>
                   <button onClick={() => executarAcao('Reiniciar IIS')} className="btn-tool n2">Reiniciar Servidor (IIS)</button>
-                  {user?.role === 'N2' && atendimento.nivelSuporte === 'N2' && (
-                    <button onClick={() => handleEscalar('N3')} className="btn-escalar">Escalonar para N3</button>
+                  {atendimento.nivelSuporte === 'N2' && atendimento.status === 'EM_ATENDIMENTO' && (
+                    <button onClick={() => handleEscalar('N3')} className="btn-escalar" disabled={atualizando}>
+                      Escalonar para N3
+                    </button>
                   )}
                 </div>
               )}
 
               {/* N3 - Engenharia */}
-              {user?.role === 'N3' && (
+              {(user?.role === 'TECNICO' || user?.role === 'ADMINISTRADOR') && (
                 <div className="tool-group">
                   <span className="tool-label">N3: Engenharia</span>
                   <button onClick={() => executarAcao('Query BD')} className="btn-tool n3">Executar Query no BD</button>
@@ -208,7 +244,22 @@ export default function TechTicketDetails() {
                 </div>
               )}
 
-              <button onClick={handleResolver} className="btn-resolver">Marcar como Resolvido</button>
+              {['ABERTO', 'EM_TRIAGEM', 'EM_ATENDIMENTO', 'PENDENTE_EVIDENCIA', 'RESOLVIDO'].includes(atendimento.status) && (
+                <button onClick={avancarFluxo} className="btn-avancar" disabled={atualizando}>
+                  {atualizando ? 'Atualizando...' : {
+                    ABERTO: 'Enviar para triagem',
+                    EM_TRIAGEM: 'Iniciar atendimento N2',
+                    EM_ATENDIMENTO: 'Solicitar evidência',
+                    PENDENTE_EVIDENCIA: 'Retomar atendimento',
+                    RESOLVIDO: 'Fechar chamado',
+                  }[atendimento.status]}
+                </button>
+              )}
+              {['EM_ATENDIMENTO', 'PENDENTE_EVIDENCIA'].includes(atendimento.status) && (
+                <button onClick={handleResolver} className="btn-resolver" disabled={atualizando}>
+                Marcar como Resolvido
+                </button>
+              )}
             </div>
           )}
         </div>

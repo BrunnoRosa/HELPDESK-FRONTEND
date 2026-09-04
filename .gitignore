@@ -36,3 +36,5 @@ dist-ssr
 coverage
 .nyc_output
 .eslintcache
+
+/node_modules
