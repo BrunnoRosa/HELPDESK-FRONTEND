@@ -1,0 +1,247 @@
+/* ==========================================================================
+   Estrutura Principal do Dashboard
+   ========================================================================== */
+.dashboard-container {
+  max-width: 1000px;
+  margin: 1.5rem auto;
+  padding: 0 1rem;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-header h2 {
+  font-size: 1.6rem;
+  color: #111827;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.dashboard-header p {
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.btn-novo-chamado {
+  background-color: #2563eb;
+  color: #ffffff;
+  padding: 0.65rem 1.25rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-novo-chamado:hover {
+  background-color: #1d4ed8;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
+/* Tratamento de Erros */
+.error-box {
+  background-color: #fef2f2;
+  color: #991b1b;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #f87171;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* ==========================================================================
+   SESSÃO DE ESTATÍSTICAS (Mesclada e com UI/UX aprimorado)
+   ========================================================================== */
+.dashboard__stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard__stats article {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  /* UI/UX: Adicionada transição suave com curva bezier para um aspecto premium */
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.3s ease;
+}
+
+/* UI/UX: Efeito de elevação (Floating) e sombra difusa ao passar o mouse */
+.dashboard__stats article:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.08),
+              0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  border-color: #d1d5db;
+}
+
+.dashboard__stats strong,
+.dashboard__stats span {
+  display: block;
+}
+
+.dashboard__stats strong {
+  font-size: 30px;
+  margin-bottom: 6px;
+  color: #111827;
+}
+
+.dashboard__stats span {
+  color: #6b7280;
+}
+
+/* ==========================================================================
+   Tabela e Contêiner
+   ========================================================================== */
+.table-container {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+}
+
+.chamados-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.chamados-table th {
+  background-color: #f9fafb;
+  color: #374151;
+  font-weight: 600;
+  padding: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+.chamados-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #f3f4f6;
+  color: #1f2937;
+  vertical-align: middle;
+}
+
+.chamados-table tbody tr {
+  /* UI/UX: Suaviza a entrada e saída da cor de fundo na linha */
+  transition: background-color 0.2s ease;
+}
+
+.chamados-table tbody tr:hover {
+  /* UI/UX: Um cinza levemente mais perceptível para melhor feedback interativo */
+  background-color: #f3f4f6;
+}
+
+.chamados-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ==========================================================================
+   Botões e Badges da Tabela
+   ========================================================================== */
+.btn-detalhes {
+  display: inline-block;
+  background: #f3f4f6;
+  color: #374151;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+  border: 1px solid #d1d5db;
+  white-space: nowrap;
+}
+
+.btn-detalhes:hover {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+/* Estilos de Status - Corrigidos para os nomes usados no JSX */
+.badge-status-aberto {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+}
+
+.badge-status-andamento {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.badge-status-fechado {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+/* Estilos de Prioridade e Nível */
+.badge-baixa {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+.badge-normal {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.badge-alta {
+  background-color: #ffedd5;
+  color: #c2410c;
+}
+
+.badge-critica {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+/* ==========================================================================
+   Responsividade (Tablets e Celulares)
+   ========================================================================== */
+@media (max-width: 900px) {
+  /* Breakpoint para tablets */
+  .dashboard__stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  /* Layout do Header */
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .btn-novo-chamado {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Grid de estatísticas vira 1 coluna no celular */
+  .dashboard__stats {
+    grid-template-columns: 1fr;
+  }
+}
