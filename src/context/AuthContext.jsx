@@ -1,33 +1,35 @@
-import { createContext, useState, useEffect, useContext } from 'react';
-import api from '../services/api';
+import React, { createContext, useState, useContext, useEffect, useMemo } from 'react';
 
 const AuthContext = createContext({});
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Inicializa o estado buscando o usuário persistido, se houver
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('@GLPI:user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+  
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    async function loadStorageData() {
-      const storedToken = localStorage.getItem('@GLPI:token');
-      const storedUser = localStorage.getItem('@GLPI:user');
+  // Recebe o LoginResponseDTO já retornado pela API e normaliza o usuário
+  // para o formato esperado pelos componentes React.
+  const login = (loginResponse) => {
+    const { token, id, nome, email, perfil } = loginResponse;
 
-      if (storedToken && storedUser) {
-        setUser(JSON.parse(storedUser));
-      }
-      setLoading(false);
+    if (!token) {
+      throw new Error('A resposta de login não contém um token.');
     }
-    loadStorageData();
-  }, []);
 
-  const login = async (email, password) => {
-    const response = await api.post('/auth/login', { email, password });
-    const { user, token } = response.data;
+    const mappedUser = {
+      id,
+      name: nome,
+      email,
+      role: perfil,
+    };
 
     localStorage.setItem('@GLPI:token', token);
-    localStorage.setItem('@GLPI:user', JSON.stringify(user));
-
-    setUser(user);
+    localStorage.setItem('@GLPI:user', JSON.stringify(mappedUser));
+    setUser(mappedUser);
   };
 
   const logout = () => {
@@ -36,8 +38,25 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  // Desloga automaticamente caso o interceptador do Axios detecte token expirado (401)
+  useEffect(() => {
+    const handleAuthExpired = () => logout();
+    window.addEventListener('helpdesk-auth-expired', handleAuthExpired);
+    return () => window.removeEventListener('helpdesk-auth-expired', handleAuthExpired);
+  }, []);
+
+  // useMemo evita renderizações desnecessárias nos componentes que consomem o contexto
+  const value = useMemo(() => ({
+    user,
+    signed: !!user,
+    loading,
+    setLoading,
+    login,
+    logout
+  }), [user, loading]);
+
   return (
-    <AuthContext.Provider value={{ signed: !!user, user, login, logout, loading }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
