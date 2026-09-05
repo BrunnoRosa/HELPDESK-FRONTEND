@@ -42,6 +42,18 @@
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
 }
 
+/* Tratamento de Erros */
+.error-box {
+  background-color: #fef2f2;
+  color: #991b1b;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid #f87171;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+  text-align: center;
+}
+
 /* ==========================================================================
    SESSÃO DE ESTATÍSTICAS (Mesclada e com UI/UX aprimorado)
    ========================================================================== */
@@ -49,7 +61,7 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 14px;
-  margin-bottom: 1.5rem; 
+  margin-bottom: 1.5rem;
 }
 
 .dashboard__stats article {
@@ -59,7 +71,7 @@
   padding: 18px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   /* UI/UX: Adicionada transição suave com curva bezier para um aspecto premium */
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
               box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
               border-color 0.3s ease;
 }
@@ -67,9 +79,9 @@
 /* UI/UX: Efeito de elevação (Floating) e sombra difusa ao passar o mouse */
 .dashboard__stats article:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.08), 
+  box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.08),
               0 8px 10px -6px rgba(0, 0, 0, 0.04);
-  border-color: #d1d5db; /* Escurece levemente a borda para dar mais contraste */
+  border-color: #d1d5db;
 }
 
 .dashboard__stats strong,
@@ -80,11 +92,11 @@
 .dashboard__stats strong {
   font-size: 30px;
   margin-bottom: 6px;
-  color: #111827; 
+  color: #111827;
 }
 
 .dashboard__stats span {
-  color: #6b7280; 
+  color: #6b7280;
 }
 
 /* ==========================================================================
@@ -111,6 +123,7 @@
   font-weight: 600;
   padding: 1rem;
   border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
 }
 
 .chamados-table td {
@@ -127,7 +140,7 @@
 
 .chamados-table tbody tr:hover {
   /* UI/UX: Um cinza levemente mais perceptível para melhor feedback interativo */
-  background-color: #f3f4f6; 
+  background-color: #f3f4f6;
 }
 
 .chamados-table tbody tr:last-child td {
@@ -148,6 +161,7 @@
   font-size: 0.85rem;
   transition: all 0.2s;
   border: 1px solid #d1d5db;
+  white-space: nowrap;
 }
 
 .btn-detalhes:hover {
@@ -163,25 +177,26 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
-/* Estilos de Status */
-.status-aberto {
+/* Estilos de Status - Corrigidos para os nomes usados no JSX */
+.badge-status-aberto {
   background-color: #eff6ff;
   color: #1d4ed8;
 }
 
-.status-andamento {
+.badge-status-andamento {
   background-color: #fef3c7;
   color: #92400e;
 }
 
-.status-resolvido {
+.badge-status-fechado {
   background-color: #dcfce7;
   color: #166534;
 }
 
-/* Estilos de Prioridade */
+/* Estilos de Prioridade e Nível */
 .badge-baixa {
   background-color: #f3f4f6;
   color: #4b5563;

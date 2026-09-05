@@ -4,11 +4,12 @@
 .new-ticket-container {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* Ajustado: alinha ao topo para evitar deslocamentos verticais */
   padding: 2.5rem 1rem;
   min-height: calc(100vh - 80px);
   background-color: #f4f7f9;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  box-sizing: border-box;
 }
 
 /* ==========================================================================
@@ -22,6 +23,7 @@
   border-radius: 16px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
   border: 1px solid #e4e7ec;
+  box-sizing: border-box;
 }
 
 .new-ticket-card h2 {
@@ -79,17 +81,31 @@
   color: #344054;
 }
 
+/* Padronização de altura para Inputs e Selects */
 .form-group input,
 .form-group textarea,
 .form-group select {
+  box-sizing: border-box;
+  width: 100%;
   padding: 0.75rem 1rem;
   border: 1px solid #d0d5dd;
   border-radius: 10px;
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: #101828;
   background-color: #ffffff;
   transition: all 0.2s ease-in-out;
   box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+  font-family: inherit;
+}
+
+.form-group input[type="text"],
+.form-group select {
+  height: 46px; /* Força mesma altura exata para inputs de texto e selects */
+}
+
+.form-group textarea {
+  min-height: 110px;
+  resize: vertical;
 }
 
 .form-group input::placeholder,
@@ -101,34 +117,89 @@
 .form-group textarea:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #7a5af8;
-  box-shadow: 0 0 0 4px rgba(122, 90, 248, 0.15);
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15);
 }
 
+/* Ajuste específico para o campo File */
 .form-group input[type="file"] {
-  padding: 0.5rem;
+  height: 46px;
+  padding: 0.5rem 0.75rem;
   background-color: #fcfcfd;
   border: 1px dashed #d0d5dd;
+  border-radius: 10px;
   cursor: pointer;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
 }
 
 .form-group input[type="file"]:hover {
-  border-color: #98a2b3;
-  background-color: #f9fafb;
+  border-color: #0ea5e9;
+  background-color: #f0f9ff;
 }
 
+/* ==========================================================================
+   PREVIEW DE IMAGEM
+   ========================================================================== */
+.image-preview-container {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.image-preview-container img {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  border: 1px solid #e4e7ec;
+  object-fit: cover;
+}
+
+.btn-remove-image {
+  background: none;
+  border: none;
+  color: #b42318;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.btn-remove-image:hover {
+  color: #7a271a;
+}
 /* ==========================================================================
    GRID DE FORMULÁRIO (LINHA COM 2 COLUNAS)
    ========================================================================== */
 .form-row {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr 1fr;
   gap: 1.25rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1.25rem; /* Aumentado de 0.5rem para 1.25rem para afastar do campo abaixo */
+  align-items: start;
 }
 
 .form-row .form-group {
-  margin-bottom: 0;
+  margin-bottom: 0; /* Mantém zerado apenas dentro do grid */
+}
+
+/* ==========================================================================
+   CAMPO DE ARQUIVO
+   ========================================================================== */
+.form-group input[type="file"] {
+  height: 46px;
+  padding: 0.5rem 0.75rem;
+  background-color: #fcfcfd;
+  border: 1px dashed #d0d5dd;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
 }
 
 /* ==========================================================================
@@ -145,16 +216,18 @@
 
 .btn-cancel, 
 .btn-submit {
-  padding: 0.75rem 1.5rem;
+  height: 44px;
+  padding: 0 1.5rem;
   font-size: 0.95rem;
   font-weight: 600;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
   border: none;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
 }
 
 .btn-cancel {
@@ -211,6 +284,5 @@
   .btn-cancel, 
   .btn-submit {
     width: 100%;
-    padding: 0.875rem;
   }
 }
