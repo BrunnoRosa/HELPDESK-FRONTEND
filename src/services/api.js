@@ -41,8 +41,8 @@ export default api;
 // ==========================================
 
 export const authApi = {
-  login: (payload) => api.post('/auth/login', payload),
-  register: (payload) => api.post('/auth/register', payload)
+  login: (payload) => api.post('/auth/login', payload)
+  // Register removido
 };
 
 export const chamadoApi = {
@@ -60,6 +60,7 @@ export const atendimentoApi = {
 };
 
 export const adminApi = {
+  criarUsuario: (payload) => api.post('/admin/usuarios', payload), // NOVA ROTA
   listarUsuarios: () => api.get('/admin/usuarios'),
   listarTecnicos: () => api.get('/admin/tecnicos'),
   atualizarPerfil: (id, perfil) => api.put(`/admin/usuarios/${id}/perfil`, { perfil }),

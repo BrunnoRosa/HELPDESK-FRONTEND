@@ -50,9 +50,6 @@ export default function Login() {
         />
         
         <button type="submit" className="btn-primary">Entrar no Sistema</button>
-        <div className="auth-links">
-          <span>Ainda não tem acesso? <Link to="/register">Criar nova conta</Link></span>
-        </div>
       </form>
     </div>
   );
