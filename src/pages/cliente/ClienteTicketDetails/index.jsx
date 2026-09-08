@@ -7,13 +7,12 @@ export default function ClientTicketDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // Estados principais baseados na estrutura do 'frontend'
-    const [chamado, setChamado] = useState(null);
-    const [atendimento, setAtendimento] = useState(null);
+  // Estados principais
+  const [chamado, setChamado] = useState(null);
+  const [atendimento, setAtendimento] = useState(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
 
-  // Efeito para carregar os dados assim que o componente montar (Inspirado no 'frontend')
   useEffect(() => {
     carregarChamado();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -47,11 +46,10 @@ export default function ClientTicketDetails() {
     );
   }
 
-  // Renderização do estado de Erro (Ex: ID inválido)
-    if (erro || !chamado || !atendimento) {
+  if (erro || !chamado || !atendimento) {
     return (
       <div className="details-container">
-          <button onClick={() => navigate('/')} className="btn-back">
+        <button onClick={() => navigate('/')} className="btn-back">
           &larr; Voltar para Meus Chamados
         </button>
         <div className="error-box" style={{ marginTop: '20px' }}>
@@ -63,7 +61,7 @@ export default function ClientTicketDetails() {
 
   return (
     <div className="details-container">
-        <button onClick={() => navigate('/')} className="btn-back">
+      <button onClick={() => navigate('/')} className="btn-back">
         &larr; Voltar para Meus Chamados
       </button>
 
@@ -101,7 +99,11 @@ export default function ClientTicketDetails() {
           </div>
           <div className="info-item">
             <label>Data de Abertura</label>
-            <p>Nível {atendimento.nivelSuporte}</p>
+            <p>
+              {chamado.dataAbertura 
+                ? new Date(chamado.dataAbertura).toLocaleDateString('pt-BR') 
+                : 'Não informada'}
+            </p>
           </div>
         </div>
 
@@ -109,9 +111,7 @@ export default function ClientTicketDetails() {
           <label>Descrição do Problema</label>
           <pre className="description-text">{chamado.descricaoChamado}</pre>
         </div>
-
       </div>
-
     </div>
   );
 }

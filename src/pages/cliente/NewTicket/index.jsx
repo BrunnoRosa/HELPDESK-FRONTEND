@@ -8,10 +8,12 @@ const initialFormData = {
   ocorrenciaChamado: 'INFORMATICA',
   descricaoChamado: '',
   prioridadeChamado: 'MEDIA',
+  imagemChamado: '', // Novo campo para guardar a imagem em Base64
 };
 
 export default function NewTicket() {
   const [formData, setFormData] = useState(initialFormData);
+  const [previewImagem, setPreviewImagem] = useState('');
   const [erro, setErro] = useState('');
   const [salvando, setSalvando] = useState(false);
 
@@ -22,6 +24,32 @@ export default function NewTicket() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Função para ler o arquivo e converter para Base64
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validação de tamanho (máximo 2MB para não pesar a requisição)
+      if (file.size > 2 * 1024 * 1024) {
+        setErro('A imagem selecionada deve ter no máximo 2MB.');
+        return;
+      }
+
+      setErro('');
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({ ...prev, imagemChamado: reader.result }));
+        setPreviewImagem(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Função para remover a imagem selecionada
+  const handleRemoveImage = () => {
+    setFormData((prev) => ({ ...prev, imagemChamado: '' }));
+    setPreviewImagem('');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErro('');
@@ -30,7 +58,9 @@ export default function NewTicket() {
     try {
       await chamadoApi.criar(formData);
       setFormData(initialFormData);
-      alert('Chamado criado com sucesso.');
+      setPreviewImagem('');
+      alert('Chamado criado com sucesso!');
+      navigate('/');
     } catch (error) {
       setErro(error.message || 'Erro ao salvar chamado. Verifique seus dados e tente novamente.');
     } finally {
@@ -42,7 +72,9 @@ export default function NewTicket() {
     <div className="new-ticket-container">
       <div className="new-ticket-card">
         <h2>Abrir Novo Chamado</h2>
-        <p className="subtitle">Preencha os dados abaixo, incluindo informações do equipamento e evidências fotográficas.</p>
+        <p className="subtitle">
+          Preencha os dados detalhados abaixo, incluindo informações do equipamento e evidências fotográficas.
+        </p>
 
         {erro && <div className="error-box">{erro}</div>}
 
@@ -93,6 +125,25 @@ export default function NewTicket() {
                 <option value="URGENTE">Urgente</option>
               </select>
             </div>
+          </div>
+
+          {/* NOVO CAMPO: Evidência / Anexo de Imagem */}
+          <div className="form-group">
+            <label>Evidência Fotográfica (Opcional)</label>
+            <input 
+              type="file" 
+              accept="image/*" 
+              onChange={handleImageChange}
+            />
+
+            {previewImagem && (
+              <div className="image-preview-container">
+                <img src={previewImagem} alt="Pré-visualização do anexo" />
+                <button type="button" className="btn-remove-image" onClick={handleRemoveImage}>
+                  Remover Foto
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="form-actions">

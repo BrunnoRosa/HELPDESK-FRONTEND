@@ -10,6 +10,7 @@ export default function ClienteDashboard() {
   useEffect(() => {
     const carregarChamados = async () => {
       try {
+        // Presume-se que o backend já filtre os chamados pelo token do cliente logado
         const response = await chamadoApi.listar();
         setMeusChamados(Array.isArray(response) ? response : []);
       } catch (error) {
@@ -21,20 +22,20 @@ export default function ClienteDashboard() {
   }, []);
 
   // -------------------------------------------------------------------------
-  // NOVA FUNCIONALIDADE MESCLADA DO 'frontend'
-  // Cálculos de estatísticas baseados apenas nos chamados do cliente atual
-  // Utilizamos useMemo para não recalcular a não ser que os chamados mudem
+  // Estatísticas focadas no Status (Aberto, Em Andamento, Resolvido)
   // -------------------------------------------------------------------------
   const estatisticas = useMemo(() => {
     return {
       total: meusChamados.length,
-      urgentes: meusChamados.filter(c => ['ALTA', 'URGENTE'].includes(c?.prioridadeChamado)).length,
-      medias: meusChamados.filter(c => c?.prioridadeChamado === 'MEDIA').length,
-      baixas: meusChamados.filter(c => c?.prioridadeChamado === 'BAIXA').length
+      abertos: meusChamados.filter(c => c?.statusChamado === 'ABERTO').length,
+      emAndamento: meusChamados.filter(c => c?.statusChamado === 'EM_ANDAMENTO').length,
+      resolvidos: meusChamados.filter(c => c?.statusChamado === 'RESOLVIDO' || c?.statusChamado === 'FECHADO').length
     };
   }, [meusChamados]);
 
-  // Helpers para estilização de badges (Mantidos do HELPDESK-FRONT)
+  // -------------------------------------------------------------------------
+  // Helpers para estilização e formatação
+  // -------------------------------------------------------------------------
   const getClassePrioridade = (prioridade) => {
     switch (prioridade) {
       case 'BAIXA': return 'badge-baixa';
@@ -42,6 +43,25 @@ export default function ClienteDashboard() {
       case 'ALTA': return 'badge-alta';
       case 'URGENTE': return 'badge-critica';
       default: return 'badge-normal';
+    }
+  };
+
+  const getClasseStatus = (status) => {
+    switch (status) {
+      case 'ABERTO': return 'badge-status-aberto';
+      case 'RESOLVIDO': 
+      case 'FECHADO': return 'badge-status-fechado';
+      default: return 'badge-status-andamento';
+    }
+  };
+
+  // Identifica visualmente em qual nível de atendimento o chamado está (N1, N2, N3)
+  const getNivelDescricao = (nivel) => {
+    switch (nivel) {
+      case 'N1': return 'N1 (Triagem)';
+      case 'N2': return 'N2 (Especializado)';
+      case 'N3': return 'N3 (Engenharia)';
+      default: return 'N1 (Triagem)';
     }
   };
 
@@ -59,36 +79,37 @@ export default function ClienteDashboard() {
 
       {erro && <div className="error-box">{erro}</div>}
 
-      {/* SESSÃO DE ESTATÍSTICAS (Implementada a partir do 'frontend') */}
+      {/* SESSÃO DE ESTATÍSTICAS */}
       <div className="dashboard__stats">
         <article>
           <strong>{estatisticas.total}</strong>
           <span>Total de chamados</span>
         </article>
         <article>
-          <strong>{estatisticas.urgentes}</strong>
-          <span>Alta ou urgente</span>
+          <strong>{estatisticas.abertos}</strong>
+          <span>Aguardando Atendimento</span>
         </article>
         <article>
-          <strong>{estatisticas.medias}</strong>
-          <span>Prioridade média</span>
+          <strong>{estatisticas.emAndamento}</strong>
+          <span>Em Andamento</span>
         </article>
         <article>
-          <strong>{estatisticas.baixas}</strong>
-          <span>Prioridade baixa</span>
+          <strong>{estatisticas.resolvidos}</strong>
+          <span>Resolvidos</span>
         </article>
       </div>
 
-      {/* LISTAGEM EM TABELA (Mantida do HELPDESK-FRONT) */}
+      {/* LISTAGEM EM TABELA */}
       <div className="table-container">
         <table className="chamados-table">
           <thead>
             <tr>
               <th>ID</th>
+              <th>Status</th>
+              <th>Nível</th>
+              <th>Equipamento</th>
               <th>Título</th>
-              <th>Ocorrência</th>
               <th>Prioridade</th>
-              <th>Descrição</th>
               <th>Ação</th>
             </tr>
           </thead>
@@ -96,14 +117,35 @@ export default function ClienteDashboard() {
             {meusChamados.map((chamado, index) => (
               <tr key={chamado?.id ?? index}>
                 <td><strong>#{chamado?.id ?? '---'}</strong></td>
+                
+                {/* Coluna de Status */}
+                <td>
+                  <span className={`badge ${getClasseStatus(chamado?.statusChamado)}`}>
+                    {chamado?.statusChamado ?? 'ABERTO'}
+                  </span>
+                </td>
+
+                {/* Coluna de Nível (N1, N2, N3) */}
+                <td>
+                  <span className="badge badge-normal">
+                    {getNivelDescricao(chamado?.nivel)}
+                  </span>
+                </td>
+
+                {/* Coluna de Equipamento */}
+                <td>{chamado?.equipamento ?? 'Não informado'}</td>
+                
+                {/* Coluna de Título */}
                 <td>{chamado?.tituloChamado ?? 'Sem título'}</td>
-                <td>{chamado?.ocorrenciaChamado ?? 'Não informada'}</td>
+                
+                {/* Coluna de Prioridade */}
                 <td>
                   <span className={`badge ${getClassePrioridade(chamado?.prioridadeChamado)}`}>
                     {chamado?.prioridadeChamado ?? 'MEDIA'}
                   </span>
                 </td>
-                <td>{chamado?.descricaoChamado ?? 'Descrição não informada.'}</td>
+                
+                {/* Coluna de Ações */}
                 <td>
                   <Link to={`/cliente/chamado/${chamado?.id ?? ''}`} className="btn-detalhes">
                     Ver Detalhes
