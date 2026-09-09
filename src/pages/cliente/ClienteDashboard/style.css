@@ -1,21 +1,18 @@
-/* ==========================================================================
-   Estrutura Principal do Dashboard
-   ========================================================================== */
 .dashboard-container {
-  max-width: 1000px;
-  margin: 1.5rem auto;
-  padding: 0 1rem;
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
 }
 
 .dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .dashboard-header h2 {
-  font-size: 1.6rem;
+  font-size: 1.75rem;
   color: #111827;
   font-weight: 700;
   margin-bottom: 0.25rem;
@@ -24,224 +21,140 @@
 .dashboard-header p {
   color: #6b7280;
   font-size: 0.95rem;
+  margin: 0;
 }
 
-.btn-novo-chamado {
-  background-color: #2563eb;
+.btn-primary-action {
+  background-color: #111827;
   color: #ffffff;
   padding: 0.65rem 1.25rem;
   border-radius: 8px;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.9rem;
-  transition: all 0.2s ease-in-out;
 }
 
-.btn-novo-chamado:hover {
-  background-color: #1d4ed8;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+.btn-primary-action:hover {
+  background-color: #374151;
 }
 
-/* Tratamento de Erros */
-.error-box {
-  background-color: #fef2f2;
-  color: #991b1b;
-  padding: 1rem;
-  border-radius: 8px;
-  border: 1px solid #f87171;
-  margin-bottom: 1.5rem;
-  font-weight: 500;
-  text-align: center;
-}
-
-/* ==========================================================================
-   SESSÃO DE ESTATÍSTICAS (Mesclada e com UI/UX aprimorado)
-   ========================================================================== */
-.dashboard__stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
+.filter-group {
+  display: flex;
+  gap: 0.5rem;
   margin-bottom: 1.5rem;
 }
 
-.dashboard__stats article {
-  background: #ffffff;
+.filter-btn {
+  background: #f3f4f6;
   border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 18px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  /* UI/UX: Adicionada transição suave com curva bezier para um aspecto premium */
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              border-color 0.3s ease;
+  color: #4b5563;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.2s;
 }
 
-/* UI/UX: Efeito de elevação (Floating) e sombra difusa ao passar o mouse */
-.dashboard__stats article:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.08),
-              0 8px 10px -6px rgba(0, 0, 0, 0.04);
-  border-color: #d1d5db;
+.filter-btn:hover {
+  background: #e5e7eb;
 }
 
-.dashboard__stats strong,
-.dashboard__stats span {
-  display: block;
+.filter-btn.active {
+  background: #111827;
+  color: #ffffff;
+  border-color: #111827;
 }
 
-.dashboard__stats strong {
-  font-size: 30px;
-  margin-bottom: 6px;
-  color: #111827;
-}
-
-.dashboard__stats span {
-  color: #6b7280;
-}
-
-/* ==========================================================================
-   Tabela e Contêiner
-   ========================================================================== */
 .table-container {
   background: #ffffff;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  overflow-x: auto;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
 }
 
-.chamados-table {
+.data-table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
   font-size: 0.9rem;
 }
 
-.chamados-table th {
+.data-table th {
   background-color: #f9fafb;
   color: #374151;
   font-weight: 600;
-  padding: 1rem;
+  padding: 1rem 1.25rem;
   border-bottom: 1px solid #e5e7eb;
-  white-space: nowrap;
 }
 
-.chamados-table td {
-  padding: 1rem;
+.data-table td {
+  padding: 1rem 1.25rem;
   border-bottom: 1px solid #f3f4f6;
   color: #1f2937;
   vertical-align: middle;
 }
 
-.chamados-table tbody tr {
-  /* UI/UX: Suaviza a entrada e saída da cor de fundo na linha */
-  transition: background-color 0.2s ease;
+.data-table tbody tr:hover {
+  background-color: #f9fafb;
 }
 
-.chamados-table tbody tr:hover {
-  /* UI/UX: Um cinza levemente mais perceptível para melhor feedback interativo */
-  background-color: #f3f4f6;
+.empty-state {
+  text-align: center;
+  padding: 3rem !important;
+  color: #6b7280;
+  font-weight: 500;
 }
 
-.chamados-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-/* ==========================================================================
-   Botões e Badges da Tabela
-   ========================================================================== */
-.btn-detalhes {
+.btn-outline {
   display: inline-block;
-  background: #f3f4f6;
-  color: #374151;
+  background: #ffffff;
+  color: #111827;
   padding: 0.4rem 0.8rem;
   border-radius: 6px;
   text-decoration: none;
   font-weight: 600;
   font-size: 0.85rem;
-  transition: all 0.2s;
   border: 1px solid #d1d5db;
-  white-space: nowrap;
 }
 
-.btn-detalhes:hover {
-  background: #e5e7eb;
-  color: #111827;
+.btn-outline:hover {
+  background: #f3f4f6;
 }
 
+/* Badges Base */
 .badge {
   display: inline-block;
-  padding: 0.25rem 0.6rem;
+  padding: 0.25rem 0.75rem;
   border-radius: 999px;
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
   white-space: nowrap;
 }
 
-/* Estilos de Status - Corrigidos para os nomes usados no JSX */
-.badge-status-aberto {
+.badge-blue {
   background-color: #eff6ff;
   color: #1d4ed8;
 }
 
-.badge-status-andamento {
-  background-color: #fef3c7;
-  color: #92400e;
+.badge-orange {
+  background-color: #fff7ed;
+  color: #c2410c;
 }
 
-.badge-status-fechado {
-  background-color: #dcfce7;
-  color: #166534;
+.badge-green {
+  background-color: #f0fdf4;
+  color: #15803d;
 }
 
-/* Estilos de Prioridade e Nível */
-.badge-baixa {
+.badge-gray {
   background-color: #f3f4f6;
   color: #4b5563;
 }
 
-.badge-normal {
-  background-color: #e0f2fe;
-  color: #0369a1;
-}
-
-.badge-alta {
-  background-color: #ffedd5;
-  color: #c2410c;
-}
-
-.badge-critica {
-  background-color: #fee2e2;
+.badge-red {
+  background-color: #fef2f2;
   color: #b91c1c;
-}
-
-/* ==========================================================================
-   Responsividade (Tablets e Celulares)
-   ========================================================================== */
-@media (max-width: 900px) {
-  /* Breakpoint para tablets */
-  .dashboard__stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 640px) {
-  /* Layout do Header */
-  .dashboard-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-  
-  .btn-novo-chamado {
-    width: 100%;
-    text-align: center;
-  }
-
-  /* Grid de estatísticas vira 1 coluna no celular */
-  .dashboard__stats {
-    grid-template-columns: 1fr;
-  }
 }

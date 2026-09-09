@@ -18,10 +18,24 @@ export default function Login() {
         senha: password,
       });
 
+      // Salva os dados no Contexto
       login(loginResponse);
-      navigate('/');
+
+      // REDIRECIONAMENTO CORRETO BASEADO NO PERFIL
+      // Verifica qual é o perfil que veio do backend
+      const perfilUsuario = loginResponse.perfil; 
+
+      if (perfilUsuario === 'ADMINISTRADOR') {
+        navigate('/admin'); // Mande o Admin para a rota de Admin que você criou
+      } else if (perfilUsuario === 'TECNICO') {
+        navigate('/tecnico'); // (Deixe a tela do técnico para o seu colega)
+      } else {
+        navigate('/cliente'); // Rota de cliente/usuário comum
+      }
+      
     } catch (error) {
       console.error('Não foi possível realizar o login:', error.message);
+      alert('Erro ao logar. Verifique as credenciais.');
     }
   };
 

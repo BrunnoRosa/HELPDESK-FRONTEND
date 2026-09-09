@@ -3,11 +3,19 @@ import { useAuth } from '../../../context/AuthContext';
 import './style.css';
 
 export default function Sidebar() {
-  // 1. ACRESCENTADO: Puxamos a função logout do contexto
   const { user, logout } = useAuth();
   const location = useLocation();
 
   const isTech = user?.role === 'TECNICO' || user?.role === 'ADMINISTRADOR';
+
+  // 1. ACRESCENTADO: Define para onde o botão Dashboard deve levar baseado no perfil
+  const getDashboardRoute = () => {
+    if (user?.role === 'ADMINISTRADOR') return '/admin';
+    if (user?.role === 'TECNICO') return '/tecnico';
+    return '/'; // Rota padrão (cliente)
+  };
+
+  const dashboardRoute = getDashboardRoute();
 
   return (
     <aside className="sidebar">
@@ -30,7 +38,8 @@ export default function Sidebar() {
       <nav className="sidebar-nav">
         <span className="nav-label">Menu Principal</span>
         
-        <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
+        {/* 2. ALTERADO: O botão agora usa a rota dinâmica e fica ativo na rota certa */}
+        <Link to={dashboardRoute} className={`nav-item ${location.pathname === dashboardRoute ? 'active' : ''}`}>
           <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="3" y="3" width="7" height="7"></rect>
             <rect x="14" y="3" width="7" height="7"></rect>
@@ -74,7 +83,6 @@ export default function Sidebar() {
 
       {/* Rodapé com identificação e Logout */}
       <div className="sidebar-footer">
-        {/* 2. ACRESCENTADO: Uma div wrapper para agrupar avatar e textos */}
         <div className="user-profile-wrapper">
           <div className="user-avatar">
             {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
@@ -85,7 +93,6 @@ export default function Sidebar() {
           </div>
         </div>
 
-        {/* 3. ACRESCENTADO: Botão de sair com ícone */}
         <button onClick={logout} className="btn-sidebar-logout" title="Sair do sistema">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>

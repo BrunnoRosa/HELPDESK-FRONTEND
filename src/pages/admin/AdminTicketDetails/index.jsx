@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { chamadoApi, adminApi } from '../../../services/api';
+import { chamadoApi, adminApi, atendimentoApi } from '../../../services/api';
 import './style.css';
 
 export default function AdminTicketDetails() {
@@ -9,14 +9,9 @@ export default function AdminTicketDetails() {
   
   const [chamado, setChamado] = useState(null);
   const [tecnicos, setTecnicos] = useState([]);
+  const [atendimentos, setAtendimentos] = useState([]);
   
-  // Estados para edição forçada
-  const [editData, setEditData] = useState({
-    status: '',
-    prioridade: '',
-    nivelSuporte: '',
-    tecnicoId: ''
-  });
+  const [editData, setEditData] = useState({ status: '', prioridade: '', nivelSuporte: '', tecnicoId: '' });
 
   useEffect(() => {
     carregarDados();
@@ -24,14 +19,15 @@ export default function AdminTicketDetails() {
 
   const carregarDados = async () => {
     try {
-      // Busca o chamado e a lista de técnicos para o dropdown de reatribuição
-      const [chamadoRes, tecnicosRes] = await Promise.all([
+      const [chamadoRes, tecnicosRes, atendimentosRes] = await Promise.all([
         chamadoApi.buscar(id),
-        adminApi.listarTecnicos()
+        adminApi.listarTecnicos(),
+        atendimentoApi.buscarPorChamado(id).catch(() => []) // Evita quebrar se não houver endpoint ainda
       ]);
       
       setChamado(chamadoRes);
       setTecnicos(tecnicosRes);
+      setAtendimentos(Array.isArray(atendimentosRes) ? atendimentosRes : []);
       
       setEditData({
         status: chamadoRes.statusChamado || '',
@@ -48,22 +44,18 @@ export default function AdminTicketDetails() {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      // Envia a atualização forçada ignorando restrições comuns
       await chamadoApi.atualizar(id, editData);
       alert('Chamado atualizado com sucesso pela Administração!');
-      carregarDados(); // Recarrega para mostrar os dados novos
+      carregarDados();
     } catch (error) {
       alert(error.message || 'Erro ao atualizar chamado.');
     }
   };
 
   const handleDelete = async () => {
-    const confirmacao = window.confirm('ATENÇÃO: Tem certeza que deseja EXCLUIR este chamado permanentemente? Essa ação não pode ser desfeita.');
-    
-    if (confirmacao) {
+    if (window.confirm('ATENÇÃO: Deseja EXCLUIR este chamado? Ação irreversível.')) {
       try {
         await chamadoApi.deletar(id);
-        alert('Chamado excluído com sucesso.');
         navigate('/admin');
       } catch (error) {
         alert(error.message || 'Erro ao excluir o chamado.');
@@ -71,60 +63,90 @@ export default function AdminTicketDetails() {
     }
   };
 
-  if (!chamado) return <div className="admin-ticket-container"><p>Carregando...</p></div>;
+  if (!chamado) return <div className="loading-state">Carregando...</div>;
 
   return (
-    <div className="admin-ticket-container">
-      <header className="ticket-header">
-        <h2>Painel de Controle do Chamado #{chamado.id}</h2>
+    <div className="ticket-detail-container">
+      <div className="ticket-header-bar">
+        <div>
+          <h2>Chamado #{chamado.id}</h2>
+          <span className={`badge badge-${chamado.statusChamado?.toLowerCase()}`}>{chamado.statusChamado}</span>
+        </div>
         <button className="btn-danger" onClick={handleDelete}>Excluir Chamado</button>
-      </header>
-      
-      <div className="ticket-info">
-        <p><strong>Título:</strong> {chamado.tituloChamado}</p>
-        <p><strong>Solicitante:</strong> {chamado.solicitante?.nome}</p>
-        <p><strong>Descrição:</strong> {chamado.descricaoChamado}</p>
       </div>
+      
+      <div className="ticket-grid">
+        <div className="ticket-main">
+          <div className="white-panel mb-4">
+            <h3>Detalhes da Solicitação</h3>
+            <p><strong>Título:</strong> {chamado.tituloChamado}</p>
+            <p><strong>Solicitante:</strong> {chamado.solicitante?.nome}</p>
+            <p><strong>Descrição:</strong></p>
+            <div className="description-box">{chamado.descricaoChamado}</div>
+          </div>
 
-      <section className="admin-section">
-        <h3>Intervenção Administrativa</h3>
-        <form onSubmit={handleUpdate} className="admin-form">
-          
-          <label>Forçar Status:</label>
-          <select value={editData.status} onChange={(e) => setEditData({...editData, status: e.target.value})}>
-            <option value="ABERTO">Aberto</option>
-            <option value="EM_ANDAMENTO">Em Andamento</option>
-            <option value="AGUARDANDO_CLIENTE">Aguardando Cliente</option>
-            <option value="RESOLVIDO">Resolvido</option>
-            <option value="FECHADO">Fechado (Finalizado)</option>
-          </select>
+          <div className="white-panel timeline-panel">
+            <h3>Linha do Tempo (Atendimentos)</h3>
+            {atendimentos.length === 0 ? (
+              <p className="empty-text">Nenhuma interação registrada ainda.</p>
+            ) : (
+              <div className="timeline">
+                {atendimentos.map(atd => (
+                  <div key={atd.id} className="timeline-item">
+                    <div className="timeline-marker"></div>
+                    <div className="timeline-content">
+                      <span className="timeline-date">{new Date(atd.dataCriacao).toLocaleString()}</span>
+                      <p className="timeline-author">{atd.autor?.nome || 'Sistema'}</p>
+                      <p className="timeline-text">{atd.mensagem}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
 
-          <label>Alterar Prioridade:</label>
-          <select value={editData.prioridade} onChange={(e) => setEditData({...editData, prioridade: e.target.value})}>
-            <option value="BAIXA">Baixa</option>
-            <option value="MEDIA">Média</option>
-            <option value="ALTA">Alta</option>
-            <option value="URGENTE">Urgente</option>
-          </select>
+        <aside className="ticket-sidebar">
+          <div className="white-panel">
+            <h3>Intervenção Administrativa</h3>
+            <form onSubmit={handleUpdate} className="admin-form">
+              <label>Forçar Status:</label>
+              <select value={editData.status} onChange={(e) => setEditData({...editData, status: e.target.value})}>
+                <option value="ABERTO">Aberto</option>
+                <option value="EM_ANDAMENTO">Em Andamento</option>
+                <option value="AGUARDANDO_CLIENTE">Aguardando Cliente</option>
+                <option value="RESOLVIDO">Resolvido</option>
+                <option value="FECHADO">Fechado</option>
+              </select>
 
-          <label>Escalonamento (Nível de Suporte):</label>
-          <select value={editData.nivelSuporte} onChange={(e) => setEditData({...editData, nivelSuporte: e.target.value})}>
-            <option value="N1">N1 - Triagem e Básico</option>
-            <option value="N2">N2 - Especializado</option>
-            <option value="N3">N3 - Engenharia</option>
-          </select>
+              <label>Prioridade:</label>
+              <select value={editData.prioridade} onChange={(e) => setEditData({...editData, prioridade: e.target.value})}>
+                <option value="BAIXA">Baixa</option>
+                <option value="MEDIA">Média</option>
+                <option value="ALTA">Alta</option>
+                <option value="URGENTE">Urgente</option>
+              </select>
 
-          <label>Reatribuir Técnico:</label>
-          <select value={editData.tecnicoId} onChange={(e) => setEditData({...editData, tecnicoId: e.target.value})}>
-            <option value="">Desatribuir (Fila Geral)</option>
-            {tecnicos.map(tec => (
-              <option key={tec.id} value={tec.id}>{tec.nome} ({tec.nivelSuporte})</option>
-            ))}
-          </select>
+              <label>Fila (Nível):</label>
+              <select value={editData.nivelSuporte} onChange={(e) => setEditData({...editData, nivelSuporte: e.target.value})}>
+                <option value="N1">N1 - Triagem e Básico</option>
+                <option value="N2">N2 - Especializado</option>
+                <option value="N3">N3 - Engenharia</option>
+              </select>
 
-          <button type="submit" className="btn-update">Aplicar Intervenção</button>
-        </form>
-      </section>
+              <label>Atribuição Direta:</label>
+              <select value={editData.tecnicoId} onChange={(e) => setEditData({...editData, tecnicoId: e.target.value})}>
+                <option value="">Desatribuir (Fila Geral)</option>
+                {tecnicos.map(tec => (
+                  <option key={tec.id} value={tec.id}>{tec.nome} ({tec.nivelSuporte})</option>
+                ))}
+              </select>
+
+              <button type="submit" className="btn-primary" style={{marginTop: '1.5rem'}}>Aplicar Intervenção</button>
+            </form>
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }

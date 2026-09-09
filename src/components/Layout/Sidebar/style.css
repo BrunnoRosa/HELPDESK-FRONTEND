@@ -1,11 +1,10 @@
-/* Definição de Variáveis para o Sidebar (Tema Escuro Moderno) */
 :root {
-  --sidebar-bg: #111827;
-  --sidebar-text: #9ca3af;
-  --sidebar-text-hover: #f3f4f6;
-  --sidebar-active-bg: rgba(55, 65, 81, 0.5);
-  --sidebar-active-border: #3b82f6;
-  --sidebar-border: #1f2937;
+  --sidebar-bg: #ffffff;
+  --sidebar-text: #4b5563;
+  --sidebar-text-hover: #111827;
+  --sidebar-active-bg: #111827;
+  --sidebar-active-text: #ffffff;
+  --sidebar-border: #e5e7eb;
   --sidebar-width: 260px;
 }
 
@@ -17,16 +16,12 @@
   display: flex;
   flex-direction: column;
   border-right: 1px solid var(--sidebar-border);
-  
-  /* Mantém a sidebar fixa para não empurrar o resto do site */
-  position: fixed; 
+  position: fixed;
   top: 0;
   left: 0;
   z-index: 100;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-/* Cabeçalho da Sidebar */
 .sidebar-logo {
   display: flex;
   align-items: center;
@@ -39,7 +34,7 @@
 .logo-icon {
   width: 36px;
   height: 36px;
-  color: #3b82f6;
+  color: #111827;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -48,9 +43,8 @@
 .sidebar-logo h2 {
   margin: 0;
   font-size: 1.25rem;
-  color: #ffffff;
+  color: #111827;
   font-weight: 700;
-  letter-spacing: -0.5px;
 }
 
 .sidebar-logo span {
@@ -59,10 +53,8 @@
   color: #6b7280;
   margin-top: 2px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
-/* Corpo e Navegação */
 .sidebar-nav {
   flex: 1;
   padding: 0 1rem;
@@ -75,9 +67,8 @@
 .nav-label {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #6b7280;
+  color: #9ca3af;
   text-transform: uppercase;
-  letter-spacing: 1px;
   margin: 1rem 0 0.5rem 0.5rem;
 }
 
@@ -92,98 +83,62 @@
   font-weight: 500;
   font-size: 0.95rem;
   transition: all 0.2s ease;
-  position: relative;
 }
 
 .nav-icon {
   width: 20px;
   height: 20px;
-  stroke-width: 2.2px;
   opacity: 0.8;
-  transition: all 0.2s ease;
 }
 
-/* Interações da Navegação */
 .nav-item:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: #f3f4f6;
   color: var(--sidebar-text-hover);
-}
-
-.nav-item:hover .nav-icon {
-  opacity: 1;
 }
 
 .nav-item.active {
   background-color: var(--sidebar-active-bg);
-  color: #ffffff;
+  color: var(--sidebar-active-text);
 }
 
 .nav-item.active .nav-icon {
-  color: var(--sidebar-active-border);
   opacity: 1;
 }
 
-/* Detalhe de borda lateral no item ativo */
-.nav-item.active::before {
-  content: '';
-  position: absolute;
-  left: -1rem;
-  top: 15%;
-  height: 70%;
-  width: 4px;
-  background-color: var(--sidebar-active-border);
-  border-radius: 0 4px 4px 0;
-}
-
-/* Rodapé do Usuário (Perfil Rápido + Botão Sair) */
 .sidebar-footer {
   padding: 1.25rem 1.5rem;
   border-top: 1px solid var(--sidebar-border);
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Mantém o perfil à esquerda e o botão de sair à direita */
-  background-color: rgba(0, 0, 0, 0.2);
+  justify-content: space-between;
+  background-color: #f9fafb;
   margin-top: auto;
 }
 
-/* Agrupa o Avatar e os Textos para o layout funcionar perfeitamente */
 .user-profile-wrapper {
   display: flex;
   align-items: center;
   gap: 12px;
-  overflow: hidden;
 }
 
 .user-avatar {
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: white;
+  background: #e5e7eb;
+  color: #111827;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
   font-size: 1rem;
-  flex-shrink: 0;
-}
-
-.user-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 2px;
-  overflow: hidden;
 }
 
 .user-name {
-  color: #f3f4f6;
+  color: #111827;
   font-size: 0.9rem;
   font-weight: 600;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  line-height: 1.1;
+  display: block;
 }
 
 .user-role {
@@ -191,11 +146,8 @@
   font-size: 0.72rem;
   text-transform: uppercase;
   font-weight: 700;
-  letter-spacing: 0.5px;
-  line-height: 1.1;
 }
 
-/* Botão de Logout com Ícone */
 .btn-sidebar-logout {
   background: transparent;
   border: none;
@@ -203,19 +155,9 @@
   cursor: pointer;
   padding: 8px;
   border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  flex-shrink: 0; /* Evita que o botão seja esmagado pelo nome longo */
 }
 
 .btn-sidebar-logout:hover {
-  background-color: rgba(239, 68, 68, 0.1);
+  background-color: #fee2e2;
   color: #ef4444;
-}
-
-.btn-sidebar-logout svg {
-  width: 18px;
-  height: 18px;
 }
