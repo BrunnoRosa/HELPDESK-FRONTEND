@@ -4,17 +4,22 @@ import { adminApi, chamadoApi } from '../../../services/api';
 import './style.css';
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('CHAMADOS'); // CHAMADOS ou USUARIOS
-  const [filaAtiva, setFilaAtiva] = useState('N1'); // N1, N2, N3
-  const [filtroStatus, setFiltroStatus] = useState('TODOS'); // TODOS, ABERTO, ESCALONADO
+  // Controle de Abas: CHAMADOS, LISTA_USUARIOS, NOVO_USUARIO
+  const [activeTab, setActiveTab] = useState('CHAMADOS'); 
   
+  // Estados de Chamados
+  const [filaAtiva, setFilaAtiva] = useState('N1'); 
+  const [filtroStatus, setFiltroStatus] = useState('TODOS'); 
   const [chamados, setChamados] = useState([]);
+  
+  // Estados de Usuários
+  const [usuarios, setUsuarios] = useState([]);
+  const [ordem, setOrdem] = useState('ID');
   const [formData, setFormData] = useState({ nomeCompleto: '', email: '', senha: '', perfilUsuario: 'USUARIO', nivelSuporte: '' });
 
   useEffect(() => {
-    if (activeTab === 'CHAMADOS') {
-      carregarChamados();
-    }
+    if (activeTab === 'CHAMADOS') carregarChamados();
+    if (activeTab === 'LISTA_USUARIOS') carregarUsuarios();
   }, [activeTab]);
 
   const carregarChamados = async () => {
@@ -26,45 +31,56 @@ export default function AdminDashboard() {
     }
   };
 
+  const carregarUsuarios = async () => {
+    try {
+      const response = await adminApi.listarUsuarios();
+      setUsuarios(Array.isArray(response) ? response : []);
+    } catch (erro) {
+      console.error('Erro ao buscar usuários:', erro);
+    }
+  };
+
   const chamadosFiltrados = useMemo(() => {
     return chamados.filter(c => {
-      // Filtra por fila (Nível de Suporte)
       const nivelMatch = (c.nivelSuporte || 'N1') === filaAtiva;
-      
-      // Filtra por status/situação
       let statusMatch = true;
       if (filtroStatus === 'ABERTO') {
         statusMatch = ['ABERTO', 'EM_ANDAMENTO'].includes(c.statusChamado);
       } else if (filtroStatus === 'ESCALONADO') {
-        // Exemplo: consideramos escalonado se mudou de nível ou tem prioridade alta
         statusMatch = ['ALTA', 'URGENTE'].includes(c.prioridadeChamado); 
       }
       return nivelMatch && statusMatch;
     });
   }, [chamados, filaAtiva, filtroStatus]);
 
-  const handleCreateUser = async (e) => {
-  e.preventDefault();
-  
-  // Mapeia o estado do React para o formato exato que o backend costuma pedir
-  const payload = {
-    nome: formData.nomeCompleto, 
-    email: formData.email,
-    senha: formData.senha,
-    perfil: formData.perfilUsuario,
-    nivelSuporte: formData.perfilUsuario === 'TECNICO' ? formData.nivelSuporte : null
-  };
+  const usuariosOrdenados = useMemo(() => {
+    const copia = [...usuarios];
+    if (ordem === 'NOME') {
+      return copia.sort((a, b) => (a.nome || '').localeCompare(b.nome || ''));
+    }
+    return copia.sort((a, b) => a.id - b.id);
+  }, [usuarios, ordem]);
 
-  try {
-    await adminApi.criarUsuario(payload);
-    alert('Usuário cadastrado com sucesso!');
-    setFormData({ nomeCompleto: '', email: '', senha: '', perfilUsuario: 'USUARIO', nivelSuporte: '' });
-  } catch (error) {
-    // Agora o console vai exibir o erro exato para você debugar
-    console.error("Erro detalhado:", error);
-    alert(error.message || 'Erro ao cadastrar usuário. Verifique os dados ou permissões.');
-  }
-};
+  const handleCreateUser = async (e) => {
+    e.preventDefault();
+    const payload = {
+      nome: formData.nomeCompleto, 
+      email: formData.email,
+      senha: formData.senha,
+      perfil: formData.perfilUsuario,
+      nivelSuporte: formData.perfilUsuario === 'TECNICO' ? formData.nivelSuporte : null
+    };
+
+    try {
+      await adminApi.criarUsuario(payload);
+      alert('Usuário cadastrado com sucesso!');
+      setFormData({ nomeCompleto: '', email: '', senha: '', perfilUsuario: 'USUARIO', nivelSuporte: '' });
+      if (activeTab === 'LISTA_USUARIOS') carregarUsuarios();
+    } catch (error) {
+      console.error("Erro detalhado:", error);
+      alert(error.message || 'Erro ao cadastrar usuário. Verifique os dados ou permissões.');
+    }
+  };
 
   return (
     <div className="admin-container">
@@ -72,7 +88,8 @@ export default function AdminDashboard() {
         <h2>Painel Administrativo</h2>
         <div className="admin-tabs">
           <button className={`tab-btn ${activeTab === 'CHAMADOS' ? 'active' : ''}`} onClick={() => setActiveTab('CHAMADOS')}>Gestão de Chamados</button>
-          <button className={`tab-btn ${activeTab === 'USUARIOS' ? 'active' : ''}`} onClick={() => setActiveTab('USUARIOS')}>Novo Usuário</button>
+          <button className={`tab-btn ${activeTab === 'LISTA_USUARIOS' ? 'active' : ''}`} onClick={() => setActiveTab('LISTA_USUARIOS')}>Usuários Cadastrados</button>
+          <button className={`tab-btn ${activeTab === 'NOVO_USUARIO' ? 'active' : ''}`} onClick={() => setActiveTab('NOVO_USUARIO')}>Novo Usuário</button>
         </div>
       </div>
 
@@ -125,7 +142,50 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {activeTab === 'USUARIOS' && (
+      {activeTab === 'LISTA_USUARIOS' && (
+        <div className="admin-panel white-panel">
+          <div className="filter-group-admin" style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <label style={{ fontSize: '0.9rem', fontWeight: '600', color: '#374151' }}>Ordenar por:</label>
+            <select value={ordem} onChange={(e) => setOrdem(e.target.value)} style={{ padding: '0.5rem', borderRadius: '8px', border: '1px solid #d1d5db' }}>
+              <option value="ID">ID do Usuário</option>
+              <option value="NOME">Ordem Alfabética</option>
+            </select>
+          </div>
+
+          <div className="table-responsive">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nome Completo</th>
+                  <th>Email</th>
+                  <th>Perfil</th>
+                </tr>
+              </thead>
+              <tbody>
+                {usuariosOrdenados.length === 0 ? (
+                  <tr><td colSpan="4" style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>Nenhum usuário cadastrado.</td></tr>
+                ) : (
+                  usuariosOrdenados.map((user) => (
+                    <tr key={user.id}>
+                      <td><strong>#{user.id}</strong></td>
+                      <td>{user.nome}</td>
+                      <td>{user.email}</td>
+                      <td>
+                        <span style={{ padding: '0.25rem 0.75rem', background: '#f3f4f6', borderRadius: '99px', fontSize: '0.8rem', fontWeight: '600' }}>
+                          {user.perfil}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'NOVO_USUARIO' && (
         <div className="admin-panel white-panel form-panel">
           <h3>Cadastrar Novo Acesso</h3>
           <form onSubmit={handleCreateUser} className="admin-form">
@@ -156,7 +216,7 @@ export default function AdminDashboard() {
                 </select>
               </>
             )}
-            <button type="submit" className="btn-primary">Cadastrar no Sistema</button>
+            <button type="submit" className="btn-primary" style={{ marginTop: '1.5rem', width: '100%', padding: '0.75rem', background: '#111827', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}>Cadastrar no Sistema</button>
           </form>
         </div>
       )}

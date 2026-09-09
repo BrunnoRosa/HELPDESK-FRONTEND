@@ -17,13 +17,15 @@ import ClientTicketDetails from './pages/cliente/ClienteTicketDetails';
 // Importação das Páginas - Técnico e Admin
 import TechDashboard from './pages/tech/TechDashboard';
 import TechTicketDetails from './pages/tech/TechTicketDetails';
-import AdminDashboard from './pages/admin/AdminDashboard';         // <-- IMPORTAÇÃO ATUALIZADA
-import AdminTicketDetails from './pages/admin/AdminTicketDetails'; // <-- NOVA IMPORTAÇÃO
+import AdminDashboard from './pages/admin/AdminDashboard';        
+import AdminTicketDetails from './pages/admin/AdminTicketDetails'; 
 
+// 1. CORREÇÃO: Direciona automaticamente para as rotas corretas caso o usuário acesse a raiz '/'
 function IndexRouter() {
   const { user } = useAuth();
-  const isTech = user?.role === 'TECNICO' || user?.role === 'ADMINISTRADOR';
-  return isTech ? <TechDashboard /> : <ClienteDashboard />;
+  if (user?.role === 'ADMINISTRADOR') return <Navigate to="/admin" replace />;
+  if (user?.role === 'TECNICO') return <Navigate to="/tecnico" replace />;
+  return <ClienteDashboard />;
 }
 
 export default function App() {
@@ -46,17 +48,17 @@ export default function App() {
             <Route index element={<IndexRouter />} />
             
             {/* Visão do Cliente */}
-            <Route path="cliente/novo-chamado" element={<NewTicket />} />
-            <Route path="cliente/chamado/:id" element={<ClientTicketDetails />} />
-
-            {/* Visão do Técnico */}
-            <Route path="tecnico/dashboard" element={<TechDashboard />} />
+              <Route path="cliente" element={<ClienteDashboard />} /> {/* <-- ADICIONE ESTA LINHA */}
+              <Route path="cliente/novo-chamado" element={<NewTicket />} />
+              <Route path="cliente/chamado/:id" element={<ClientTicketDetails />} />
+            {/* 2. CORREÇÃO: Removido o "/dashboard" para casar perfeitamente com o Login e Sidebar */}
+            <Route path="tecnico" element={<TechDashboard />} />
             <Route path="tecnico/chamado/:id" element={<TechTicketDetails />} />
             <Route path="tecnico/relatorios" element={<TechReports />} />
 
             {/* Visão do Admin */}
             <Route path="admin" element={<AdminDashboard />} />
-            <Route path="admin/chamado/:id" element={<AdminTicketDetails />} /> {/* <-- NOVA ROTA */}
+            <Route path="admin/chamado/:id" element={<AdminTicketDetails />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/login" replace />} />

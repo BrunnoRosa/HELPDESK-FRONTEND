@@ -7,8 +7,8 @@ const initialFormData = {
   tituloChamado: '',
   ocorrenciaChamado: 'INFORMATICA',
   descricaoChamado: '',
-  prioridadeChamado: 'MEDIA',
-  imagemChamado: '', // Novo campo para guardar a imagem em Base64
+  prioridadeChamado: 'BAIXA', // Valor padrão chumbado, invisível para o cliente
+  imagemChamado: '',
 };
 
 export default function NewTicket() {
@@ -24,16 +24,13 @@ export default function NewTicket() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Função para ler o arquivo e converter para Base64
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Validação de tamanho (máximo 2MB para não pesar a requisição)
       if (file.size > 2 * 1024 * 1024) {
         setErro('A imagem selecionada deve ter no máximo 2MB.');
         return;
       }
-
       setErro('');
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -44,7 +41,6 @@ export default function NewTicket() {
     }
   };
 
-  // Função para remover a imagem selecionada
   const handleRemoveImage = () => {
     setFormData((prev) => ({ ...prev, imagemChamado: '' }));
     setPreviewImagem('');
@@ -103,31 +99,18 @@ export default function NewTicket() {
             />
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label>Ocorrência</label>
-              <select name="ocorrenciaChamado" value={formData.ocorrenciaChamado} onChange={handleChange}>
-                <option value="INFORMATICA">Informática</option>
-                <option value="IMPRESSORA">Impressora</option>
-                <option value="ELETRICA">Elétrica</option>
-                <option value="CLIMATIZACAO">Climatização</option>
-                <option value="MOBILIA">Mobília</option>
-                <option value="SISTEMAINCENDIO">Sistema de incêndio</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label>Prioridade</label>
-              <select name="prioridadeChamado" value={formData.prioridadeChamado} onChange={handleChange}>
-                <option value="BAIXA">Baixa</option>
-                <option value="MEDIA">Média</option>
-                <option value="ALTA">Alta</option>
-                <option value="URGENTE">Urgente</option>
-              </select>
-            </div>
+          <div className="form-group">
+            <label>Ocorrência</label>
+            <select name="ocorrenciaChamado" value={formData.ocorrenciaChamado} onChange={handleChange}>
+              <option value="INFORMATICA">Informática</option>
+              <option value="IMPRESSORA">Impressora</option>
+              <option value="ELETRICA">Elétrica</option>
+              <option value="CLIMATIZACAO">Climatização</option>
+              <option value="MOBILIA">Mobília</option>
+              <option value="SISTEMAINCENDIO">Sistema de incêndio</option>
+            </select>
           </div>
 
-          {/* NOVO CAMPO: Evidência / Anexo de Imagem */}
           <div className="form-group">
             <label>Evidência Fotográfica (Opcional)</label>
             <input 
@@ -135,7 +118,6 @@ export default function NewTicket() {
               accept="image/*" 
               onChange={handleImageChange}
             />
-
             {previewImagem && (
               <div className="image-preview-container">
                 <img src={previewImagem} alt="Pré-visualização do anexo" />

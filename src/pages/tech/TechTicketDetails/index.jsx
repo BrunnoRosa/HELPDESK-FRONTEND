@@ -86,6 +86,40 @@ export default function TechTicketDetails() {
     }
   };
 
+  const handleMudarPrioridade = async (e) => {
+    const novaPrioridade = e.target.value;
+    if (!window.confirm(`Deseja alterar a prioridade para ${novaPrioridade}?`)) return;
+
+    setErro('');
+    setMensagem('');
+    setAtualizando(true);
+
+    try {
+      const dataHora = new Date().toLocaleString();
+      const novaLinha = `[${dataHora}] ${user?.name}: Prioridade alterada de ${chamado.prioridadeChamado} para ${novaPrioridade}`;
+      const novaDescricao = chamado.descricaoChamado ? `${chamado.descricaoChamado}\n${novaLinha}` : novaLinha;
+
+      await chamadoApi.atualizar(id, {
+        id: Number(id),
+        tituloChamado: chamado.tituloChamado,
+        ocorrenciaChamado: chamado.ocorrenciaChamado,
+        descricaoChamado: novaDescricao,
+        prioridadeChamado: novaPrioridade
+      });
+
+      setChamado((prev) => ({
+        ...prev,
+        prioridadeChamado: novaPrioridade,
+        descricaoChamado: novaDescricao
+      }));
+      setMensagem(`Prioridade atualizada para ${novaPrioridade}.`);
+    } catch (error) {
+      setErro("Erro ao mudar prioridade: " + error.message);
+    } finally {
+      setAtualizando(false);
+    }
+  };
+
   const handleComentarioSubmit = (e) => {
     e.preventDefault();
     if (!descricaoAtualizacao.trim()) return;
@@ -132,8 +166,8 @@ export default function TechTicketDetails() {
 
   const avancarFluxo = () => {
     const proximaEtapa = {
-      ABERTO: { status: 'EM_TRIAGEM', nivelSuporte: 'N1', mensagem: 'Chamado enviado para triagem.' },
-      EM_TRIAGEM: { status: 'EM_ATENDIMENTO', nivelSuporte: 'N2', mensagem: 'Atendimento iniciado no nível N2.' },
+      ABERTO: { status: 'EM_ATENDIMENTO', nivelSuporte: 'N2', mensagem: 'Chamado escalonado para N2.' },
+      EM_TRIAGEM: { status: 'EM_ATENDIMENTO', nivelSuporte: 'N2', mensagem: 'Atendimento escalonado para o nível N2.' },
       EM_ATENDIMENTO: { status: 'PENDENTE_EVIDENCIA', nivelSuporte: atendimento.nivelSuporte, mensagem: 'Chamado colocado como pendente de evidência.' },
       PENDENTE_EVIDENCIA: { status: 'EM_ATENDIMENTO', nivelSuporte: atendimento.nivelSuporte, mensagem: 'Atendimento retomado após evidência.' },
       RESOLVIDO: { status: 'FECHADO', nivelSuporte: atendimento.nivelSuporte, mensagem: 'Chamado fechado.' },
@@ -153,7 +187,6 @@ export default function TechTicketDetails() {
         <button onClick={() => navigate('/')} className="btn-voltar">← Voltar para o Painel</button>
         <div className="detalhe__heading">
           <h2>Chamado #{chamado.id} - {chamado.tituloChamado}</h2>
-          {/* AQUI ESTÁ A CORREÇÃO DO BADGE! */}
           <span className={`status-badge ${isResolvido ? 'resolvido' : 'aberto'}`}>
             {atendimento.status}
           </span>
@@ -219,7 +252,28 @@ export default function TechTicketDetails() {
             <dl className="detalhe__data">
               <div><dt>Status</dt><dd>{atendimento.status}</dd></div>
               <div><dt>Nível Atual</dt><dd>{atendimento.nivelSuporte}</dd></div>
-              <div><dt>Prioridade</dt><dd><span className={`badge-prio ${chamado.prioridadeChamado?.toLowerCase()}`}>{chamado.prioridadeChamado}</span></dd></div>
+              
+              <div>
+                <dt>Prioridade</dt>
+                <dd>
+                  {isResolvido ? (
+                    <span className={`badge-prio ${chamado.prioridadeChamado?.toLowerCase()}`}>{chamado.prioridadeChamado}</span>
+                  ) : (
+                    <select 
+                      value={chamado.prioridadeChamado} 
+                      onChange={handleMudarPrioridade}
+                      disabled={atualizando}
+                      style={{ padding: '0.3rem', borderRadius: '4px', border: '1px solid #d1d5db', background: '#f9fafb', width: '100%', fontWeight: '600' }}
+                    >
+                      <option value="BAIXA">BAIXA</option>
+                      <option value="MEDIA">MÉDIA</option>
+                      <option value="ALTA">ALTA</option>
+                      <option value="URGENTE">URGENTE</option>
+                    </select>
+                  )}
+                </dd>
+              </div>
+              
               <hr style={{ gridColumn: '1 / -1', borderTop: '1px solid #e2e8f0', margin: '10px 0' }}/>
               <div><dt>Solicitante</dt><dd>{atendimento.solicitanteNome || 'Não informado'}</dd></div>
               <div><dt>Usuário Vinculado</dt><dd>{atendimento.usuarioVinculado || 'Não vinculado'}</dd></div>
@@ -232,7 +286,6 @@ export default function TechTicketDetails() {
             <div className="card action-card">
               <h3>Ferramentas de Suporte</h3>
               
-              {/* N1 - Soluções Básicas */}
               <div className="tool-group">
                 <span className="tool-label">N1: Soluções Básicas</span>
                 <button onClick={() => executarAcao('Reset de Senha')} className="btn-tool n1">Reset de Senha</button>
@@ -244,7 +297,6 @@ export default function TechTicketDetails() {
                 )}
               </div>
 
-              {/* N2 - Especializado */}
               {(user?.role === 'TECNICO' || user?.role === 'ADMINISTRADOR') && (
                 <div className="tool-group">
                   <span className="tool-label">N2: Especializado</span>
@@ -258,7 +310,6 @@ export default function TechTicketDetails() {
                 </div>
               )}
 
-              {/* N3 - Engenharia */}
               {(user?.role === 'TECNICO' || user?.role === 'ADMINISTRADOR') && (
                 <div className="tool-group">
                   <span className="tool-label">N3: Engenharia</span>
@@ -270,8 +321,8 @@ export default function TechTicketDetails() {
               {['ABERTO', 'EM_TRIAGEM', 'EM_ATENDIMENTO', 'PENDENTE_EVIDENCIA', 'RESOLVIDO'].includes(atendimento.status) && (
                 <button onClick={avancarFluxo} className="btn-avancar" disabled={atualizando}>
                   {atualizando ? 'Atualizando...' : {
-                    ABERTO: 'Enviar para triagem',
-                    EM_TRIAGEM: 'Iniciar atendimento N2',
+                    ABERTO: 'Escalonar para N2',
+                    EM_TRIAGEM: 'Escalonar para N2',
                     EM_ATENDIMENTO: 'Solicitar evidência',
                     PENDENTE_EVIDENCIA: 'Retomar atendimento',
                     RESOLVIDO: 'Fechar chamado',
