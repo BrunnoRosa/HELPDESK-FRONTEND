@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import './style.css';
@@ -6,13 +7,30 @@ export default function Sidebar() {
   const { user, logout } = useAuth();
   const location = useLocation();
 
+  // Estado da foto de perfil
+  const [avatarUrl, setAvatarUrl] = useState(null);
+
+  // Busca a foto salva no localStorage sempre que o usuário ou rota mudarem
+  useEffect(() => {
+    if (user?.email) {
+      const savedAvatar = localStorage.getItem(`user_avatar_${user.email}`);
+      setAvatarUrl(savedAvatar);
+    }
+  }, [user?.email, location.pathname]);
+
   const isTech = user?.role === 'TECNICO' || user?.role === 'ADMINISTRADOR';
 
-  // 1. ACRESCENTADO: Define para onde o botão Dashboard deve levar baseado no perfil
   const getDashboardRoute = () => {
     if (user?.role === 'ADMINISTRADOR') return '/admin';
     if (user?.role === 'TECNICO') return '/tecnico';
-    return '/'; // Rota padrão (cliente)
+    return '/';
+  };
+
+  const getUserInitials = (name) => {
+    if (!name) return 'U';
+    const names = name.trim().split(' ');
+    if (names.length === 1) return names[0].charAt(0).toUpperCase();
+    return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase();
   };
 
   const dashboardRoute = getDashboardRoute();
@@ -38,7 +56,6 @@ export default function Sidebar() {
       <nav className="sidebar-nav">
         <span className="nav-label">Menu Principal</span>
         
-        {/* 2. ALTERADO: O botão agora usa a rota dinâmica e fica ativo na rota certa */}
         <Link to={dashboardRoute} className={`nav-item ${location.pathname === dashboardRoute ? 'active' : ''}`}>
           <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="3" y="3" width="7" height="7"></rect>
@@ -85,7 +102,11 @@ export default function Sidebar() {
       <div className="sidebar-footer">
         <div className="user-profile-wrapper">
           <div className="user-avatar">
-            {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="Foto do usuário" className="sidebar-avatar-img" />
+            ) : (
+              getUserInitials(user?.name)
+            )}
           </div>
           <div className="user-info">
             <span className="user-name">{user?.name || 'Usuário'}</span>
