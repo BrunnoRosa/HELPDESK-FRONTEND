@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
-// Importando as APIs reais (ajuste o caminho se necessário)
 import { atendimentoApi, chamadoApi } from '../../../services/api'; 
 import './style.css';
 
@@ -10,7 +9,6 @@ export default function TechTicketDetails() {
   const navigate = useNavigate();
   const { user } = useAuth();
   
-  // Estados integrados com a API
   const [chamado, setChamado] = useState(null);
   const [atendimento, setAtendimento] = useState(null);
   const [descricaoAtualizacao, setDescricaoAtualizacao] = useState('');
@@ -19,7 +17,6 @@ export default function TechTicketDetails() {
   const [loading, setLoading] = useState(true);
   const [atualizando, setAtualizando] = useState(false);
 
-  // Função para buscar dados reais do backend
   const carregarDados = async () => {
     try {
       setLoading(true);
@@ -62,7 +59,6 @@ export default function TechTicketDetails() {
     }
   };
 
-  // Registra comentários ou uso de ferramentas no histórico (descrição)
   const registrarHistorico = async (textoComplementar) => {
     setErro('');
     setMensagem('');
@@ -157,7 +153,10 @@ export default function TechTicketDetails() {
         <button onClick={() => navigate('/')} className="btn-voltar">← Voltar para o Painel</button>
         <div className="detalhe__heading">
           <h2>Chamado #{chamado.id} - {chamado.tituloChamado}</h2>
-          <span className={`status-badge status-${atendimento.status.toLowerCase()}`}>{atendimento.status}</span>
+          {/* AQUI ESTÁ A CORREÇÃO DO BADGE! */}
+          <span className={`status-badge ${isResolvido ? 'resolvido' : 'aberto'}`}>
+            {atendimento.status}
+          </span>
         </div>
       </div>
 
@@ -187,6 +186,30 @@ export default function TechTicketDetails() {
                 <button type="submit" className="btn-enviar-nota">Registrar no histórico</button>
               </form>
             )}
+          </div>
+
+          <div className="card">
+            <h3>Evidências e Anexos (Fotografias)</h3>
+            <div className="attachments-grid" style={{ marginTop: '10px' }}>
+              <div className="attachment-item" style={{ marginBottom: '15px' }}>
+                <span className="icon">📄</span>
+                <a href="#" target="_blank" rel="noreferrer" style={{ marginLeft: '8px' }}>
+                  evidencia_tela_erro.jpg
+                </a>
+              </div>
+              
+              {atendimento.status === 'PENDENTE_EVIDENCIA' && (
+                <div className="upload-section" style={{ borderTop: '1px solid #eee', paddingTop: '15px' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
+                    Anexar nova evidência solicitada pelo usuário:
+                  </label>
+                  <input type="file" accept="image/*, .pdf" />
+                  <button type="button" className="btn-upload" style={{ marginLeft: '10px', padding: '5px 10px' }}>
+                    Enviar Arquivo
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

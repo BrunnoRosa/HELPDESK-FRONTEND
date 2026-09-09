@@ -67,7 +67,7 @@
   background: #ffffff;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  overflow-x: auto; /* Permite scroll horizontal em telas pequenas */
+  overflow-x: auto;
 }
 
 .tech-table {
@@ -98,7 +98,7 @@
 }
 
 /* ==========================================
-   4. COMPONENTES DE INTERFACE (HELPDESK-FRONT)
+   4. COMPONENTES DE INTERFACE E BADGES
    ========================================== */
 .status-badge {
   background-color: #e2e8f0;
@@ -107,6 +107,31 @@
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 600;
+}
+
+/* Novo: Badges para Níveis de Suporte */
+.badge-nivel {
+  padding: 0.3rem 0.7rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  display: inline-block;
+}
+
+.badge-nivel.n1 { background-color: #e0f2fe; color: #0369a1; }
+.badge-nivel.n2 { background-color: #fef08a; color: #854d0e; }
+.badge-nivel.n3 { background-color: #fecdd3; color: #9f1239; }
+
+/* Estilos para os novos badges de Status */
+.status-badge.aberto {
+  background-color: #e2e8f0;
+  color: #475569;
+}
+
+.status-badge.resolvido {
+  background-color: #d1fae5;
+  color: #065f46;
 }
 
 .priority-select {

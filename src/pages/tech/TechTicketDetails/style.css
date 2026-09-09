@@ -239,7 +239,30 @@
 }
 
 /* ==========================================
-   6. RESPONSIVIDADE (frontend adaptado)
+   7. BADGES DE STATUS (Adicionado)
+   ========================================== */
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-badge.aberto {
+  background-color: #e2e8f0;
+  color: #475569;
+}
+
+.status-badge.resolvido {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+/* ==========================================
+   8. RESPONSIVIDADE (frontend adaptado)
    ========================================== */
 @media (max-width: 850px) {
   .details-grid {
