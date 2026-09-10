@@ -47,7 +47,7 @@ export default function TechTicketDetails() {
       nivelSuporte: alteracoes.nivelSuporte ?? atendimento?.nivelSuporte,
       usuarioVinculado: atendimento?.usuarioVinculado ?? null,
       equipamentoVinculado: atendimento?.equipamentoVinculado ?? null,
-      tecnicoResponsavelId: atendimento?.tecnicoResponsavelId ?? null,
+      tecnicoResponsavelId: alteracoes.tecnicoResponsavelId ?? atendimento?.tecnicoResponsavelId ?? null, 
     };
 
     try {
@@ -172,6 +172,20 @@ export default function TechTicketDetails() {
       PENDENTE_EVIDENCIA: { status: 'EM_ATENDIMENTO', nivelSuporte: atendimento.nivelSuporte, mensagem: 'Atendimento retomado após evidência.' },
       RESOLVIDO: { status: 'FECHADO', nivelSuporte: atendimento.nivelSuporte, mensagem: 'Chamado fechado.' },
     }[atendimento.status];
+    
+    const handleAssumirChamado = async () => {
+    if (!window.confirm('Deseja assumir este chamado e iniciar o atendimento?')) return;
+    try {
+      // Altera o status para EM_ATENDIMENTO e vincula o ID do usuário logado
+      await atualizarAtendimento({ 
+        status: 'EM_ATENDIMENTO',
+        tecnicoResponsavelId: user?.id // ou user?.sub, dependendo de como o seu token salva o id
+      });
+      await registrarHistorico("O técnico assumiu o chamado. Status alterado para Em Andamento.");
+    } catch (error) {
+      setErro(`Erro ao assumir chamado: ${error.message}`);
+    }
+  };
 
     handleTransicao(proximaEtapa);
   };
@@ -318,10 +332,15 @@ export default function TechTicketDetails() {
                 </div>
               )}
 
-              {['ABERTO', 'EM_TRIAGEM', 'EM_ATENDIMENTO', 'PENDENTE_EVIDENCIA', 'RESOLVIDO'].includes(atendimento.status) && (
+              {atendimento.status === 'ABERTO' && (
+                <button onClick={handleAssumirChamado} className="btn-avancar" style={{ backgroundColor: '#10b981' }} disabled={atualizando}>
+                  {atualizando ? 'Atualizando...' : 'Assumir Chamado'}
+                </button>
+              )}
+
+              {['EM_TRIAGEM', 'EM_ATENDIMENTO', 'PENDENTE_EVIDENCIA', 'RESOLVIDO'].includes(atendimento.status) && (
                 <button onClick={avancarFluxo} className="btn-avancar" disabled={atualizando}>
                   {atualizando ? 'Atualizando...' : {
-                    ABERTO: 'Escalonar para N2',
                     EM_TRIAGEM: 'Escalonar para N2',
                     EM_ATENDIMENTO: 'Solicitar evidência',
                     PENDENTE_EVIDENCIA: 'Retomar atendimento',
