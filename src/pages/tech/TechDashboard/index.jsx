@@ -27,18 +27,24 @@ export default function TechDashboard() {
 
   const stats = useMemo(() => ({
     total: chamados.length,
-    urgentes: chamados.filter((chamado) => chamado?.prioridadeChamado === 'URGENTE').length,
-    altas: chamados.filter((chamado) => chamado?.prioridadeChamado === 'ALTA').length,
-    medias: chamados.filter((chamado) => chamado?.prioridadeChamado === 'MEDIA').length,
+    urgentes: chamados.filter((c) => c?.prioridadeChamado === 'URGENTE').length,
+    altas: chamados.filter((c) => c?.prioridadeChamado === 'ALTA').length,
+    medias: chamados.filter((c) => c?.prioridadeChamado === 'MEDIA').length,
   }), [chamados]);
 
+  // Proteção: Filtra itens nulos ou sem chamadoId antes de criar o objeto
   const porChamado = useMemo(() => 
-    Object.fromEntries(atendimentos.map((item) => [item.chamadoId, item])), 
+    Object.fromEntries(
+      atendimentos
+        .filter(item => item && item.chamadoId)
+        .map((item) => [item.chamadoId, item])
+    ), 
   [atendimentos]);
 
+  // Proteção: Garante que o texto seja convertido para String antes do .split()
   const formatarResumo = (texto) => {
     if (!texto) return 'Descrição não informada.';
-    const ocorrenciaOriginal = texto.split('[')[0];
+    const ocorrenciaOriginal = String(texto).split('[')[0];
     return ocorrenciaOriginal.length > 80 
       ? ocorrenciaOriginal.substring(0, 80) + '...' 
       : ocorrenciaOriginal;
@@ -70,45 +76,49 @@ export default function TechDashboard() {
               <th>Ocorrência</th>
               <th>Descrição (Resumo)</th>
               <th>Prioridade</th>
-              <th>Status</th> {/* NOVA COLUNA AQUI */}
+              <th>Status</th>
               <th>Ação</th>
             </tr>
           </thead>
           <tbody>
-            {chamados.map((chamado, index) => {
-              // Verifica o status do chamado (pega do chamado ou do atendimento)
-              const statusAtual = chamado?.statusChamado || porChamado[chamado?.id]?.status || 'ABERTO';
-              const isResolvido = statusAtual.toUpperCase() === 'RESOLVIDO';
+            {/* VALIDAÇÃO DE LISTA VAZIA ADICIONADA */}
+            {chamados.length === 0 ? (
+              <tr>
+                <td colSpan="8" style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
+                  Nenhum chamado atribuído no momento.
+                </td>
+              </tr>
+            ) : (
+              chamados.map((chamado, index) => {
+                const statusAtual = chamado?.statusChamado || porChamado[chamado?.id]?.status || 'ABERTO';
+                const isResolvido = statusAtual.toUpperCase() === 'RESOLVIDO';
 
-              return (
-                // Se estiver resolvido, deixa a linha levemente transparente para destacar os pendentes
-                <tr key={chamado?.id ?? index} style={{ opacity: isResolvido ? 0.6 : 1 }}>
-                  <td><strong>#{chamado?.id ?? '---'}</strong></td>
-                  <td>{chamado?.tituloChamado ?? 'Sem título'}</td>
-                  <td>
-                    <span className={`badge-nivel ${porChamado[chamado?.id]?.nivelSuporte?.toLowerCase()}`}>
-                      {porChamado[chamado?.id]?.nivelSuporte ?? 'N1'}
-                    </span>
-                  </td>
-                  <td>{chamado?.ocorrenciaChamado ?? 'Não informada'}</td>
-                  <td title={chamado?.descricaoChamado}>{formatarResumo(chamado?.descricaoChamado)}</td>
-                  <td>{chamado?.prioridadeChamado ?? 'MEDIA'}</td>
-                  
-                  {/* NOVA CÉLULA DE STATUS */}
-                  <td>
-                    <span className={`status-badge ${isResolvido ? 'resolvido' : 'aberto'}`}>
-                      {statusAtual}
-                    </span>
-                  </td>
-                  
-                  <td>
-                    <Link to={`/tecnico/chamado/${chamado?.id ?? ''}`} className="btn-action">
-                      {isResolvido ? 'Visualizar' : 'Atender'} {/* MUDA O TEXTO DO BOTÃO */}
-                    </Link>
-                  </td>
-                </tr>
-              );
-            })}
+                return (
+                  <tr key={chamado?.id ?? index} style={{ opacity: isResolvido ? 0.6 : 1 }}>
+                    <td><strong>#{chamado?.id ?? '---'}</strong></td>
+                    <td>{chamado?.tituloChamado ?? 'Sem título'}</td>
+                    <td>
+                      <span className={`badge-nivel ${porChamado[chamado?.id]?.nivelSuporte?.toLowerCase()}`}>
+                        {porChamado[chamado?.id]?.nivelSuporte ?? 'N1'}
+                      </span>
+                    </td>
+                    <td>{chamado?.ocorrenciaChamado ?? 'Não informada'}</td>
+                    <td title={chamado?.descricaoChamado}>{formatarResumo(chamado?.descricaoChamado)}</td>
+                    <td>{chamado?.prioridadeChamado ?? 'MEDIA'}</td>
+                    <td>
+                      <span className={`status-badge ${isResolvido ? 'resolvido' : 'aberto'}`}>
+                        {statusAtual}
+                      </span>
+                    </td>
+                    <td>
+                      <Link to={`/tecnico/chamado/${chamado?.id ?? ''}`} className="btn-action">
+                        {isResolvido ? 'Visualizar' : 'Atender'}
+                      </Link>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>

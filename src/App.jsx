@@ -20,13 +20,15 @@ import ClientTicketDetails from './pages/cliente/ClienteTicketDetails';
 // Importação das Páginas - Técnico e Admin
 import TechDashboard from './pages/tech/TechDashboard';
 import TechTicketDetails from './pages/tech/TechTicketDetails';
-import AdminDashboard from './pages/admin/AdminDashboard';
-import AdminTicketDetails from './pages/admin/AdminTicketDetails';
+import AdminDashboard from './pages/admin/AdminDashboard';        
+import AdminTicketDetails from './pages/admin/AdminTicketDetails'; 
 
+// 1. CORREÇÃO: Direciona automaticamente para as rotas corretas caso o usuário acesse a raiz '/'
 function IndexRouter() {
   const { user } = useAuth();
-  const isTech = user?.role === 'TECNICO' || user?.role === 'ADMINISTRADOR';
-  return isTech ? <TechDashboard /> : <ClienteDashboard />;
+  if (user?.role === 'ADMINISTRADOR') return <Navigate to="/admin" replace />;
+  if (user?.role === 'TECNICO') return <Navigate to="/tecnico" replace />;
+  return <ClienteDashboard />;
 }
 
 export default function App() {
@@ -52,11 +54,11 @@ export default function App() {
             <Route path="perfil" element={<Profile />} /> {/* <-- 2. ROTA ADICIONADA */}
 
             {/* Visão do Cliente */}
-            <Route path="cliente/novo-chamado" element={<NewTicket />} />
-            <Route path="cliente/chamado/:id" element={<ClientTicketDetails />} />
-
-            {/* Visão do Técnico */}
-            <Route path="tecnico" element={<TechDashboard />} /> {/* <-- 3. AJUSTADO DE "tecnico/dashboard" PARA "tecnico" */}
+              <Route path="cliente" element={<ClienteDashboard />} /> {/* <-- ADICIONE ESTA LINHA */}
+              <Route path="cliente/novo-chamado" element={<NewTicket />} />
+              <Route path="cliente/chamado/:id" element={<ClientTicketDetails />} />
+            {/* 2. CORREÇÃO: Removido o "/dashboard" para casar perfeitamente com o Login e Sidebar */}
+            <Route path="tecnico" element={<TechDashboard />} />
             <Route path="tecnico/chamado/:id" element={<TechTicketDetails />} />
             <Route path="tecnico/relatorios" element={<TechReports />} />
 
