@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { chamadoApi } from '../../../services/api';
+import Notification from '../../../components/Notification';
 import './style.css';
 
 const initialFormData = {
@@ -14,7 +15,7 @@ const initialFormData = {
 export default function NewTicket() {
   const [formData, setFormData] = useState(initialFormData);
   const [previewImagem, setPreviewImagem] = useState('');
-  const [erro, setErro] = useState('');
+  const [feedback, setFeedback] = useState({ type: '', message: '' });
   const [salvando, setSalvando] = useState(false);
 
   const navigate = useNavigate();
@@ -28,10 +29,10 @@ export default function NewTicket() {
     const file = e.target.files[0];
     if (file) {
       if (file.size > 2 * 1024 * 1024) {
-        setErro('A imagem selecionada deve ter no máximo 2MB.');
+        setFeedback({ type: 'error', message: 'A imagem selecionada deve ter no máximo 2MB.' });
         return;
       }
-      setErro('');
+      setFeedback({ type: '', message: '' });
       const reader = new FileReader();
       reader.onloadend = () => {
         setFormData((prev) => ({ ...prev, imagemChamado: reader.result }));
@@ -48,17 +49,24 @@ export default function NewTicket() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErro('');
+    setFeedback({ type: '', message: '' });
     setSalvando(true);
 
     try {
       await chamadoApi.criar(formData);
       setFormData(initialFormData);
       setPreviewImagem('');
-      alert('Chamado criado com sucesso!');
-      navigate('/');
+      setFeedback({ type: 'success', message: 'Chamado criado com sucesso! Redirecionando...' });
+      
+      // Aguarda 1.5s para o usuário visualizar a notificação de sucesso antes de redirecionar
+      setTimeout(() => {
+        navigate('/');
+      }, 1500);
     } catch (error) {
-      setErro(error.message || 'Erro ao salvar chamado. Verifique seus dados e tente novamente.');
+      setFeedback({
+        type: 'error',
+        message: error.message || 'Erro ao salvar chamado. Verifique seus dados e tente novamente.',
+      });
     } finally {
       setSalvando(false);
     }
@@ -72,7 +80,8 @@ export default function NewTicket() {
           Preencha os dados detalhados abaixo, incluindo informações do equipamento e evidências fotográficas.
         </p>
 
-        {erro && <div className="error-box">{erro}</div>}
+        {/* Componente de Notificação Padronizado */}
+        <Notification type={feedback.type} message={feedback.message} />
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">

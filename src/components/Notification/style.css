@@ -1,0 +1,65 @@
+.notification-box {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.notification-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.notification-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Sucesso (Verde) */
+.notification-box.success {
+  background-color: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+.notification-box.success .notification-icon svg {
+  stroke: #166534;
+}
+
+/* Erro (Vermelho) */
+.notification-box.error {
+  background-color: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+.notification-box.error .notification-icon svg {
+  stroke: #991b1b;
+}
+
+/* Alerta (Amarelo/Laranja) */
+.notification-box.warning {
+  background-color: #fffbe3;
+  color: #854d0e;
+  border: 1px solid #fef08a;
+}
+.notification-box.warning .notification-icon svg {
+  stroke: #854d0e;
+}
+
+/* Informação (Azul) */
+.notification-box.info {
+  background-color: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+.notification-box.info .notification-icon svg {
+  stroke: #1e40af;
+}
