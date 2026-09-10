@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import Notification from '../../components/Notification'; // 1. Importação do componente de notificação
 import './style.css';
 
 export default function Profile() {
@@ -141,11 +142,8 @@ export default function Profile() {
         <h3>Segurança</h3>
         <p className="card-subtitle">Atualize sua senha de acesso ao sistema.</p>
 
-        {feedback.message && (
-          <div className={`alert-message ${feedback.type}`}>
-            {feedback.message}
-          </div>
-        )}
+        {/* 2. Componente de Notificação padronizado */}
+        <Notification type={feedback.type} message={feedback.message} />
 
         <form onSubmit={handlePasswordSubmit} className="password-form">
           <div className="form-group">
