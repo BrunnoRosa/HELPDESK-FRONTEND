@@ -9,6 +9,9 @@ import Protected from './components/Protected';
 // Importação das Páginas - Auth
 import Login from './pages/auth/Login';
 
+// Importação das Páginas - Geral / Configurações
+import Profile from './pages/Profile'; // <-- 1. IMPORTE A PÁGINA DE PERFIL AQUI
+
 // Importação das Páginas - Cliente
 import ClienteDashboard from './pages/cliente/ClienteDashboard';
 import NewTicket from './pages/cliente/NewTicket';
@@ -47,6 +50,9 @@ export default function App() {
           >
             <Route index element={<IndexRouter />} />
             
+            {/* Rota do Perfil (Acessível a qualquer perfil logado) */}
+            <Route path="perfil" element={<Profile />} /> {/* <-- 2. ROTA ADICIONADA */}
+
             {/* Visão do Cliente */}
               <Route path="cliente" element={<ClienteDashboard />} /> {/* <-- ADICIONE ESTA LINHA */}
               <Route path="cliente/novo-chamado" element={<NewTicket />} />
@@ -61,6 +67,7 @@ export default function App() {
             <Route path="admin/chamado/:id" element={<AdminTicketDetails />} />
           </Route>
 
+          {/* Redirecionamento para rotas inexistentes */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </AuthProvider>
