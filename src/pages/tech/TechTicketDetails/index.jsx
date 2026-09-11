@@ -52,7 +52,10 @@ export default function TechTicketDetails() {
 
     try {
       const atendimentoAtualizado = await atendimentoApi.atualizar(payload);
-      setAtendimento(atendimentoAtualizado);
+      
+      // Força a interface a atualizar com o payload que acabamos de enviar
+      setAtendimento(prev => ({ ...prev, ...payload })); 
+      
       return atendimentoAtualizado;
     } finally {
       setAtualizando(false);
@@ -166,30 +169,32 @@ export default function TechTicketDetails() {
 
   const avancarFluxo = () => {
     const proximaEtapa = {
-      ABERTO: { status: 'EM_ATENDIMENTO', nivelSuporte: 'N2', mensagem: 'Chamado escalonado para N2.' },
+      ABERTO: { status: 'EM_TRIAGEM', nivelSuporte: 'N1', mensagem: 'Chamado em triagem.' },
       EM_TRIAGEM: { status: 'EM_ATENDIMENTO', nivelSuporte: 'N2', mensagem: 'Atendimento escalonado para o nível N2.' },
       EM_ATENDIMENTO: { status: 'PENDENTE_EVIDENCIA', nivelSuporte: atendimento.nivelSuporte, mensagem: 'Chamado colocado como pendente de evidência.' },
       PENDENTE_EVIDENCIA: { status: 'EM_ATENDIMENTO', nivelSuporte: atendimento.nivelSuporte, mensagem: 'Atendimento retomado após evidência.' },
       RESOLVIDO: { status: 'FECHADO', nivelSuporte: atendimento.nivelSuporte, mensagem: 'Chamado fechado.' },
     }[atendimento.status];
-    
-    const handleAssumirChamado = async () => {
-    if (!window.confirm('Deseja assumir este chamado e iniciar o atendimento?')) return;
-    try {
-      // Altera o status para EM_ATENDIMENTO e vincula o ID do usuário logado
-      await atualizarAtendimento({ 
-        status: 'EM_ATENDIMENTO',
-        tecnicoResponsavelId: user?.id // ou user?.sub, dependendo de como o seu token salva o id
-      });
-      await registrarHistorico("O técnico assumiu o chamado. Status alterado para Em Andamento.");
-    } catch (error) {
-      setErro(`Erro ao assumir chamado: ${error.message}`);
-    }
-  };
 
     handleTransicao(proximaEtapa);
   };
 
+  const handleAssumirChamado = async () => {
+    if (!window.confirm('Deseja assumir este chamado e iniciar o atendimento?')) return;
+    try {
+      await atualizarAtendimento({ 
+        status: 'EM_TRIAGEM',
+        // Utiliza fallbacks para garantir que o ID não vá nulo
+        tecnicoResponsavelId: user?.id || user?.sub || user?.userId || user?.idUsuario
+      });
+      await registrarHistorico("O técnico assumiu o chamado. Status alterado para Em Triagem.");
+      
+      await carregarDados(); 
+    } catch (error) {
+      setErro(`Erro ao assumir chamado: ${error.message}`);
+    }
+  };
+  
   if (loading) return <p className="loading-text">Carregando detalhes do chamado...</p>;
   if (!chamado || !atendimento) return <div className="error-box">{erro}</div>;
 
