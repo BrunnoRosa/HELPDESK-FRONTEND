@@ -67,3 +67,8 @@ export const adminApi = {
   deletarUsuario: (id) => api.delete(`/admin/usuarios/${id}`),
   resumo: () => api.get('/admin/relatorios/resumo')
 };
+
+// No final do seu api.js, troque para:
+export const usuarioApi = {
+  alterarSenha: (payload) => api.put('/usuarios/alterar-senha', payload)
+};

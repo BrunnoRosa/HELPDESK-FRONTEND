@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import Notification from '../../components/Notification'; // 1. Importação do componente de notificação
+import Notification from '../../components/Notification';
+import { usuarioApi } from '../../services/api';
 import './style.css';
 
 export default function Profile() {
@@ -42,7 +43,6 @@ export default function Profile() {
       reader.onloadend = () => {
         const base64Image = reader.result;
         setAvatarUrl(base64Image);
-        // Salva localmente para não perder ao dar F5
         if (user?.email) {
           localStorage.setItem(`user_avatar_${user.email}`, base64Image);
         }
@@ -69,18 +69,25 @@ export default function Profile() {
     setLoading(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1200));
+      await usuarioApi.alterarSenha({
+        senhaAtual: currentPassword,
+        novaSenha: newPassword,
+        confirmarNovaSenha: confirmPassword
+      });
 
       setFeedback({ type: 'success', message: 'Senha alterada com sucesso!' });
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (err) {
-      setFeedback({ type: 'error', message: 'Erro ao alterar a senha. Tente novamente.' });
+      setFeedback({ 
+        type: 'error', 
+        message: err.message || 'Erro ao alterar a senha. Verifique a senha atual.' 
+      });
     } finally {
       setLoading(false);
     }
-  };
+  }; // Chave de fechamento da função que estava faltando
 
   return (
     <div className="profile-container">
@@ -91,7 +98,6 @@ export default function Profile() {
 
       {/* Card 1: Informações do Usuário */}
       <div className="profile-card">
-        {/* Input de arquivo escondido */}
         <input
           type="file"
           ref={fileInputRef}
@@ -100,7 +106,6 @@ export default function Profile() {
           style={{ display: 'none' }}
         />
 
-        {/* Círculo Interativo com Foto ou Inicial */}
         <div 
           className="profile-avatar-large" 
           onClick={() => fileInputRef.current?.click()}
@@ -142,7 +147,6 @@ export default function Profile() {
         <h3>Segurança</h3>
         <p className="card-subtitle">Atualize sua senha de acesso ao sistema.</p>
 
-        {/* 2. Componente de Notificação padronizado */}
         <Notification type={feedback.type} message={feedback.message} />
 
         <form onSubmit={handlePasswordSubmit} className="password-form">
