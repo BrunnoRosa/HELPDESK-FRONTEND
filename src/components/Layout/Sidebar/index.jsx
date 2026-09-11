@@ -114,8 +114,24 @@ export default function Sidebar() {
           </div>
         </div>
 
-        <button onClick={logout} className="btn-sidebar-logout" title="Sair do sistema">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <button 
+          onClick={logout} 
+          className="btn-sidebar-logout" 
+          title="Sair do sistema"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '8px',
+            background: '#dfc0c0', /* Fundo vermelho bem clarinho */
+            border: 'none',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            marginLeft: 'auto'
+          }}
+        >
+          {/* Adicionado width="20", height="20" e stroke="red" para forçar a exibição */}
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ca1c1c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
             <polyline points="16 17 21 12 16 7"></polyline>
             <line x1="21" y1="12" x2="9" y2="12"></line>
