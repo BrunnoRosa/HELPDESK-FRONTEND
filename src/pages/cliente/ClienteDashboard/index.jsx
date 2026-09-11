@@ -42,7 +42,6 @@ export default function ClienteDashboard() {
           <h2>Meus Chamados</h2>
           <p>Acompanhe o andamento das suas solicitações.</p>
         </div>
-        <Link to="/cliente/novo-chamado" className="btn-primary-action">+ Novo Chamado</Link>
       </div>
 
       {erro && <div className="error-box">{erro}</div>}

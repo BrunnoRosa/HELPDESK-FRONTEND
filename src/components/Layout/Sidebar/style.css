@@ -1,10 +1,10 @@
 :root {
-  --sidebar-bg: #ffffff;
-  --sidebar-text: #4b5563;
-  --sidebar-text-hover: #111827;
-  --sidebar-active-bg: #111827;
-  --sidebar-active-text: #ffffff;
-  --sidebar-border: #e5e7eb;
+  --sidebar-bg: #f1f5f9;          /* Cinza slate claro para dar contraste com a página */
+  --sidebar-text: #475569;        /* Texto cinza médio de boa leitura */
+  --sidebar-text-hover: #0f172a;  /* Grafite escuro ao passar o mouse */
+  --sidebar-active-bg: #e2e8f0;   /* Cinza ligeiramente mais escuro no item ativo */
+  --sidebar-active-text: #0f172a;  /* Texto do item ativo */
+  --sidebar-border: #e2e8f0;      /* Borda sutil para delimitar áreas */
   --sidebar-width: 260px;
 }
 
@@ -28,13 +28,13 @@
   gap: 12px;
   padding: 1.5rem;
   border-bottom: 1px solid var(--sidebar-border);
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .logo-icon {
   width: 36px;
   height: 36px;
-  color: #111827;
+  color: #0f172a; /* Ícone da logo em grafite escuro */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -43,141 +43,149 @@
 .sidebar-logo h2 {
   margin: 0;
   font-size: 1.25rem;
-  color: #111827;
+  color: #0f172a;
   font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .sidebar-logo span {
   display: block;
-  font-size: 0.75rem;
-  color: #6b7280;
+  font-size: 0.7rem;
+  color: #64748b;
   margin-top: 2px;
   text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
 }
 
 .sidebar-nav {
   flex: 1;
-  padding: 0 1rem;
+  padding: 0 0.875rem;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
   overflow-y: auto;
 }
 
 .nav-label {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 700;
-  color: #9ca3af;
+  color: #94a3b8;
   text-transform: uppercase;
-  margin: 1rem 0 0.5rem 0.5rem;
+  letter-spacing: 0.06em;
+  margin: 1.25rem 0 0.5rem 0.5rem;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 0.75rem 1rem;
+  padding: 0.7rem 0.875rem;
   color: var(--sidebar-text);
   text-decoration: none;
   border-radius: 8px;
   font-weight: 500;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   transition: all 0.2s ease;
 }
 
 .nav-icon {
   width: 20px;
   height: 20px;
-  opacity: 0.8;
+  opacity: 0.7;
+  transition: all 0.2s ease;
 }
 
 .nav-item:hover {
-  background-color: #f3f4f6;
+  background-color: #e2e8f0;
   color: var(--sidebar-text-hover);
+  transform: translateX(3px);
+}
+
+.nav-item:hover .nav-icon {
+  opacity: 1;
 }
 
 .nav-item.active {
   background-color: var(--sidebar-active-bg);
   color: var(--sidebar-active-text);
+  font-weight: 700;
+  border-left: 3px solid #0f172a; /* Detalhe em grafite no item ativo */
+  border-radius: 0 8px 8px 0;
 }
 
 .nav-item.active .nav-icon {
   opacity: 1;
-}
-
-.user-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: #e2e8f0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  overflow: hidden; /* Garante que a imagem fique dentro do círculo */
-  flex-shrink: 0;
-}
-
-/* Regra para ajustar a imagem dentro do avatar da sidebar */
-.sidebar-avatar-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  color: #0f172a;
 }
 
 .sidebar-footer {
-  padding: 1.25rem 1.5rem;
+  padding: 1rem 1.25rem;
   border-top: 1px solid var(--sidebar-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #f9fafb;
+  background-color: #e2e8f0;
   margin-top: auto;
 }
 
 .user-profile-wrapper {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .user-avatar {
-  width: 36px;
-  height: 36px;
-  background: #e5e7eb;
-  color: #111827;
+  width: 38px;
+  height: 38px;
+  background: #cbd5e1;
+  color: #0f172a;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-  font-size: 1rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.sidebar-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .user-name {
-  color: #111827;
-  font-size: 0.9rem;
+  color: #0f172a;
+  font-size: 0.875rem;
   font-weight: 600;
   display: block;
+  line-height: 1.2;
 }
 
 .user-role {
-  color: #6b7280;
-  font-size: 0.72rem;
+  color: #64748b;
+  font-size: 0.7rem;
   text-transform: uppercase;
   font-weight: 700;
+  letter-spacing: 0.03em;
 }
 
 .btn-sidebar-logout {
   background: transparent;
   border: none;
-  color: #6b7280;
+  color: #64748b;
   cursor: pointer;
   padding: 8px;
-  border-radius: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
 }
 
 .btn-sidebar-logout:hover {
   background-color: #fee2e2;
-  color: #ef4444;
+  color: #dc2626;
 }
