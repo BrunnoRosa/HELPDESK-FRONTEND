@@ -77,14 +77,26 @@ export default function Sidebar() {
         )}
 
         {user?.role === 'ADMINISTRADOR' && (
-          <Link to="/tecnico/relatorios" className={`nav-item ${location.pathname === '/tecnico/relatorios' ? 'active' : ''}`}>
-            <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path>
-              <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path>
-              <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path>
-            </svg>
-            Relatórios e SLA
-          </Link>
+          <>
+            <Link to="/admin/usuarios" className={`nav-item ${location.pathname === '/admin/usuarios' ? 'active' : ''}`}>
+              <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+              Gestão de Usuários
+            </Link>
+
+            <Link to="/tecnico/relatorios" className={`nav-item ${location.pathname === '/tecnico/relatorios' ? 'active' : ''}`}>
+              <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path>
+                <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path>
+                <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path>
+              </svg>
+              Relatórios e SLA
+            </Link>
+          </>
         )}
 
         <span className="nav-label" style={{ marginTop: '1.5rem' }}>Configurações</span>
@@ -118,19 +130,7 @@ export default function Sidebar() {
           onClick={logout} 
           className="btn-sidebar-logout" 
           title="Sair do sistema"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '8px',
-            background: '#dfc0c0', /* Fundo vermelho bem clarinho */
-            border: 'none',
-            borderRadius: '6px',
-            cursor: 'pointer',
-            marginLeft: 'auto'
-          }}
         >
-          {/* Adicionado width="20", height="20" e stroke="red" para forçar a exibição */}
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ca1c1c" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
             <polyline points="16 17 21 12 16 7"></polyline>

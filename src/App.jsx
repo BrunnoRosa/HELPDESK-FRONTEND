@@ -22,6 +22,7 @@ import TechDashboard from './pages/tech/TechDashboard';
 import TechTicketDetails from './pages/tech/TechTicketDetails';
 import AdminDashboard from './pages/admin/AdminDashboard';        
 import AdminTicketDetails from './pages/admin/AdminTicketDetails'; 
+import AdminUsers from './pages/admin/AdminUsers'; // <
 
 // 1. CORREÇÃO: Direciona automaticamente para as rotas corretas caso o usuário acesse a raiz '/'
 function IndexRouter() {
@@ -65,6 +66,7 @@ export default function App() {
             {/* Visão do Admin */}
             <Route path="admin" element={<AdminDashboard />} />
             <Route path="admin/chamado/:id" element={<AdminTicketDetails />} />
+            <Route path="admin/usuarios" element={<AdminUsers />} />
           </Route>
 
           {/* Redirecionamento para rotas inexistentes */}

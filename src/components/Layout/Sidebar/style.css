@@ -34,7 +34,7 @@
 .logo-icon {
   width: 36px;
   height: 36px;
-  color: #0f172a; /* Ícone da logo em grafite escuro */
+  color: #0f172a;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -110,7 +110,7 @@
   background-color: var(--sidebar-active-bg);
   color: var(--sidebar-active-text);
   font-weight: 700;
-  border-left: 3px solid #0f172a; /* Detalhe em grafite no item ativo */
+  border-left: 3px solid #0f172a;
   border-radius: 0 8px 8px 0;
 }
 
@@ -173,19 +173,22 @@
 }
 
 .btn-sidebar-logout {
-  background: transparent;
+  background: #dfc0c0;
   border: none;
-  color: #64748b;
-  cursor: pointer;
   padding: 8px;
-  border-radius: 8px;
+  border-radius: 6px;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-left: auto;
   transition: all 0.2s ease;
 }
 
 .btn-sidebar-logout:hover {
   background-color: #fee2e2;
-  color: #dc2626;
+}
+
+.btn-sidebar-logout:hover svg {
+  stroke: #dc2626;
 }
