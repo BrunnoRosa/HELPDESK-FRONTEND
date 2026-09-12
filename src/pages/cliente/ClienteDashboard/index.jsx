@@ -20,8 +20,16 @@ export default function ClienteDashboard() {
     carregarChamados();
   }, []);
 
+  // Ajuste na filtragem: agrupando EM_TRIAGEM dentro de EM_ANDAMENTO para a visão do Cliente
   const chamadosFiltrados = useMemo(() => {
     if (filtroAtivo === 'TODOS') return meusChamados;
+    
+    if (filtroAtivo === 'EM_ANDAMENTO') {
+      return meusChamados.filter(
+        c => c?.statusChamado === 'EM_ANDAMENTO' || c?.statusChamado === 'EM_TRIAGEM'
+      );
+    }
+
     return meusChamados.filter(c => c?.statusChamado === filtroAtivo);
   }, [meusChamados, filtroAtivo]);
 
@@ -30,8 +38,15 @@ export default function ClienteDashboard() {
     return map[prioridade] || 'badge-gray';
   };
 
+  // Mapeamento atualizado para incluir EM_TRIAGEM
   const getClasseStatus = (status) => {
-    const map = { ABERTO: 'badge-blue', EM_ANDAMENTO: 'badge-orange', RESOLVIDO: 'badge-green', FECHADO: 'badge-green' };
+    const map = { 
+      ABERTO: 'badge-blue', 
+      EM_TRIAGEM: 'badge-orange', 
+      EM_ANDAMENTO: 'badge-orange', 
+      RESOLVIDO: 'badge-green', 
+      FECHADO: 'badge-green' 
+    };
     return map[status] || 'badge-gray';
   };
 
@@ -79,7 +94,11 @@ export default function ClienteDashboard() {
               chamadosFiltrados.map((chamado) => (
                 <tr key={chamado.id}>
                   <td><strong>#{chamado.id}</strong></td>
-                  <td><span className={`badge ${getClasseStatus(chamado.statusChamado)}`}>{chamado.statusChamado}</span></td>
+                  <td>
+                    <span className={`badge ${getClasseStatus(chamado.statusChamado)}`}>
+                      {chamado.statusChamado?.replace('_', ' ')}
+                    </span>
+                  </td>
                   <td>{chamado.equipamento ?? 'Não informado'}</td>
                   <td>{chamado.tituloChamado}</td>
                   <td><span className={`badge ${getClassePrioridade(chamado.prioridadeChamado)}`}>{chamado.prioridadeChamado}</span></td>
