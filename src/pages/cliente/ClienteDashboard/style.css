@@ -21,6 +21,19 @@
   margin: 0;
 }
 
+/* Mensagem de Erro */
+.error-box {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  padding: 0.875rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Filtros */
 .filter-group {
   display: flex;
   gap: 0.5rem;
@@ -49,6 +62,7 @@
   border-color: #111827;
 }
 
+/* Tabela */
 .table-container {
   background: #ffffff;
   border-radius: 12px;
@@ -90,6 +104,7 @@
   font-weight: 500;
 }
 
+/* Botões de Ação */
 .btn-outline {
   display: inline-block;
   background: #ffffff;
@@ -100,13 +115,14 @@
   font-weight: 600;
   font-size: 0.85rem;
   border: 1px solid #d1d5db;
+  transition: background-color 0.2s;
 }
 
 .btn-outline:hover {
   background: #f3f4f6;
 }
 
-/* Badges Base */
+/* Badges de Status e Prioridade */
 .badge {
   display: inline-block;
   padding: 0.25rem 0.75rem;
