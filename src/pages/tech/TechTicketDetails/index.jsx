@@ -53,7 +53,7 @@ export default function TechTicketDetails() {
     try {
       const atendimentoAtualizado = await atendimentoApi.atualizar(payload);
       
-      // Força a interface a atualizar com o payload que acabamos de enviar
+      // Força a interface a atualizar com o payload enviado
       setAtendimento(prev => ({ ...prev, ...payload })); 
       
       return atendimentoAtualizado;
@@ -184,7 +184,6 @@ export default function TechTicketDetails() {
     try {
       await atualizarAtendimento({ 
         status: 'EM_TRIAGEM',
-        // Utiliza fallbacks para garantir que o ID não vá nulo
         tecnicoResponsavelId: user?.id || user?.sub || user?.userId || user?.idUsuario
       });
       await registrarHistorico("O técnico assumiu o chamado. Status alterado para Em Triagem.");
@@ -309,11 +308,6 @@ export default function TechTicketDetails() {
                 <span className="tool-label">N1: Soluções Básicas</span>
                 <button onClick={() => executarAcao('Reset de Senha')} className="btn-tool n1">Reset de Senha</button>
                 <button onClick={() => executarAcao('Acesso Remoto')} className="btn-tool n1">Acesso Remoto Básico</button>
-                {atendimento.nivelSuporte === 'N1' && atendimento.status === 'EM_TRIAGEM' && (
-                  <button onClick={() => handleEscalar('N2')} className="btn-escalar" disabled={atualizando}>
-                    Escalonar para N2
-                  </button>
-                )}
               </div>
 
               {(user?.role === 'TECNICO' || user?.role === 'ADMINISTRADOR') && (
