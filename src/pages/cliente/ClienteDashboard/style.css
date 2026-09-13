@@ -1,159 +1,352 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* ==========================================================================
+   CLIENTE DASHBOARD - DESIGN REFINADO (LIGHT & DARK THEME COMPATIBLE)
+   ========================================================================== */
+
 .dashboard-container {
-  max-width: 1100px;
-  margin: 2rem auto;
-  padding: 0 1.5rem;
+  max-width: 1140px;
+  margin: 2rem 0;
+  padding: 0 1rem;
+  width: 100%;
 }
 
+/* Cabeçalho */
 .dashboard-header {
   margin-bottom: 2rem;
 }
 
 .dashboard-header h2 {
-  font-size: 1.75rem;
-  color: #111827;
+  font-size: 1.85rem;
   font-weight: 700;
-  margin-bottom: 0.25rem;
+  color: var(--text-primary, #0f172a);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.35rem;
 }
 
 .dashboard-header p {
-  color: #6b7280;
+  color: var(--text-secondary, #64748b);
   font-size: 0.95rem;
   margin: 0;
 }
 
-/* Mensagem de Erro */
+/* Box de Erro */
 .error-box {
-  background-color: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #991b1b;
-  padding: 0.875rem 1rem;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  margin-bottom: 1.75rem;
   font-size: 0.9rem;
   font-weight: 500;
+  backdrop-filter: blur(8px);
 }
 
-/* Filtros */
+/* Grupo de Filtros (Pills Modernos) */
 .filter-group {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.75rem;
 }
 
 .filter-btn {
-  background: #f3f4f6;
-  border: 1px solid #e5e7eb;
-  color: #4b5563;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
+  background: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  color: var(--text-secondary, #64748b);
+  padding: 0.55rem 1.15rem;
+  border-radius: 9999px;
   cursor: pointer;
   font-weight: 600;
   font-size: 0.85rem;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
+/* Hover nos Filtros - Modo Claro */
 .filter-btn:hover {
-  background: #e5e7eb;
+  background: var(--hover-bg, #f1f5f9);
+  color: var(--text-primary, #0f172a);
+  border-color: var(--border-hover, #cbd5e1);
+  transform: translateY(-1px);
 }
 
-.filter-btn.active {
-  background: #111827;
+/* Hover nos Filtros - Modo Escuro */
+[data-theme="dark"] .filter-btn {
+  background: var(--bg-surface, #1e293b);
+  border-color: var(--border-color, #334155);
+  color: var(--text-secondary, #94a3b8);
+}
+
+[data-theme="dark"] .filter-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+  border-color: #475569;
+}
+
+/* Filtro Ativo com Destaque Azul Vibrant */
+.filter-btn.active,
+[data-theme="dark"] .filter-btn.active {
+  background: #3b82f6;
   color: #ffffff;
-  border-color: #111827;
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
 }
 
-/* Tabela */
+/* Container da Tabela */
 .table-container {
-  background: #ffffff;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
+  background: var(--bg-surface, #ffffff);
+  border-radius: 16px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+  transition: all 0.2s ease;
 }
 
+[data-theme="dark"] .table-container {
+  background: var(--bg-surface, #1e293b);
+  border-color: var(--border-color, #334155);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+}
+
+/* Estrutura da Tabela */
 .data-table {
   width: 100%;
-  border-collapse: collapse;
+  min-width: 760px;
+  border-collapse: separate;
+  border-spacing: 0;
   text-align: left;
   font-size: 0.9rem;
 }
 
+/* Cabeçalho da Tabela no Modo Claro (Levemente mais escuro) */
 .data-table th {
-  background-color: #f9fafb;
-  color: #374151;
-  font-weight: 600;
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid #e5e7eb;
+  background-color: #e2e8f0;
+  color: #334155;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 1.1rem 1.25rem;
+  border-bottom: 1px solid #cbd5e1;
+}
+
+/* Cabeçalho da Tabela no Modo Escuro */
+[data-theme="dark"] .data-table th {
+  background-color: #0f172a;
+  color: #94a3b8;
+  border-bottom-color: #334155;
 }
 
 .data-table td {
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid #f3f4f6;
-  color: #1f2937;
+  padding: 1.1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color, #f1f5f9);
+  color: var(--text-primary, #1e293b);
   vertical-align: middle;
+  transition: background-color 0.15s ease;
 }
 
-.data-table tbody tr:hover {
-  background-color: #f9fafb;
+[data-theme="dark"] .data-table td {
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+  color: #e2e8f0;
 }
 
+/* Hover na Linha da Tabela (Claro & Escuro) */
+.data-table tbody tr:hover td {
+  background-color: rgba(59, 130, 246, 0.04);
+}
+
+[data-theme="dark"] .data-table tbody tr:hover td {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Estilo para o ID (#123) */
+.data-table td strong {
+  font-family: monospace;
+  font-size: 0.88rem;
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+[data-theme="dark"] .data-table td strong {
+  color: #60a5fa;
+  background: rgba(59, 130, 246, 0.18);
+}
+
+/* Estado Vazio (Modo Claro) */
 .empty-state {
   text-align: center;
-  padding: 3rem !important;
-  color: #6b7280;
+  padding: 4rem 1rem !important;
+  color: var(--text-muted, #94a3b8);
+  background-color: var(--bg-surface, #ffffff);
   font-weight: 500;
 }
 
-/* Botões de Ação */
+/* Estado Vazio (Modo Escuro - Tom cinza sutil um pouco mais claro) */
+[data-theme="dark"] .empty-state {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  color: #cbd5e1;
+}
+
+/* Botão Visualizar */
 .btn-outline {
-  display: inline-block;
-  background: #ffffff;
-  color: #111827;
-  padding: 0.4rem 0.8rem;
-  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: #3b82f6;
+  padding: 0.45rem 0.95rem;
+  border-radius: 8px;
   text-decoration: none;
   font-weight: 600;
-  font-size: 0.85rem;
-  border: 1px solid #d1d5db;
-  transition: background-color 0.2s;
+  font-size: 0.825rem;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  transition: all 0.2s ease;
 }
 
 .btn-outline:hover {
-  background: #f3f4f6;
+  background: #3b82f6;
+  color: #ffffff;
+  border-color: #3b82f6;
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.25);
+  transform: translateY(-1px);
 }
 
-/* Badges de Status e Prioridade */
+[data-theme="dark"] .btn-outline {
+  color: #60a5fa;
+  border-color: rgba(96, 165, 250, 0.35);
+}
+
+[data-theme="dark"] .btn-outline:hover {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+}
+
+/* ==========================================================================
+   BADGES COM CORES VIVAS & PONTINHO INDICADOR
+   ========================================================================== */
+
 .badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.725rem;
   font-weight: 700;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
   white-space: nowrap;
+  border: 1px solid transparent;
 }
 
+/* Bolinha indicadora no badge */
+.badge::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+@media (max-width: 640px) {
+  .dashboard-container {
+    margin: 1rem 0;
+    padding: 0;
+  }
+
+  .dashboard-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .dashboard-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .filter-group {
+    gap: 0.45rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .filter-btn {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.78rem;
+  }
+
+  .table-container {
+    border-radius: 10px;
+  }
+}
+
+/* --- TEMA CLARO: BADGES --- */
 .badge-blue {
   background-color: #eff6ff;
   color: #1d4ed8;
+  border-color: #bfdbfe;
 }
 
 .badge-orange {
   background-color: #fff7ed;
   color: #c2410c;
+  border-color: #fed7aa;
 }
 
 .badge-green {
   background-color: #f0fdf4;
   color: #15803d;
-}
-
-.badge-gray {
-  background-color: #f3f4f6;
-  color: #4b5563;
+  border-color: #bbf7d0;
 }
 
 .badge-red {
   background-color: #fef2f2;
   color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.badge-gray {
+  background-color: #f8fafc;
+  color: #475569;
+  border-color: #e2e8f0;
+}
+
+/* --- TEMA ESCURO: BADGES COM ALTO CONTRASTE --- */
+[data-theme="dark"] .badge-blue {
+  background-color: rgba(59, 130, 246, 0.16);
+  color: #60a5fa;
+  border-color: rgba(96, 165, 250, 0.3);
+}
+
+[data-theme="dark"] .badge-orange {
+  background-color: rgba(249, 115, 22, 0.16);
+  color: #fb923c;
+  border-color: rgba(251, 146, 60, 0.3);
+}
+
+[data-theme="dark"] .badge-green {
+  background-color: rgba(34, 197, 94, 0.16);
+  color: #4ade80;
+  border-color: rgba(74, 222, 128, 0.3);
+}
+
+[data-theme="dark"] .badge-red {
+  background-color: rgba(239, 68, 68, 0.16);
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.3);
+}
+
+[data-theme="dark"] .badge-gray {
+  background-color: rgba(148, 163, 184, 0.12);
+  color: #cbd5e1;
+  border-color: rgba(203, 213, 225, 0.2);
 }

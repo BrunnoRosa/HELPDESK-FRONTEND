@@ -1,15 +1,17 @@
 import './style.css';
 
-export default function Header() {
+export default function Header({ title }) {
+  // Garante que se o título for nulo, undefined ou vazio (""), exiba o fallback
+  const displayTitle = title && String(title).trim() !== '' ? title : "Portal de Atendimentos";
+
   return (
     <header className="main-header">
       <div className="header-breadcrumbs">
-        {/* Aqui podemos colocar o título dinâmico depois, por enquanto um texto fixo */}
-        <h2>Portal de Atendimento</h2>
+        <h2>{displayTitle}</h2>
       </div>
 
-      {/* Espaço mantido caso você queira adicionar um sino de notificações ou campo de busca no futuro */}
       <div className="header-actions">
+        {/* Espaço para botões de ação futuros, buscas ou notificações */}
       </div>
     </header>
   );

@@ -1,4 +1,8 @@
-/* Animações e Transições Globais */
+/* ==========================================================================
+   CLIENTE TICKET DETAILS - DESIGN REFINADO (LIGHT & DARK THEME COMPATIBLE)
+   ========================================================================== */
+
+/* Container Principal e Animação */
 .details-container {
   max-width: 900px;
   margin: 2rem auto;
@@ -13,40 +17,64 @@
 
 /* Botão Voltar */
 .btn-back {
-  background: none;
-  border: none;
-  color: #667085;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary, #64748b);
   font-weight: 600;
   cursor: pointer;
   margin-bottom: 1.5rem;
-  font-size: 0.95rem;
-  padding: 8px 12px;
-  border-radius: 6px;
-  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 
 .btn-back:hover {
-  background-color: #f3f4f6;
-  color: #1f2937;
-  text-decoration: none;
+  background: var(--hover-bg, #f1f5f9);
+  color: var(--text-primary, #0f172a);
+  transform: translateX(-3px);
 }
 
-/* Cartão de Detalhes */
+[data-theme="dark"] .btn-back {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .btn-back:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+}
+
+/* Cartão de Detalhes Principal */
 .details-card {
-  background: #ffffff;
-  border-radius: 14px;
-  border: 1px solid #e4e7ec;
-  padding: 24px;
+  background: var(--bg-surface, #ffffff);
+  border-radius: 16px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  padding: 2rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  transition: box-shadow 0.3s ease;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
 }
 
-.details-card:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+[data-theme="dark"] .details-card {
+  background: var(--bg-surface, #1e293b);
+  border-color: var(--border-color, #334155);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+}
+
+/* Estado de Carregamento */
+.loading-state {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: var(--text-muted, #94a3b8);
+  font-weight: 500;
+}
+
+[data-theme="dark"] .loading-state {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #cbd5e1;
 }
 
 /* Cabeçalho do Chamado */
@@ -54,26 +82,44 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 20px;
-  border-bottom: 1px solid #f3f4f6;
+  gap: 1.25rem;
+  border-bottom: 1px solid var(--border-color, #f1f5f9);
   padding-bottom: 1.5rem;
   margin-bottom: 1.5rem;
 }
 
+[data-theme="dark"] .details-header {
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+/* ID da Tag (#123) */
 .ticket-id {
+  font-family: monospace;
   font-size: 0.85rem;
-  color: #667085;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+[data-theme="dark"] .ticket-id {
+  color: #60a5fa;
+  background: rgba(59, 130, 246, 0.18);
 }
 
 .details-header h2 {
-  font-size: 1.75rem;
-  color: #111827;
-  margin-top: 0.5rem;
-  font-weight: 800;
-  line-height: 1.2;
+  font-size: 1.65rem;
+  color: var(--text-primary, #0f172a);
+  margin-top: 0.6rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+[data-theme="dark"] .details-header h2 {
+  color: #f8fafc;
 }
 
 .badges-group {
@@ -82,41 +128,60 @@
   flex-wrap: wrap;
 }
 
-/* Grid de Dados (Informações do Chamado) */
+/* Grid de Informações Meta */
 .details-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
+  gap: 1rem;
   margin-bottom: 1.5rem;
 }
 
 .info-item {
   background: #f8fafc;
-  padding: 16px;
-  border-radius: 9px;
-  border: 1px solid transparent;
-  transition: border-color 0.2s ease;
+  padding: 1rem 1.15rem;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+[data-theme="dark"] .info-item {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: #334155;
 }
 
 .info-item:hover {
-  border-color: #e2e8f0;
+  border-color: #cbd5e1;
 }
 
-.info-item label, .details-section label {
+[data-theme="dark"] .info-item:hover {
+  border-color: #475569;
+}
+
+.info-item label, 
+.details-section label {
   display: block;
   font-size: 0.75rem;
   font-weight: 700;
-  color: #667085;
+  color: var(--text-secondary, #64748b);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 0.5rem;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.4rem;
+}
+
+[data-theme="dark"] .info-item label,
+[data-theme="dark"] .details-section label {
+  color: #94a3b8;
 }
 
 .info-item p {
-  color: #1f2937;
-  font-weight: 700;
-  font-size: 1rem;
+  color: var(--text-primary, #1e293b);
+  font-weight: 600;
+  font-size: 0.95rem;
   margin: 0;
+}
+
+[data-theme="dark"] .info-item p {
+  color: #e2e8f0;
 }
 
 /* Seção de Descrição */
@@ -125,25 +190,36 @@
 }
 
 .description-text {
-  color: #344054;
-  line-height: 1.55;
-  background: #f9fafb;
+  color: var(--text-primary, #334155);
+  line-height: 1.6;
+  background: #f8fafc;
   padding: 1.25rem;
-  border-radius: 9px;
-  border: 1px solid #e4e7ec;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
   white-space: pre-wrap;
   font-family: inherit;
-  font-size: 0.95rem;
+  font-size: 0.925rem;
+  margin-top: 0.4rem;
 }
 
-/* Evidência (Imagem) caso exista */
+[data-theme="dark"] .description-text {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: #334155;
+  color: #e2e8f0;
+}
+
+/* Container de Evidências */
 .evidence-container {
   margin-top: 0.75rem;
-  border-radius: 9px;
+  border-radius: 12px;
   overflow: hidden;
-  border: 1px solid #e4e7ec;
+  border: 1px solid var(--border-color, #e2e8f0);
   max-width: 100%;
   position: relative;
+}
+
+[data-theme="dark"] .evidence-container {
+  border-color: #334155;
 }
 
 .evidence-container img {
@@ -155,17 +231,107 @@
 }
 
 .evidence-container:hover img {
-  transform: scale(1.03);
+  transform: scale(1.02);
 }
 
-/* Notificação de Erro */
+/* Box de Erro */
 .error-box {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  backdrop-filter: blur(8px);
+}
+
+/* ==========================================================================
+   BADGES COM CORES VIVAS & PONTINHO INDICADOR
+   ========================================================================== */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.725rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+.badge::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+/* Modo Claro */
+.badge-blue {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+.badge-orange {
+  background-color: #fff7ed;
+  color: #c2410c;
+  border-color: #fed7aa;
+}
+
+.badge-green {
+  background-color: #f0fdf4;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+.badge-red {
   background-color: #fef2f2;
-  border: 1px solid #f87171;
-  color: #991b1b;
-  padding: 1rem;
-  border-radius: 8px;
-  text-align: center;
-  font-weight: 600;
-  animation: fadeIn 0.3s ease-out;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.badge-gray {
+  background-color: #f8fafc;
+  color: #475569;
+  border-color: #e2e8f0;
+}
+
+/* Modo Escuro */
+[data-theme="dark"] .badge-blue {
+  background-color: rgba(59, 130, 246, 0.16);
+  color: #60a5fa;
+  border-color: rgba(96, 165, 250, 0.3);
+}
+
+[data-theme="dark"] .badge-orange {
+  background-color: rgba(249, 115, 22, 0.16);
+  color: #fb923c;
+  border-color: rgba(251, 146, 60, 0.3);
+}
+
+[data-theme="dark"] .badge-green {
+  background-color: rgba(34, 197, 94, 0.16);
+  color: #4ade80;
+  border-color: rgba(74, 222, 128, 0.3);
+}
+
+[data-theme="dark"] .badge-red {
+  background-color: rgba(239, 68, 68, 0.16);
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.3);
+}
+
+[data-theme="dark"] .badge-gray {
+  background-color: rgba(148, 163, 184, 0.12);
+  color: #cbd5e1;
+  border-color: rgba(203, 213, 225, 0.2);
 }

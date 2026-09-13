@@ -19,5 +19,11 @@
   padding: 2rem;
   
   /* Mantém o conteúdo afastado da Sidebar fixa de 260px */
-  margin-left: 260px; 
+  margin-left: var(--sidebar-width, 300px);
+}
+
+@media (max-width: 900px) {
+  .layout-footer {
+    margin-left: 0;
+  }
 }

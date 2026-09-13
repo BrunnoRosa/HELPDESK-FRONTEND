@@ -1,11 +1,13 @@
 import { useState, useEffect, useMemo } from 'react';
 import { adminApi } from '../../../services/api';
+import Notification from '../../../components/Notification';
 import './style.css'; // Pode importar o mesmo CSS do AdminDashboard ou criar um específico
 
 export default function AdminUsers() {
   const [activeTab, setActiveTab] = useState('LISTA_USUARIOS'); 
   const [usuarios, setUsuarios] = useState([]);
   const [ordem, setOrdem] = useState('ID');
+  const [feedback, setFeedback] = useState({ type: '', message: '' });
   const [formData, setFormData] = useState({ 
     nomeCompleto: '', 
     email: '', 
@@ -39,6 +41,7 @@ export default function AdminUsers() {
 
   const handleCreateUser = async (e) => {
     e.preventDefault();
+    setFeedback({ type: '', message: '' });
     const payload = {
       nome: formData.nomeCompleto, 
       email: formData.email,
@@ -49,12 +52,15 @@ export default function AdminUsers() {
 
     try {
       await adminApi.criarUsuario(payload);
-      alert('Usuário cadastrado com sucesso!');
+      setFeedback({ type: 'success', message: 'Usuário cadastrado com sucesso!' });
       setFormData({ nomeCompleto: '', email: '', senha: '', perfilUsuario: 'USUARIO', nivelSuporte: '' });
       setActiveTab('LISTA_USUARIOS');
     } catch (error) {
       console.error("Erro detalhado:", error);
-      alert(error.message || 'Erro ao cadastrar usuário. Verifique os dados ou permissões.');
+      setFeedback({
+        type: 'error',
+        message: error.message || 'Erro ao cadastrar usuário. Verifique os dados ou permissões.'
+      });
     }
   };
 
@@ -78,11 +84,13 @@ export default function AdminUsers() {
         </div>
       </div>
 
+      {feedback.message && <Notification type={feedback.type} message={feedback.message} />}
+
       {activeTab === 'LISTA_USUARIOS' && (
         <div className="admin-panel white-panel">
-          <div className="filter-group-admin" style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <label style={{ fontSize: '0.9rem', fontWeight: '600', color: '#374151' }}>Ordenar por:</label>
-            <select value={ordem} onChange={(e) => setOrdem(e.target.value)} style={{ padding: '0.5rem', borderRadius: '8px', border: '1px solid #d1d5db' }}>
+          <div className="user-sort">
+            <label htmlFor="user-sort-select">Ordenar por:</label>
+            <select id="user-sort-select" value={ordem} onChange={(e) => setOrdem(e.target.value)}>
               <option value="ID">ID do Usuário</option>
               <option value="NOME">Ordem Alfabética</option>
             </select>
@@ -100,7 +108,7 @@ export default function AdminUsers() {
               </thead>
               <tbody>
                 {usuariosOrdenados.length === 0 ? (
-                  <tr><td colSpan="4" style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>Nenhum usuário cadastrado.</td></tr>
+                  <tr><td colSpan="4" className="empty-state">Nenhum usuário cadastrado.</td></tr>
                 ) : (
                   usuariosOrdenados.map((user) => (
                     <tr key={user.id}>
@@ -108,7 +116,7 @@ export default function AdminUsers() {
                       <td>{user.nome}</td>
                       <td>{user.email}</td>
                       <td>
-                        <span style={{ padding: '0.25rem 0.75rem', background: '#f3f4f6', borderRadius: '99px', fontSize: '0.8rem', fontWeight: '600' }}>
+                        <span className="role-badge">
                           {user.perfil}
                         </span>
                       </td>
@@ -152,7 +160,7 @@ export default function AdminUsers() {
                 </select>
               </>
             )}
-            <button type="submit" className="btn-primary" style={{ marginTop: '1.5rem', width: '100%', padding: '0.75rem', background: '#111827', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}>Cadastrar no Sistema</button>
+            <button type="submit" className="btn-primary">Cadastrar no Sistema</button>
           </form>
         </div>
       )}

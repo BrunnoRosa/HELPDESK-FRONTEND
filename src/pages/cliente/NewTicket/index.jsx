@@ -58,7 +58,6 @@ export default function NewTicket() {
       setPreviewImagem('');
       setFeedback({ type: 'success', message: 'Chamado criado com sucesso! Redirecionando...' });
       
-      // Aguarda 1.5s para o usuário visualizar a notificação de sucesso antes de redirecionar
       setTimeout(() => {
         navigate('/');
       }, 1500);

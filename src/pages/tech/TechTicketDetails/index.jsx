@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { atendimentoApi, chamadoApi } from '../../../services/api'; 
+import Notification from '../../../components/Notification';
 import './style.css';
 
 export default function TechTicketDetails() {
@@ -52,10 +53,7 @@ export default function TechTicketDetails() {
 
     try {
       const atendimentoAtualizado = await atendimentoApi.atualizar(payload);
-      
-      // Força a interface a atualizar com o payload enviado
       setAtendimento(prev => ({ ...prev, ...payload })); 
-      
       return atendimentoAtualizado;
     } finally {
       setAtualizando(false);
@@ -187,7 +185,6 @@ export default function TechTicketDetails() {
         tecnicoResponsavelId: user?.id || user?.sub || user?.userId || user?.idUsuario
       });
       await registrarHistorico("O técnico assumiu o chamado. Status alterado para Em Triagem.");
-      
       await carregarDados(); 
     } catch (error) {
       setErro(`Erro ao assumir chamado: ${error.message}`);
@@ -195,7 +192,7 @@ export default function TechTicketDetails() {
   };
   
   if (loading) return <p className="loading-text">Carregando detalhes do chamado...</p>;
-  if (!chamado || !atendimento) return <div className="error-box">{erro}</div>;
+  if (!chamado || !atendimento) return <Notification type="error" message={erro || 'Não foi possível carregar o chamado.'} />;
 
   const isResolvido = atendimento.status === 'RESOLVIDO' || atendimento.status === 'FECHADO';
 
@@ -211,14 +208,14 @@ export default function TechTicketDetails() {
         </div>
       </div>
 
-      {erro && <div className="error-box">{erro}</div>}
-      {mensagem && <div className="success-box">{mensagem}</div>}
+      {erro && <Notification type="error" message={erro} />}
+      {mensagem && <Notification type="success" message={mensagem} />}
 
       <div className="details-grid">
         <div className="main-content">
           <div className="card">
             <h3>Ocorrência Original</h3>
-            <p>{chamado.ocorrenciaChamado}</p>
+            <p className="ocorrencia-texto">{chamado.ocorrenciaChamado}</p>
           </div>
 
           <div className="card">
@@ -241,23 +238,25 @@ export default function TechTicketDetails() {
 
           <div className="card">
             <h3>Evidências e Anexos (Fotografias)</h3>
-            <div className="attachments-grid" style={{ marginTop: '10px' }}>
-              <div className="attachment-item" style={{ marginBottom: '15px' }}>
+            <div className="attachments-grid">
+              <div className="attachment-item">
                 <span className="icon">📄</span>
-                <a href="#" target="_blank" rel="noreferrer" style={{ marginLeft: '8px' }}>
+                <a href="#" target="_blank" rel="noreferrer" className="attachment-link">
                   evidencia_tela_erro.jpg
                 </a>
               </div>
               
               {atendimento.status === 'PENDENTE_EVIDENCIA' && (
-                <div className="upload-section" style={{ borderTop: '1px solid #eee', paddingTop: '15px' }}>
-                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
+                <div className="upload-section">
+                  <label className="upload-label">
                     Anexar nova evidência solicitada pelo usuário:
                   </label>
-                  <input type="file" accept="image/*, .pdf" />
-                  <button type="button" className="btn-upload" style={{ marginLeft: '10px', padding: '5px 10px' }}>
-                    Enviar Arquivo
-                  </button>
+                  <div className="upload-controls">
+                    <input type="file" accept="image/*, .pdf" className="file-input" />
+                    <button type="button" className="btn-upload">
+                      Enviar Arquivo
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -275,13 +274,15 @@ export default function TechTicketDetails() {
                 <dt>Prioridade</dt>
                 <dd>
                   {isResolvido ? (
-                    <span className={`badge-prio ${chamado.prioridadeChamado?.toLowerCase()}`}>{chamado.prioridadeChamado}</span>
+                    <span className={`badge-prio ${chamado.prioridadeChamado?.toLowerCase()}`}>
+                      {chamado.prioridadeChamado}
+                    </span>
                   ) : (
                     <select 
                       value={chamado.prioridadeChamado} 
                       onChange={handleMudarPrioridade}
                       disabled={atualizando}
-                      style={{ padding: '0.3rem', borderRadius: '4px', border: '1px solid #d1d5db', background: '#f9fafb', width: '100%', fontWeight: '600' }}
+                      className="select-prioridade"
                     >
                       <option value="BAIXA">BAIXA</option>
                       <option value="MEDIA">MÉDIA</option>
@@ -292,7 +293,7 @@ export default function TechTicketDetails() {
                 </dd>
               </div>
               
-              <hr style={{ gridColumn: '1 / -1', borderTop: '1px solid #e2e8f0', margin: '10px 0' }}/>
+              <hr className="data-divider"/>
               <div><dt>Solicitante</dt><dd>{atendimento.solicitanteNome || 'Não informado'}</dd></div>
               <div><dt>Usuário Vinculado</dt><dd>{atendimento.usuarioVinculado || 'Não vinculado'}</dd></div>
               <div><dt>Equipamento</dt><dd>{atendimento.equipamentoVinculado || 'Não vinculado'}</dd></div>
@@ -332,7 +333,7 @@ export default function TechTicketDetails() {
               )}
 
               {atendimento.status === 'ABERTO' && (
-                <button onClick={handleAssumirChamado} className="btn-avancar" style={{ backgroundColor: '#10b981' }} disabled={atualizando}>
+                <button onClick={handleAssumirChamado} className="btn-avancar btn-assumir" disabled={atualizando}>
                   {atualizando ? 'Atualizando...' : 'Assumir Chamado'}
                 </button>
               )}
@@ -349,7 +350,7 @@ export default function TechTicketDetails() {
               )}
               {['EM_ATENDIMENTO', 'PENDENTE_EVIDENCIA'].includes(atendimento.status) && (
                 <button onClick={handleResolver} className="btn-resolver" disabled={atualizando}>
-                Marcar como Resolvido
+                  Marcar como Resolvido
                 </button>
               )}
             </div>

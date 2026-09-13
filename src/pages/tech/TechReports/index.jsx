@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import ChamadoCard from '../../../components/ChamadoCard';
+import Notification from '../../../components/Notification';
 import { atendimentoApi, chamadoApi } from '../../../services/api';
 import './style.css';
 
@@ -39,7 +40,7 @@ export default function TechReports() {
         <p className="page-subtitle">Monitoramento de logs, cronograma de manutenção e consulta geral de chamados.</p>
       </div>
 
-      {erro && <div className="error-box">{erro}</div>}
+      {erro && <Notification type="error" message={erro} />}
 
       {/* BLOCO 1: MANTIDO DO SEU PROJETO (Guia de Manutenção e ISO) */}
       <div className="reports-grid">

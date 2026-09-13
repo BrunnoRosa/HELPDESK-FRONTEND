@@ -10,7 +10,7 @@ import Protected from './components/Protected';
 import Login from './pages/auth/Login';
 
 // Importação das Páginas - Geral / Configurações
-import Profile from './pages/Profile'; // <-- 1. IMPORTE A PÁGINA DE PERFIL AQUI
+import Profile from './pages/profile';
 
 // Importação das Páginas - Cliente
 import ClienteDashboard from './pages/cliente/ClienteDashboard';

@@ -2,16 +2,19 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { authApi } from '../../../services/api';
+import Notification from '../../../components/Notification';
 import './style.css';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [erro, setErro] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setErro('');
     try {
       const loginResponse = await authApi.login({
         email,
@@ -35,7 +38,7 @@ export default function Login() {
       
     } catch (error) {
       console.error('Não foi possível realizar o login:', error.message);
-      alert('Erro ao logar. Verifique as credenciais.');
+      setErro('Erro ao logar. Verifique as credenciais.');
     }
   };
 
@@ -44,6 +47,7 @@ export default function Login() {
       <form className="auth-form" onSubmit={handleLogin}>
         <h2>GLPI Desk</h2>
         <p className="auth-subtitle">Sistema de Gestão de Chamados</p>
+        {erro && <Notification type="error" message={erro} />}
         
         <label>E-mail</label>
         <input 
