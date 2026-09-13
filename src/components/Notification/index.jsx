@@ -1,6 +1,3 @@
-import "./style.css";
-
-import React from 'react';
 import './style.css';
 
 export default function Notification({ type = 'info', message }) {
@@ -43,8 +40,10 @@ export default function Notification({ type = 'info', message }) {
     }
   };
 
+  const normalizedType = ['success', 'error', 'warning', 'info'].includes(type) ? type : 'info';
+
   return (
-    <div className={`notification-box ${type}`}>
+    <div className={`notification-box ${normalizedType}`} role="status" aria-live="polite">
       <span className="notification-icon">{renderIcon()}</span>
       <span className="notification-text">{message}</span>
     </div>

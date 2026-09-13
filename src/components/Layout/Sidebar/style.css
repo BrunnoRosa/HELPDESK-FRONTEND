@@ -1,66 +1,246 @@
-:root {
-  --sidebar-bg: #f1f5f9;          /* Cinza slate claro para dar contraste com a página */
-  --sidebar-text: #475569;        /* Texto cinza médio de boa leitura */
-  --sidebar-text-hover: #0f172a;  /* Grafite escuro ao passar o mouse */
-  --sidebar-active-bg: #e2e8f0;   /* Cinza ligeiramente mais escuro no item ativo */
-  --sidebar-active-text: #0f172a;  /* Texto do item ativo */
-  --sidebar-border: #e2e8f0;      /* Borda sutil para delimitar áreas */
-  --sidebar-width: 260px;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* =========================================================
+   1. VARIÁVEIS DE TEMA & LAYOUT
+   ========================================================= */
+
+/* ☀️ TEMA CLARO */
+:root, [data-theme="light"], body[data-theme="light"] {
+  --sidebar-width: 300px; /* Largura ajustada para não cortar a logo */
+  --header-height: 64px;
+
+  --bg-primary: #aeb6b9;
+  --bg-surface: #ffffff;
+  --bg-sidebar: #d8dbde;
+  --bg-sidebar-footer: #e2e8f0;
+  --border-color: #e2e8f0;
+  --input-bg: #ffffff;
+  
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-sidebar: #334155;
+  --text-sidebar-heading: #0f172a;
+  --text-muted: #94a3b8;
+  
+  --hover-bg: #e2e8f0;
+  --hover-text: #0f172a;
+  --active-bg: #dbeafe;
+  --active-text: #1d4ed8;
+  --accent-color: #2563eb;
 }
 
-.sidebar {
-  width: var(--sidebar-width);
-  height: 100vh;
-  background-color: var(--sidebar-bg);
-  color: var(--sidebar-text);
+/* 🌙 TEMA ESCURO */
+[data-theme="dark"], body[data-theme="dark"] {
+  --sidebar-width: 300px; /* Largura ajustada para não cortar a logo */
+  --header-height: 64px;
+
+  --bg-primary: #121214;
+  --bg-surface: #1e1e22;
+  --bg-sidebar: #18181b;
+  --bg-sidebar-footer: #09090b;
+  --border-color: #2e2e34;
+  --input-bg: #27272a;
+  
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-sidebar: #d4d4d8;
+  --text-sidebar-heading: #ffffff;
+  --text-muted: #71717a;
+  
+  --hover-bg: #27272a;
+  --hover-text: #ffffff;
+  --active-bg: #27272a;
+  --active-text: #3b82f6;
+  --accent-color: #3b82f6;
+}
+
+/* =========================================================
+   2. RESET GLOBAL & ESTRUTURA DE LAYOUT
+   ========================================================= */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+}
+
+/* Estrutura padrão de layout */
+.app, .app-container, .portal-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+}
+
+/* Conteúdo Principal */
+main, .main-content, .content-wrapper, .app-main {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid var(--sidebar-border);
+  min-width: 0;
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.page-content, .main-body {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+/* =========================================================
+   3. FORMULÁRIOS & SELECTS GLOBAIS
+   ========================================================= */
+input, select, textarea {
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  font-family: inherit;
+}
+
+select option {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+/* =========================================================
+   4. HEADER E LOGO
+   ========================================================= */
+.sidebar-top-header {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 100;
-}
-
-.sidebar-logo {
+  height: var(--header-height);
+  width: var(--sidebar-width);
+  background-color: var(--bg-sidebar);
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 1.5rem;
-  border-bottom: 1px solid var(--sidebar-border);
-  margin-bottom: 0.75rem;
+  gap: 14px;
+  padding: 0 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  z-index: 102;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
-.logo-icon {
-  width: 36px;
-  height: 36px;
-  color: #0f172a;
+.sidebar-toggle-btn {
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--text-sidebar);
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.sidebar-logo h2 {
+.sidebar-toggle-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+.sidebar-toggle-btn:hover {
+  background-color: var(--hover-bg);
+  color: var(--hover-text);
+}
+
+.theme-toggle-btn {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  color: var(--accent-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.logo-text h2 {
   margin: 0;
-  font-size: 1.25rem;
-  color: #0f172a;
+  font-size: 1.1rem;
+  color: var(--text-sidebar-heading) !important;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  white-space: nowrap;
 }
 
-.sidebar-logo span {
+.logo-text span {
   display: block;
-  font-size: 0.7rem;
-  color: #64748b;
-  margin-top: 2px;
+  font-size: 0.65rem;
+  color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
   font-weight: 600;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   5. SIDEBAR ESTRUTURA E NAV
+   ========================================================= */
+.sidebar {
+  width: var(--sidebar-width);
+  height: calc(100vh - var(--header-height));
+  background-color: var(--bg-sidebar);
+  color: var(--text-sidebar);
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border-color);
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  z-index: 100;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s ease, border-color 0.25s ease;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.sidebar.closed {
+  transform: translateX(-100%);
 }
 
 .sidebar-nav {
   flex: 1;
-  padding: 0 0.875rem;
+  padding: 1rem 0.875rem;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -70,63 +250,102 @@
 .nav-label {
   font-size: 0.7rem;
   font-weight: 700;
-  color: #94a3b8;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  margin: 1.25rem 0 0.5rem 0.5rem;
+  margin: 1rem 0 0.5rem 0.5rem;
 }
 
+/* =========================================================
+   6. ESTILOS DOS ITENS DE MENU (UX/UI Refinado)
+   ========================================================= */
 .nav-item {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 0.7rem 0.875rem;
-  color: var(--sidebar-text);
+  padding: 0.75rem 0.875rem;
+  color: var(--text-sidebar);
   text-decoration: none;
   border-radius: 8px;
   font-weight: 500;
   font-size: 0.9rem;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Bordinha animada na ESQUERDA */
+.nav-item::before {
+  content: '';
+  position: absolute;
+  left: 0; /* Fixado na esquerda agora */
+  top: 50%;
+  width: 4px; /* Espessura da bordinha */
+  height: 60%; /* Altura elegante */
+  background-color: var(--accent-color);
+  border-radius: 0 4px 4px 0; /* Arredondado suave para a direita (para dentro do botão) */
+  opacity: 0;
+  transform: translateY(-50%) scaleY(0);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
 }
 
 .nav-icon {
   width: 20px;
   height: 20px;
-  opacity: 0.7;
-  transition: all 0.2s ease;
+  opacity: 0.8;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+  flex-shrink: 0;
 }
 
+/* Efeito Hover (passar o mouse) */
 .nav-item:hover {
-  background-color: #e2e8f0;
-  color: var(--sidebar-text-hover);
-  transform: translateX(3px);
+  background-color: var(--hover-bg);
+  color: var(--hover-text);
+  transform: translateX(4px); /* Desliza o bloco inteiro levemente para a direita */
+}
+
+/* Revela e expande a bordinha esquerda */
+.nav-item:hover::before {
+  opacity: 1;
+  transform: translateY(-50%) scaleY(1);
 }
 
 .nav-item:hover .nav-icon {
   opacity: 1;
+  transform: scale(1.1); /* Ícone pula levemente */
 }
 
+/* Item ativo (Página atual) */
 .nav-item.active {
-  background-color: var(--sidebar-active-bg);
-  color: var(--sidebar-active-text);
+  background-color: var(--active-bg);
+  color: var(--active-text);
   font-weight: 700;
-  border-left: 3px solid #0f172a;
+  border-left: 3px solid var(--accent-color);
   border-radius: 0 8px 8px 0;
 }
 
 .nav-item.active .nav-icon {
   opacity: 1;
-  color: #0f172a;
+  color: var(--accent-color);
+  transform: scale(1); /* Mantém fixo no ativo */
 }
 
+/* Evita mostrar a bordinha animada se o item já tem a borda padrão de "active" */
+.nav-item.active:hover::before {
+  display: none;
+}
+
+/* =========================================================
+   7. RODAPÉ DO SIDEBAR E USUÁRIO
+   ========================================================= */
 .sidebar-footer {
   padding: 1rem 1.25rem;
-  border-top: 1px solid var(--sidebar-border);
+  border-top: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #e2e8f0;
+  background-color: var(--bg-sidebar-footer);
   margin-top: auto;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
 .user-profile-wrapper {
@@ -138,8 +357,8 @@
 .user-avatar {
   width: 38px;
   height: 38px;
-  background: #cbd5e1;
-  color: #0f172a;
+  background: var(--hover-bg);
+  color: var(--text-sidebar-heading);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -148,6 +367,7 @@
   font-size: 0.9rem;
   overflow: hidden;
   flex-shrink: 0;
+  border: 1px solid var(--border-color);
 }
 
 .sidebar-avatar-img {
@@ -157,7 +377,7 @@
 }
 
 .user-name {
-  color: #0f172a;
+  color: var(--text-sidebar-heading);
   font-size: 0.875rem;
   font-weight: 600;
   display: block;
@@ -165,7 +385,7 @@
 }
 
 .user-role {
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 0.7rem;
   text-transform: uppercase;
   font-weight: 700;
@@ -173,7 +393,7 @@
 }
 
 .btn-sidebar-logout {
-  background: #dfc0c0;
+  background: rgba(239, 68, 68, 0.1);
   border: none;
   padding: 8px;
   border-radius: 6px;
@@ -185,10 +405,46 @@
   transition: all 0.2s ease;
 }
 
-.btn-sidebar-logout:hover {
-  background-color: #fee2e2;
+.btn-sidebar-logout svg {
+  stroke: #ef4444;
 }
 
-.btn-sidebar-logout:hover svg {
-  stroke: #dc2626;
+.btn-sidebar-logout:hover {
+  background-color: rgba(239, 68, 68, 0.2);
+}
+
+@media (max-width: 900px) {
+  .sidebar-top-header {
+    width: 100%;
+  }
+
+  .sidebar {
+    box-shadow: 12px 0 30px rgba(15, 23, 42, 0.16);
+  }
+}
+
+@media (max-width: 480px) {
+  :root, [data-theme="light"], body[data-theme="light"],
+  [data-theme="dark"], body[data-theme="dark"] {
+    --sidebar-width: min(300px, 88vw);
+  }
+
+  .logo-text span {
+    display: none;
+  }
+
+  .sidebar-footer {
+    padding: 0.875rem;
+  }
+
+  .user-info {
+    min-width: 0;
+  }
+
+  .user-name {
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }

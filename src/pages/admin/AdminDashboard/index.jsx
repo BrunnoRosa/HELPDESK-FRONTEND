@@ -26,13 +26,19 @@ export default function AdminDashboard() {
       const nivelMatch = (c.nivelSuporte || 'N1') === filaAtiva;
       let statusMatch = true;
       if (filtroStatus === 'ABERTO') {
-        statusMatch = ['ABERTO', 'EM_ANDAMENTO'].includes(c.statusChamado);
+        statusMatch = ['ABERTO', 'EM_ANDAMENTO', 'EM_ATENDIMENTO', 'EM_TRIAGEM'].includes(c.statusChamado);
       } else if (filtroStatus === 'ESCALONADO') {
         statusMatch = ['ALTA', 'URGENTE'].includes(c.prioridadeChamado); 
       }
       return nivelMatch && statusMatch;
     });
   }, [chamados, filaAtiva, filtroStatus]);
+
+  // Função auxiliar para sanitizar o texto removendo pontos residuais e substituição de _ por espaço
+  const formatarTexto = (texto) => {
+    if (!texto) return '';
+    return texto.replace(/[•●*\s]+/g, ' ').replace(/_/g, ' ').trim();
+  };
 
   return (
     <div className="admin-container">
@@ -84,11 +90,23 @@ export default function AdminDashboard() {
                 chamadosFiltrados.map(c => (
                   <tr key={c.id}>
                     <td><strong>#{c.id}</strong></td>
-                    <td><span className={`badge badge-${c.statusChamado?.toLowerCase() || 'gray'}`}>{c.statusChamado}</span></td>
+                    <td>
+                      <span className={`badge badge-${c.statusChamado?.toLowerCase() || 'gray'}`}>
+                        {formatarTexto(c.statusChamado)}
+                      </span>
+                    </td>
                     <td>{c.tituloChamado}</td>
-                    <td><span className={`badge badge-${c.prioridadeChamado?.toLowerCase() || 'gray'}`}>{c.prioridadeChamado}</span></td>
+                    <td>
+                      <span className={`badge badge-${c.prioridadeChamado?.toLowerCase() || 'gray'}`}>
+                        {formatarTexto(c.prioridadeChamado)}
+                      </span>
+                    </td>
                     <td>{c.tecnicoResponsavel?.nome || 'Não Atribuído'}</td>
-                    <td><Link to={`/admin/chamado/${c.id}`} className="btn-outline-small">Gerenciar</Link></td>
+                    <td>
+                      <Link to={`/admin/chamado/${c.id}`} className="btn-outline-small">
+                        Gerenciar
+                      </Link>
+                    </td>
                   </tr>
                 ))
               )}

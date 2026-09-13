@@ -8,7 +8,7 @@ export default function Profile() {
   const { user } = useAuth();
   const fileInputRef = useRef(null);
 
-  // Carrega a foto do localStorage (se existir) para simular persistência no front
+  // Carrega a foto do localStorage para simular persistência no front
   const [avatarUrl, setAvatarUrl] = useState(() => {
     return localStorage.getItem(`user_avatar_${user?.email}`) || null;
   });
@@ -46,7 +46,7 @@ export default function Profile() {
         if (user?.email) {
           localStorage.setItem(`user_avatar_${user.email}`, base64Image);
         }
-        setFeedback({ type: 'success', message: 'Foto de perfil atualizada localmente!' });
+        setFeedback({ type: 'success', message: 'Foto de perfil atualizada com sucesso!' });
       };
       reader.readAsDataURL(file);
     }
@@ -87,13 +87,13 @@ export default function Profile() {
     } finally {
       setLoading(false);
     }
-  }; // Chave de fechamento da função que estava faltando
+  };
 
   return (
     <div className="profile-container">
       <div className="profile-header">
         <h2>Meu Perfil</h2>
-        <p>Gerencie as informações e a segurança da sua conta.</p>
+        <p className="subtitle">Gerencie as informações e a segurança da sua conta.</p>
       </div>
 
       {/* Card 1: Informações do Usuário */}
@@ -147,7 +147,9 @@ export default function Profile() {
         <h3>Segurança</h3>
         <p className="card-subtitle">Atualize sua senha de acesso ao sistema.</p>
 
-        <Notification type={feedback.type} message={feedback.message} />
+        {feedback.message && (
+          <Notification type={feedback.type} message={feedback.message} />
+        )}
 
         <form onSubmit={handlePasswordSubmit} className="password-form">
           <div className="form-group">

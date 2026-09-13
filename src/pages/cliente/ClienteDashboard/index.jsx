@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { chamadoApi } from '../../../services/api';
+import Notification from '../../../components/Notification';
 import './style.css';
 
 export default function ClienteDashboard() {
@@ -66,7 +67,7 @@ export default function ClienteDashboard() {
         </div>
       </div>
 
-      {erro && <div className="error-box">{erro}</div>}
+      {erro && <Notification type="error" message={erro} />}
 
       <div className="filter-group">
         {['TODOS', 'ABERTO', 'EM_ANDAMENTO', 'RESOLVIDO'].map(status => (

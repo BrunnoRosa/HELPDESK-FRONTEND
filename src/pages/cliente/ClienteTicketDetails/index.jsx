@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { atendimentoApi, chamadoApi } from '../../../services/api';
+import Notification from '../../../components/Notification';
 import './style.css';
 
 export default function ClientTicketDetails() {
@@ -36,11 +37,31 @@ export default function ClientTicketDetails() {
     }
   };
 
+  // Mapeamento dinâmico de cores dos badges
+  const getStatusBadgeClass = (status) => {
+    if (!status) return 'badge-gray';
+    const s = status.toLowerCase();
+    if (s.includes('aberto') || s.includes('novo')) return 'badge-blue';
+    if (s.includes('andamento') || s.includes('atendimento') || s.includes('pendente')) return 'badge-orange';
+    if (s.includes('conclu') || s.includes('resolv') || s.includes('fechado')) return 'badge-green';
+    if (s.includes('cancel')) return 'badge-red';
+    return 'badge-gray';
+  };
+
+  const getPriorityBadgeClass = (prioridade) => {
+    if (!prioridade) return 'badge-gray';
+    const p = prioridade.toLowerCase();
+    if (p.includes('alta') || p.includes('urgente') || p.includes('crítica')) return 'badge-red';
+    if (p.includes('média') || p.includes('media')) return 'badge-orange';
+    if (p.includes('baixa')) return 'badge-blue';
+    return 'badge-gray';
+  };
+
   if (carregando) {
     return (
       <div className="details-container">
-        <div className="details-card">
-          <p style={{ textAlign: 'center', color: '#667085' }}>Carregando detalhes do chamado...</p>
+        <div className="details-card loading-state">
+          <p>Carregando detalhes do chamado...</p>
         </div>
       </div>
     );
@@ -52,9 +73,7 @@ export default function ClientTicketDetails() {
         <button onClick={() => navigate('/')} className="btn-back">
           &larr; Voltar para Meus Chamados
         </button>
-        <div className="error-box" style={{ marginTop: '20px' }}>
-          {erro || 'Chamado não encontrado.'}
-        </div>
+        <Notification type="error" message={erro || 'Chamado não encontrado.'} />
       </div>
     );
   }
@@ -73,11 +92,11 @@ export default function ClientTicketDetails() {
             <h2>{chamado.tituloChamado}</h2>
           </div>
           <div className="badges-group">
-            <span className={`badge status-${atendimento.status.toLowerCase()}`}>
+            <span className={`badge ${getStatusBadgeClass(atendimento.status)}`}>
               {atendimento.status}
             </span>
             {chamado.prioridadeChamado && (
-              <span className={`badge badge-${chamado.prioridadeChamado.toLowerCase()}`}>
+              <span className={`badge ${getPriorityBadgeClass(chamado.prioridadeChamado)}`}>
                 Prioridade: {chamado.prioridadeChamado}
               </span>
             )}

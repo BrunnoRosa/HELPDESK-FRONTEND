@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { chamadoApi, atendimentoApi } from '../../../services/api';
+import Notification from '../../../components/Notification';
 import './style.css';
 
 export default function TechDashboard() {
@@ -57,13 +58,25 @@ export default function TechDashboard() {
         <p className="page-subtitle">Visão consolidada dos chamados em atendimento.</p>
       </div>
 
-      {erro && <div className="error-box">{erro}</div>}
+      {erro && <Notification type="error" message={erro} />}
 
       <div className="dashboard__stats">
-        <article><strong>{stats.total}</strong><span>Total de chamados</span></article>
-        <article className="stat-urgente"><strong>{stats.urgentes}</strong><span>Urgentes</span></article>
-        <article><strong>{stats.altas}</strong><span>Prioridade alta</span></article>
-        <article><strong>{stats.medias}</strong><span>Prioridade média</span></article>
+        <article>
+          <strong>{stats.total}</strong>
+          <span>Total de chamados</span>
+        </article>
+        <article className="stat-urgente">
+          <strong>{stats.urgentes}</strong>
+          <span>Urgentes</span>
+        </article>
+        <article>
+          <strong>{stats.altas}</strong>
+          <span>Prioridade alta</span>
+        </article>
+        <article>
+          <strong>{stats.medias}</strong>
+          <span>Prioridade média</span>
+        </article>
       </div>
 
       <div className="table-wrapper">
@@ -81,10 +94,9 @@ export default function TechDashboard() {
             </tr>
           </thead>
           <tbody>
-            {/* VALIDAÇÃO DE LISTA VAZIA ADICIONADA */}
             {chamados.length === 0 ? (
               <tr>
-                <td colSpan="8" style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
+                <td colSpan="8" className="empty-state-td">
                   Nenhum chamado atribuído no momento.
                 </td>
               </tr>
@@ -98,13 +110,17 @@ export default function TechDashboard() {
                     <td><strong>#{chamado?.id ?? '---'}</strong></td>
                     <td>{chamado?.tituloChamado ?? 'Sem título'}</td>
                     <td>
-                      <span className={`badge-nivel ${porChamado[chamado?.id]?.nivelSuporte?.toLowerCase()}`}>
+                      <span className={`badge-nivel ${porChamado[chamado?.id]?.nivelSuporte?.toLowerCase() || 'n1'}`}>
                         {porChamado[chamado?.id]?.nivelSuporte ?? 'N1'}
                       </span>
                     </td>
                     <td>{chamado?.ocorrenciaChamado ?? 'Não informada'}</td>
                     <td title={chamado?.descricaoChamado}>{formatarResumo(chamado?.descricaoChamado)}</td>
-                    <td>{chamado?.prioridadeChamado ?? 'MEDIA'}</td>
+                    <td>
+                      <span className={`badge-prioridade ${(chamado?.prioridadeChamado ?? 'MEDIA').toLowerCase()}`}>
+                        {chamado?.prioridadeChamado ?? 'MEDIA'}
+                      </span>
+                    </td>
                     <td>
                       <span className={`status-badge ${isResolvido ? 'resolvido' : 'aberto'}`}>
                         {statusAtual}

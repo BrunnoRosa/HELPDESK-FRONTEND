@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { chamadoApi, adminApi, atendimentoApi } from '../../../services/api';
+import Notification from '../../../components/Notification';
 import './style.css';
 
 export default function AdminTicketDetails() {
@@ -10,6 +11,7 @@ export default function AdminTicketDetails() {
   const [chamado, setChamado] = useState(null);
   const [tecnicos, setTecnicos] = useState([]);
   const [atendimentos, setAtendimentos] = useState([]);
+  const [feedback, setFeedback] = useState({ type: '', message: '' });
   
   const [editData, setEditData] = useState({ status: '', prioridade: '', nivelSuporte: '', tecnicoId: '' });
 
@@ -22,7 +24,7 @@ export default function AdminTicketDetails() {
       const [chamadoRes, tecnicosRes, atendimentosRes] = await Promise.all([
         chamadoApi.buscar(id),
         adminApi.listarTecnicos(),
-        atendimentoApi.buscarPorChamado(id).catch(() => []) // Evita quebrar se não houver endpoint ainda
+        atendimentoApi.buscarPorChamado(id).catch(() => [])
       ]);
       
       setChamado(chamadoRes);
@@ -36,19 +38,20 @@ export default function AdminTicketDetails() {
         tecnicoId: chamadoRes.tecnicoResponsavel?.id || ''
       });
     } catch (error) {
-      alert('Erro ao carregar dados do chamado.');
+      setFeedback({ type: 'error', message: 'Erro ao carregar dados do chamado.' });
       navigate('/admin');
     }
   };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+    setFeedback({ type: '', message: '' });
     try {
       await chamadoApi.atualizar(id, editData);
-      alert('Chamado atualizado com sucesso pela Administração!');
+      setFeedback({ type: 'success', message: 'Chamado atualizado com sucesso pela Administração!' });
       carregarDados();
     } catch (error) {
-      alert(error.message || 'Erro ao atualizar chamado.');
+      setFeedback({ type: 'error', message: error.message || 'Erro ao atualizar chamado.' });
     }
   };
 
@@ -58,35 +61,46 @@ export default function AdminTicketDetails() {
         await chamadoApi.deletar(id);
         navigate('/admin');
       } catch (error) {
-        alert(error.message || 'Erro ao excluir o chamado.');
+        setFeedback({ type: 'error', message: error.message || 'Erro ao excluir o chamado.' });
       }
     }
+  };
+
+  const formatarTexto = (texto) => {
+    if (!texto) return '';
+    return texto.replace(/[•●*\s]+/g, ' ').replace(/_/g, ' ').trim();
   };
 
   if (!chamado) return <div className="loading-state">Carregando...</div>;
 
   return (
-    <div className="ticket-detail-container">
-      <div className="ticket-header-bar">
-        <div>
+    <div className="admin-ticket-container">
+      <div className="admin-ticket-header">
+        <div className="admin-ticket-title-group">
           <h2>Chamado #{chamado.id}</h2>
-          <span className={`badge badge-${chamado.statusChamado?.toLowerCase()}`}>{chamado.statusChamado}</span>
+          <span className={`badge badge-${chamado.statusChamado?.toLowerCase() || 'gray'}`}>
+            {formatarTexto(chamado.statusChamado)}
+          </span>
         </div>
         <button className="btn-danger" onClick={handleDelete}>Excluir Chamado</button>
       </div>
+
+      {feedback.message && <Notification type={feedback.type} message={feedback.message} />}
       
-      <div className="ticket-grid">
-        <div className="ticket-main">
-          <div className="white-panel mb-4">
-            <h3>Detalhes da Solicitação</h3>
-            <p><strong>Título:</strong> {chamado.tituloChamado}</p>
-            <p><strong>Solicitante:</strong> {chamado.solicitante?.nome}</p>
-            <p><strong>Descrição:</strong></p>
-            <div className="description-box">{chamado.descricaoChamado}</div>
+      <div className="admin-ticket-grid">
+        <div className="admin-ticket-main">
+          <div className="admin-card">
+            <h3 className="admin-card-title">Detalhes da Solicitação</h3>
+            <div className="admin-card-content">
+              <p><strong>Título:</strong> {chamado.tituloChamado}</p>
+              <p><strong>Solicitante:</strong> {chamado.solicitante?.nome || 'Não informado'}</p>
+              <p><strong>Descrição:</strong></p>
+              <div className="description-box">{chamado.descricaoChamado}</div>
+            </div>
           </div>
 
-          <div className="white-panel timeline-panel">
-            <h3>Linha do Tempo (Atendimentos)</h3>
+          <div className="admin-card">
+            <h3 className="admin-card-title">Linha do Tempo (Atendimentos)</h3>
             {atendimentos.length === 0 ? (
               <p className="empty-text">Nenhuma interação registrada ainda.</p>
             ) : (
@@ -106,43 +120,65 @@ export default function AdminTicketDetails() {
           </div>
         </div>
 
-        <aside className="ticket-sidebar">
-          <div className="white-panel">
-            <h3>Intervenção Administrativa</h3>
-            <form onSubmit={handleUpdate} className="admin-form">
-              <label>Forçar Status:</label>
-              <select value={editData.status} onChange={(e) => setEditData({...editData, status: e.target.value})}>
-                <option value="ABERTO">Aberto</option>
-                <option value="EM_ANDAMENTO">Em Andamento</option>
-                <option value="AGUARDANDO_CLIENTE">Aguardando Cliente</option>
-                <option value="RESOLVIDO">Resolvido</option>
-                <option value="FECHADO">Fechado</option>
-              </select>
+        <aside className="admin-ticket-sidebar">
+          <div className="admin-card">
+            <h3 className="admin-card-title">Intervenção Administrativa</h3>
+            <form onSubmit={handleUpdate} className="admin-form-vertical">
+              <div className="form-group">
+                <label>Forçar Status:</label>
+                <select 
+                  value={editData.status} 
+                  onChange={(e) => setEditData({...editData, status: e.target.value})}
+                >
+                  <option value="ABERTO">Aberto</option>
+                  <option value="EM_TRIAGEM">Em Triagem</option>
+                  <option value="EM_ATENDIMENTO">Em Atendimento</option>
+                  <option value="EM_ANDAMENTO">Em Andamento</option>
+                  <option value="AGUARDANDO_CLIENTE">Aguardando Cliente</option>
+                  <option value="RESOLVIDO">Resolvido</option>
+                  <option value="FECHADO">Fechado</option>
+                </select>
+              </div>
 
-              <label>Prioridade:</label>
-              <select value={editData.prioridade} onChange={(e) => setEditData({...editData, prioridade: e.target.value})}>
-                <option value="BAIXA">Baixa</option>
-                <option value="MEDIA">Média</option>
-                <option value="ALTA">Alta</option>
-                <option value="URGENTE">Urgente</option>
-              </select>
+              <div className="form-group">
+                <label>Prioridade:</label>
+                <select 
+                  value={editData.prioridade} 
+                  onChange={(e) => setEditData({...editData, prioridade: e.target.value})}
+                >
+                  <option value="BAIXA">Baixa</option>
+                  <option value="MEDIA">Média</option>
+                  <option value="ALTA">Alta</option>
+                  <option value="URGENTE">Urgente</option>
+                </select>
+              </div>
 
-              <label>Fila (Nível):</label>
-              <select value={editData.nivelSuporte} onChange={(e) => setEditData({...editData, nivelSuporte: e.target.value})}>
-                <option value="N1">N1 - Triagem e Básico</option>
-                <option value="N2">N2 - Especializado</option>
-                <option value="N3">N3 - Engenharia</option>
-              </select>
+              <div className="form-group">
+                <label>Fila (Nível):</label>
+                <select 
+                  value={editData.nivelSuporte} 
+                  onChange={(e) => setEditData({...editData, nivelSuporte: e.target.value})}
+                >
+                  <option value="N1">N1 - Triagem e Básico</option>
+                  <option value="N2">N2 - Especializado</option>
+                  <option value="N3">N3 - Engenharia</option>
+                </select>
+              </div>
 
-              <label>Atribuição Direta:</label>
-              <select value={editData.tecnicoId} onChange={(e) => setEditData({...editData, tecnicoId: e.target.value})}>
-                <option value="">Desatribuir (Fila Geral)</option>
-                {tecnicos.map(tec => (
-                  <option key={tec.id} value={tec.id}>{tec.nome} ({tec.nivelSuporte})</option>
-                ))}
-              </select>
+              <div className="form-group">
+                <label>Atribuição Direta:</label>
+                <select 
+                  value={editData.tecnicoId} 
+                  onChange={(e) => setEditData({...editData, tecnicoId: e.target.value})}
+                >
+                  <option value="">Desatribuir (Fila Geral)</option>
+                  {tecnicos.map(tec => (
+                    <option key={tec.id} value={tec.id}>{tec.nome} ({tec.nivelSuporte})</option>
+                  ))}
+                </select>
+              </div>
 
-              <button type="submit" className="btn-primary" style={{marginTop: '1.5rem'}}>Aplicar Intervenção</button>
+              <button type="submit" className="btn-primary-block">Aplicar Intervenção</button>
             </form>
           </div>
         </aside>
