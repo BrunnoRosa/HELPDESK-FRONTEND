@@ -119,9 +119,9 @@ export default function ClientTicketDetails() {
           <div className="info-item">
             <label>Data de Abertura</label>
             <p>
-              {chamado.dataAbertura 
-                ? new Date(chamado.dataAbertura).toLocaleDateString('pt-BR') 
-                : 'Não informada'}
+              {chamado.dataAberturaChamado
+                  ? new Date(chamado.dataAberturaChamado).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
+                  : 'Não informada'}
             </p>
           </div>
         </div>
