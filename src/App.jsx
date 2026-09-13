@@ -1,55 +1,78 @@
-import { AuthProvider, useAuth } from './context/AuthContext';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './pages/Login';
-import Register from './pages/Register'; // <-- Adicione esta linha!
-import Dashboard from './pages/Dashboard';
-import NewTicket from './pages/NewTicket';
-import TicketDetails from './pages/TicketDetails';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import TechReports from './pages/tech/TechReports';
 
-function PrivateRoute({ children }) {
-  const { signed, loading } = useAuth();
-  if (loading) return <div className="p-8 text-center">Carregando...</div>;
-  return signed ? children : <Navigate to="/login" />;
+// Importação dos componentes de estrutura
+import Layout from './components/Layout';
+import Protected from './components/Protected';
+
+// Importação das Páginas - Auth
+import Login from './pages/auth/Login';
+
+// Importação das Páginas - Geral / Configurações
+import Profile from './pages/profile';
+
+// Importação das Páginas - Cliente
+import ClienteDashboard from './pages/cliente/ClienteDashboard';
+import NewTicket from './pages/cliente/NewTicket';
+import ClientTicketDetails from './pages/cliente/ClienteTicketDetails';
+
+// Importação das Páginas - Técnico e Admin
+import TechDashboard from './pages/tech/TechDashboard';
+import TechTicketDetails from './pages/tech/TechTicketDetails';
+import AdminDashboard from './pages/admin/AdminDashboard';        
+import AdminTicketDetails from './pages/admin/AdminTicketDetails'; 
+import AdminUsers from './pages/admin/AdminUsers'; // <
+
+// 1. CORREÇÃO: Direciona automaticamente para as rotas corretas caso o usuário acesse a raiz '/'
+function IndexRouter() {
+  const { user } = useAuth();
+  if (user?.role === 'ADMINISTRADOR') return <Navigate to="/admin" replace />;
+  if (user?.role === 'TECNICO') return <Navigate to="/tecnico" replace />;
+  return <ClienteDashboard />;
 }
 
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
+    <BrowserRouter>
+      <AuthProvider>
         <Routes>
-          <Route path="/register" element={<Register />} />
+          {/* Rotas Públicas */}
           <Route path="/login" element={<Login />} />
-          {/* Rota do Painel Principal */}
-       <Route path="/dashboard" element={<Dashboard />} />
 
-        {/* Redireciona a raiz "/" diretamente para o "/dashboard" */}
-        {/*<Route path="/" element={<Navigate to="/dashboard" replace />} />*/}
-          <Route
-            path="/"
+          {/* Rotas Privadas (Envelopadas pelo Layout) */}
+          <Route 
+            path="/" 
             element={
-              <PrivateRoute>
-                <Dashboard />
-              </PrivateRoute>
+              <Protected>
+                <Layout />
+              </Protected>
             }
-          />
-          <Route
-            path="/novo-chamado"
-            element={
-              <PrivateRoute>
-                <NewTicket />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/chamados/:id"
-            element={
-              <PrivateRoute>
-                <TicketDetails />
-              </PrivateRoute>
-            }
-          />
+          >
+            <Route index element={<IndexRouter />} />
+            
+            {/* Rota do Perfil (Acessível a qualquer perfil logado) */}
+            <Route path="perfil" element={<Profile />} /> {/* <-- 2. ROTA ADICIONADA */}
+
+            {/* Visão do Cliente */}
+              <Route path="cliente" element={<ClienteDashboard />} /> {/* <-- ADICIONE ESTA LINHA */}
+              <Route path="cliente/novo-chamado" element={<NewTicket />} />
+              <Route path="cliente/chamado/:id" element={<ClientTicketDetails />} />
+            {/* 2. CORREÇÃO: Removido o "/dashboard" para casar perfeitamente com o Login e Sidebar */}
+            <Route path="tecnico" element={<TechDashboard />} />
+            <Route path="tecnico/chamado/:id" element={<TechTicketDetails />} />
+            <Route path="tecnico/relatorios" element={<TechReports />} />
+
+            {/* Visão do Admin */}
+            <Route path="admin" element={<AdminDashboard />} />
+            <Route path="admin/chamado/:id" element={<AdminTicketDetails />} />
+            <Route path="admin/usuarios" element={<AdminUsers />} />
+          </Route>
+
+          {/* Redirecionamento para rotas inexistentes */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }

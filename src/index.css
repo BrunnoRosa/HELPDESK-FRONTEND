@@ -1,3 +1,123 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* =========================================================
+   1. VARIÁVEIS DE TEMA & LAYOUT
+   ========================================================= */
+
+/* ☀️ TEMA CLARO */
+:root, [data-theme="light"], body[data-theme="light"] {
+  --sidebar-width: 330px;
+  --header-height: 64px;
+
+  --bg-primary: #eef2f5;
+  --bg-surface: #fbfcfd;
+  --bg-sidebar: #e1e8ef;
+  --bg-sidebar-footer: #d7e0e8;
+  --border-color: #d5dde5;
+  --input-bg: #f8fafc;
+  
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-sidebar: #334155;
+  --text-sidebar-heading: #0f172a;
+  --text-muted: #94a3b8;
+  
+  --hover-bg: #dce5ed;
+  --hover-text: #0f172a;
+  --active-bg: #dbeafe;
+  --active-text: #1d4ed8;
+  --accent-color: #2563eb;
+}
+
+/* 🌙 TEMA ESCURO */
+[data-theme="dark"], body[data-theme="dark"] {
+  --sidebar-width: 330px; 
+  --header-height: 64px;
+
+  --bg-primary: #121214;
+  --bg-surface: #1e1e22;
+  --bg-sidebar: #18181b;
+  --bg-sidebar-footer: #09090b;
+  --border-color: #2e2e34;
+  --input-bg: #27272a;
+  
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-sidebar: #d4d4d8;
+  --text-sidebar-heading: #ffffff;
+  --text-muted: #71717a;
+  
+  --hover-bg: #27272a;
+  --hover-text: #ffffff;
+  --active-bg: #27272a;
+  --active-text: #3b82f6;
+  --accent-color: #3b82f6;
+}
+
+/* =========================================================
+   2. RESET GLOBAL & ESTRUTURA DE LAYOUT
+   ========================================================= */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+}
+
+/* Estrutura padrão de layout (Sidebar na esquerda + Conteúdo na direita) */
+.app, .app-container, .portal-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+}
+
+/* Conteúdo Principal (Alinhamento vertical para Header no topo) */
+main, .main-content, .content-wrapper, .app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Área da página interna abaixo do Header */
+.page-content, .main-body {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+/* =========================================================
+   3. FORMULÁRIOS & SELECTS GLOBAIS
+   ========================================================= */
+input, select, textarea {
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  font-family: inherit;
+}
+
+select option {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+}

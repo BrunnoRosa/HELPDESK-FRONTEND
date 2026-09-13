@@ -1,0 +1,434 @@
+/* ==========================================
+   1. ESTRUTURA E CABEÇALHO DO PAINEL
+   ========================================== */
+.admin-container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 1.5rem 0;
+  padding: 0 1rem;
+  color: var(--text-primary);
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.admin-header h2 {
+  font-size: 1.85rem;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* CONTAINER PRINCIPAL ADAPTÁVEL AO TEMA */
+.admin-panel,
+.white-panel {
+  background-color: var(--bg-surface) !important;
+  border-radius: 16px;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  padding: 1.25rem;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+
+[data-theme="dark"] .admin-header h2 {
+  color: #f4f4f5;
+}
+
+[data-theme="dark"] .admin-panel,
+[data-theme="dark"] .white-panel {
+  background-color: #1e1e22 !important;
+  border-color: #2e2e34 !important;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+}
+
+/* ==========================================
+   2. FILAS E ABAS DE NÍVEL (N1, N2, N3)
+   ========================================== */
+.queue-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+  background-color: var(--bg-primary) !important;
+  padding: 0.25rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color) !important;
+  width: fit-content;
+  max-width: 100%;
+}
+
+[data-theme="dark"] .queue-tabs {
+  background-color: #121214 !important;
+  border-color: #2e2e34 !important;
+}
+
+.queue-btn {
+  background: transparent;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.queue-btn:hover {
+  color: var(--text-primary);
+}
+
+.queue-btn.active {
+  background-color: var(--bg-surface) !important;
+  color: var(--accent-color) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .queue-btn {
+  color: #a1a1aa;
+}
+
+[data-theme="dark"] .queue-btn:hover {
+  color: #f4f4f5;
+}
+
+[data-theme="dark"] .queue-btn.active {
+  background-color: #27272a !important;
+  color: #60a5fa !important;
+}
+
+/* ==========================================
+   3. FILTROS RÁPIDOS (TODOS, ABERTO, ESCALONADO)
+   ========================================== */
+.filter-group-admin {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.filter-btn {
+  background-color: var(--bg-primary) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-secondary) !important;
+  padding: 0.4rem 1rem;
+  border-radius: 99px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  background-color: var(--hover-bg) !important;
+  color: var(--hover-text) !important;
+}
+
+.filter-btn.active {
+  background-color: var(--accent-color) !important;
+  color: #ffffff !important;
+  border-color: var(--accent-color) !important;
+}
+
+[data-theme="dark"] .filter-btn {
+  background-color: #27272a !important;
+  border-color: #3f3f46 !important;
+  color: #a1a1aa !important;
+}
+
+[data-theme="dark"] .filter-btn:hover {
+  background-color: #333338 !important;
+  color: #f4f4f5 !important;
+}
+
+[data-theme="dark"] .filter-btn.active {
+  background-color: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+/* ==========================================
+   4. TABELA DE CHAMADOS
+   ========================================== */
+.table-responsive {
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}
+
+[data-theme="dark"] .table-responsive {
+  border-color: #2e2e34;
+}
+
+.admin-table {
+  width: 100%;
+  min-width: 820px;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.admin-table th {
+  color: var(--text-secondary);
+  font-weight: 600;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bg-primary) !important;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+}
+
+[data-theme="dark"] .admin-table th {
+  color: #a1a1aa;
+  background-color: #121214 !important;
+  border-bottom-color: #3f3f46;
+}
+
+.admin-table td {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+  background-color: transparent !important;
+  vertical-align: middle;
+}
+
+[data-theme="dark"] .admin-table td {
+  color: #e4e4e7;
+  border-bottom-color: #2e2e34;
+}
+
+.admin-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.admin-table tbody tr:hover {
+  background-color: rgba(59, 130, 246, 0.04);
+}
+
+[data-theme="dark"] .admin-table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2.5rem !important;
+  color: var(--text-muted) !important;
+  font-style: italic;
+}
+
+[data-theme="dark"] .empty-state {
+  color: #cbd5e1 !important;
+  background-color: #27272a !important;
+}
+
+/* Botão de Ação "Gerenciar" */
+.btn-outline-small {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  padding: 0.35rem 0.85rem;
+  border-radius: 6px;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+
+.btn-outline-small:hover {
+  background-color: var(--accent-color);
+  color: #ffffff;
+  border-color: var(--accent-color);
+}
+
+[data-theme="dark"] .btn-outline-small {
+  background-color: #27272a;
+  border-color: #3f3f46;
+  color: #e4e4e7;
+}
+
+[data-theme="dark"] .btn-outline-small:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+}
+
+/* ==========================================
+   5. BADGES DE STATUS E PRIORIDADE (PÍLULAS LIMPAS)
+   ========================================== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  justify-content: center;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: all 0.25s ease;
+}
+
+.badge::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+
+/* STATUS */
+.badge-aberto {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.badge-em_triagem {
+  background-color: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+}
+
+.badge-em_atendimento,
+.badge-em_andamento,
+.badge-pendente_evidencia {
+  background-color: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+}
+
+.badge-resolvido {
+  background-color: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.badge-fechado {
+  background-color: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+/* PRIORIDADES */
+.badge-baixa {
+  background-color: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.badge-media {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.badge-alta {
+  background-color: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+}
+
+.badge-urgente {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.badge-gray {
+  background-color: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+/* Mesmas cores de alto contraste usadas no modo escuro do cliente. */
+[data-theme="dark"] .badge-aberto,
+[data-theme="dark"] .badge-media {
+  background-color: rgba(59, 130, 246, 0.16);
+  color: #60a5fa;
+  border-color: rgba(96, 165, 250, 0.3);
+}
+
+[data-theme="dark"] .badge-em_triagem,
+[data-theme="dark"] .badge-em_atendimento,
+[data-theme="dark"] .badge-em_andamento,
+[data-theme="dark"] .badge-pendente_evidencia,
+[data-theme="dark"] .badge-alta {
+  background-color: rgba(249, 115, 22, 0.16);
+  color: #fb923c;
+  border-color: rgba(251, 146, 60, 0.3);
+}
+
+[data-theme="dark"] .badge-resolvido,
+[data-theme="dark"] .badge-fechado {
+  background-color: rgba(34, 197, 94, 0.16);
+  color: #4ade80;
+  border-color: rgba(74, 222, 128, 0.3);
+}
+
+[data-theme="dark"] .badge-urgente {
+  background-color: rgba(239, 68, 68, 0.16);
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.3);
+}
+
+[data-theme="dark"] .badge-baixa,
+[data-theme="dark"] .badge-gray {
+  background-color: rgba(148, 163, 184, 0.12);
+  color: #cbd5e1;
+  border-color: rgba(203, 213, 225, 0.2);
+}
+
+/* ==========================================
+   6. RESPONSIVIDADE
+   ========================================== */
+@media (max-width: 768px) {
+  .admin-container {
+    padding: 0 1rem;
+    margin: 1rem 0;
+  }
+
+  .admin-header {
+    align-items: flex-start;
+  }
+
+  .admin-header h2 {
+    font-size: 1.5rem;
+    line-height: 1.25;
+  }
+
+  .admin-panel,
+  .white-panel {
+    padding: 0.75rem;
+    border-radius: 12px;
+  }
+
+  .queue-tabs {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .queue-btn {
+    flex: 1;
+    padding: 0.5rem;
+    text-align: center;
+  }
+
+  .filter-group-admin {
+    gap: 0.45rem;
+  }
+
+  .filter-btn {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.78rem;
+  }
+}
