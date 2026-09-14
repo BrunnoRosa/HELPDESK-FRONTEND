@@ -85,7 +85,8 @@ export default function TechTicketDetails() {
         tituloChamado: chamado.tituloChamado,
         ocorrenciaChamado: chamado.ocorrenciaChamado,
         descricaoChamado: novaLinha,
-        prioridadeChamado: chamado.prioridadeChamado
+        prioridadeChamado: chamado.prioridadeChamado,
+        imagemChamado: chamado.imagemChamado // <-- REPASSA A IMAGEM ATUAL AQUI
       });
 
       setMensagem('Histórico atualizado com sucesso.');
@@ -112,7 +113,8 @@ export default function TechTicketDetails() {
         tituloChamado: chamado.tituloChamado,
         ocorrenciaChamado: chamado.ocorrenciaChamado,
         descricaoChamado: novaLinha,
-        prioridadeChamado: novaPrioridade
+        prioridadeChamado: novaPrioridade,
+        imagemChamado: chamado.imagemChamado // <-- REPASSA A IMAGEM ATUAL AQUI
       });
 
       await carregarDados();
