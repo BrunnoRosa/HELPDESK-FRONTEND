@@ -64,8 +64,8 @@ export default function TechTicketDetails() {
     setErro('');
     setMensagem('');
     try {
-      const dataHora = new Date().toLocaleString();
-      const novaLinha = `[${dataHora}] ${user?.name}: ${textoComplementar}`;
+      const novaLinha = `${user?.name}: ${textoComplementar}`; // sem timestamp manual — o backend já carimba
+
       await chamadoApi.atualizar(id, {
         id: Number(id),
         tituloChamado: chamado.tituloChamado,
@@ -73,15 +73,10 @@ export default function TechTicketDetails() {
         descricaoChamado: novaLinha,
         prioridadeChamado: chamado.prioridadeChamado
       });
-      
+
       setMensagem('Histórico atualizado com sucesso.');
       setDescricaoAtualizacao('');
-      setChamado((chamadoAtual) => ({
-        ...chamadoAtual,
-        descricaoChamado: chamadoAtual.descricaoChamado
-          ? `${chamadoAtual.descricaoChamado}\n${novaLinha}`
-          : novaLinha,
-      }));
+      await carregarDados(); // recarrega do backend, já com o carimbo correto
     } catch (error) {
       setErro("Erro ao atualizar histórico: " + error.message);
     }
@@ -96,23 +91,17 @@ export default function TechTicketDetails() {
     setAtualizando(true);
 
     try {
-      const dataHora = new Date().toLocaleString();
-      const novaLinha = `[${dataHora}] ${user?.name}: Prioridade alterada de ${chamado.prioridadeChamado} para ${novaPrioridade}`;
-      const novaDescricao = chamado.descricaoChamado ? `${chamado.descricaoChamado}\n${novaLinha}` : novaLinha;
+      const novaLinha = `${user?.name}: Prioridade alterada de ${chamado.prioridadeChamado} para ${novaPrioridade}`;
 
       await chamadoApi.atualizar(id, {
         id: Number(id),
         tituloChamado: chamado.tituloChamado,
         ocorrenciaChamado: chamado.ocorrenciaChamado,
-        descricaoChamado: novaDescricao,
+        descricaoChamado: novaLinha, // só a linha nova — o backend concatena com o que já existe
         prioridadeChamado: novaPrioridade
       });
 
-      setChamado((prev) => ({
-        ...prev,
-        prioridadeChamado: novaPrioridade,
-        descricaoChamado: novaDescricao
-      }));
+      await carregarDados();
       setMensagem(`Prioridade atualizada para ${novaPrioridade}.`);
     } catch (error) {
       setErro("Erro ao mudar prioridade: " + error.message);
