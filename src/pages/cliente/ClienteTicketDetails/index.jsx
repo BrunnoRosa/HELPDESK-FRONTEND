@@ -57,6 +57,12 @@ export default function ClientTicketDetails() {
     return 'badge-gray';
   };
 
+  const extrairEquipamento = (descricao) => {
+    if (!descricao) return '';
+    const match = descricao.match(/\[Equipamento:\s*(.*?)\s*\|/);
+    return match?.[1]?.trim() || '';
+  };
+
   if (carregando) {
     return (
       <div className="details-container">
@@ -110,7 +116,7 @@ export default function ClientTicketDetails() {
           </div>
           <div className="info-item">
             <label>Equipamento / Ativo</label>
-            <p>{atendimento.equipamentoVinculado || 'Não informado'}</p>
+            <p>{atendimento.equipamentoVinculado || extrairEquipamento(chamado.descricaoChamado) || 'Não informado'}</p>
           </div>
           <div className="info-item">
             <label>Ocorrência</label>
@@ -119,8 +125,8 @@ export default function ClientTicketDetails() {
           <div className="info-item">
             <label>Data de Abertura</label>
             <p>
-              {chamado.dataAbertura 
-                ? new Date(chamado.dataAbertura).toLocaleDateString('pt-BR') 
+              {chamado.dataAberturaChamado
+                ? new Date(chamado.dataAberturaChamado).toLocaleString('pt-BR')
                 : 'Não informada'}
             </p>
           </div>

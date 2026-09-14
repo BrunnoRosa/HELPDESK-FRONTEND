@@ -103,9 +103,7 @@ export default function TechReports() {
             <option value="ABERTO">Aberto</option>
             <option value="EM_TRIAGEM">Em triagem</option>
             <option value="EM_ATENDIMENTO">Em atendimento</option>
-            <option value="PENDENTE_EVIDENCIA">Pendente evidência</option>
             <option value="RESOLVIDO">Resolvido</option>
-            <option value="FECHADO">Fechado</option>
           </select>
         </div>
 

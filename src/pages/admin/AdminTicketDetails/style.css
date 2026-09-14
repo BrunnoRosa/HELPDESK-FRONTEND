@@ -18,6 +18,15 @@
   width: 100%;
 }
 
+.admin-ticket-container > .notification-box {
+  width: calc(100% - 376px);
+  max-width: 100%;
+  min-height: 0;
+  padding: 0.65rem 0.85rem;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+}
+
 .admin-ticket-title-group {
   display: flex;
   align-items: center;
@@ -332,6 +341,10 @@
 }
 
 @media (max-width: 960px) {
+  .admin-ticket-container > .notification-box {
+    width: 100%;
+  }
+
   .admin-ticket-grid {
     grid-template-columns: 1fr;
   }
