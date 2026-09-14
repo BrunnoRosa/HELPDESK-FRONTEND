@@ -86,7 +86,7 @@ export default function TechTicketDetails() {
         ocorrenciaChamado: chamado.ocorrenciaChamado,
         descricaoChamado: novaLinha,
         prioridadeChamado: chamado.prioridadeChamado,
-        imagemChamado: chamado.imagemChamado // <-- REPASSA A IMAGEM ATUAL AQUI
+        imagemChamado: chamado.imagemChamado // Preserva a imagem enviando-a no PUT
       });
 
       setMensagem('Histórico atualizado com sucesso.');
@@ -114,7 +114,7 @@ export default function TechTicketDetails() {
         ocorrenciaChamado: chamado.ocorrenciaChamado,
         descricaoChamado: novaLinha,
         prioridadeChamado: novaPrioridade,
-        imagemChamado: chamado.imagemChamado // <-- REPASSA A IMAGEM ATUAL AQUI
+        imagemChamado: chamado.imagemChamado // Preserva a imagem enviando-a no PUT
       });
 
       await carregarDados();
@@ -200,8 +200,12 @@ export default function TechTicketDetails() {
   if (!chamado || !atendimento) return <Notification type="error" message={erro || 'Não foi possível carregar o chamado.'} />;
 
   const isResolvido = atendimento.status === 'RESOLVIDO' || atendimento.status === 'FECHADO';
+  
+  // Leitura do equipamento vindo da descrição ou do atendimento
   const equipamentoDaDescricao = chamado.descricaoChamado?.match(/\[Equipamento:\s*(.*?)\s*\|/)?.[1]?.trim();
   const equipamentoExibido = atendimento.equipamentoVinculado || equipamentoDaDescricao;
+
+  // Lógica de recuperação de anexo local / banco de dados
   const imagemArmazenada = localStorage.getItem(`helpdesk:chamado:${chamado.id}:imagem`);
   let anexoLocal = null;
 
@@ -258,41 +262,41 @@ export default function TechTicketDetails() {
             )}
           </div>
 
-          {(anexo || atendimento.status === 'PENDENTE_EVIDENCIA') && (
-            <div className="card">
-              <h3>Evidências e Anexos (Fotografias)</h3>
-              <div className="attachments-grid">
-                {anexo && (
-                  <div className="attachment-item">
-                    <span className="icon">📎</span>
-                    <a
-                      href={anexo.data}
-                      download={anexo.nome}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="attachment-link"
-                    >
-                      {anexo.nome}
-                    </a>
+          <div className="card">
+            <h3>Evidências e Anexos (Fotografias)</h3>
+            <div className="attachments-grid">
+              
+              {/* Exibição dinâmica da evidência com suporte ao modal e fallback do localStorage */}
+              {anexo ? (
+                <div className="attachment-item">
+                  <span className="icon">📸</span>
+                  <span 
+                    onClick={() => abrirModal(anexo.data)} 
+                    className="attachment-link"
+                    style={{ cursor: 'pointer', color: '#0056b3', textDecoration: 'underline' }}
+                  >
+                    Ver imagem anexada
+                  </span>
+                </div>
+              ) : (
+                <p style={{ fontSize: '14px', color: '#666' }}>Nenhuma evidência anexada neste chamado.</p>
+              )}
+              
+              {atendimento.status === 'PENDENTE_EVIDENCIA' && (
+                <div className="upload-section">
+                  <label className="upload-label">
+                    Anexar nova evidência solicitada pelo usuário:
+                  </label>
+                  <div className="upload-controls">
+                    <input type="file" accept="image/*, .pdf" className="file-input" />
+                    <button type="button" className="btn-upload">
+                      Enviar Arquivo
+                    </button>
                   </div>
-                )}
-
-                {atendimento.status === 'PENDENTE_EVIDENCIA' && (
-                  <div className="upload-section">
-                    <label className="upload-label">
-                      Anexar nova evidência solicitada pelo usuário:
-                    </label>
-                    <div className="upload-controls">
-                      <input type="file" accept="image/*, .pdf" className="file-input" />
-                      <button type="button" className="btn-upload">
-                        Enviar Arquivo
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
 
         <div className="sidebar-content">
