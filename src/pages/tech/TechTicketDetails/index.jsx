@@ -18,6 +18,20 @@ export default function TechTicketDetails() {
   const [loading, setLoading] = useState(true);
   const [atualizando, setAtualizando] = useState(false);
 
+  // Controle de estado para exibição do Modal da Evidência Fotográfica
+  const [modalAberto, setModalAberto] = useState(false);
+  const [imagemSelecionada, setImagemSelecionada] = useState(null);
+
+  const abrirModal = (urlImagem) => {
+    setImagemSelecionada(urlImagem);
+    setModalAberto(true);
+  };
+
+  const fecharModal = () => {
+    setModalAberto(false);
+    setImagemSelecionada(null);
+  };
+
   const carregarDados = async () => {
     try {
       setLoading(true);
@@ -64,7 +78,7 @@ export default function TechTicketDetails() {
     setErro('');
     setMensagem('');
     try {
-      const novaLinha = `${user?.name}: ${textoComplementar}`; // sem timestamp manual — o backend já carimba
+      const novaLinha = `${user?.name}: ${textoComplementar}`;
 
       await chamadoApi.atualizar(id, {
         id: Number(id),
@@ -76,7 +90,7 @@ export default function TechTicketDetails() {
 
       setMensagem('Histórico atualizado com sucesso.');
       setDescricaoAtualizacao('');
-      await carregarDados(); // recarrega do backend, já com o carimbo correto
+      await carregarDados();
     } catch (error) {
       setErro("Erro ao atualizar histórico: " + error.message);
     }
@@ -97,7 +111,7 @@ export default function TechTicketDetails() {
         id: Number(id),
         tituloChamado: chamado.tituloChamado,
         ocorrenciaChamado: chamado.ocorrenciaChamado,
-        descricaoChamado: novaLinha, // só a linha nova — o backend concatena com o que já existe
+        descricaoChamado: novaLinha,
         prioridadeChamado: novaPrioridade
       });
 
@@ -228,12 +242,22 @@ export default function TechTicketDetails() {
           <div className="card">
             <h3>Evidências e Anexos (Fotografias)</h3>
             <div className="attachments-grid">
-              <div className="attachment-item">
-                <span className="icon">📄</span>
-                <a href="#" target="_blank" rel="noreferrer" className="attachment-link">
-                  evidencia_tela_erro.jpg
-                </a>
-              </div>
+              
+              {/* Renderização dinâmica da evidência anexada pelo usuário */}
+              {chamado.imagemChamado ? (
+                <div className="attachment-item">
+                  <span className="icon">📸</span>
+                  <span 
+                    onClick={() => abrirModal(chamado.imagemChamado)} 
+                    className="attachment-link"
+                    style={{ cursor: 'pointer', color: '#0056b3', textDecoration: 'underline' }}
+                  >
+                    Ver imagem anexada
+                  </span>
+                </div>
+              ) : (
+                <p style={{ fontSize: '14px', color: '#666' }}>Nenhuma evidência anexada neste chamado.</p>
+              )}
               
               {atendimento.status === 'PENDENTE_EVIDENCIA' && (
                 <div className="upload-section">
@@ -346,6 +370,31 @@ export default function TechTicketDetails() {
           )}
         </div>
       </div>
+
+      {/* Modal de visualização da imagem em tamanho completo */}
+      {modalAberto && (
+        <div 
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999 }}
+          onClick={fecharModal}
+        >
+          <div 
+            style={{ position: 'relative', padding: '10px', backgroundColor: '#fff', borderRadius: '8px', maxWidth: '90vw', maxHeight: '90vh', display: 'flex', flexDirection: 'column' }}
+            onClick={(e) => e.stopPropagation()} 
+          >
+            <button 
+              style={{ position: 'absolute', top: '-40px', right: '0px', fontSize: '30px', color: '#fff', background: 'transparent', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
+              onClick={fecharModal}
+            >
+              &times;
+            </button>
+            <img 
+              src={imagemSelecionada} 
+              alt="Evidência do Chamado" 
+              style={{ maxWidth: '100%', maxHeight: '85vh', objectFit: 'contain' }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
