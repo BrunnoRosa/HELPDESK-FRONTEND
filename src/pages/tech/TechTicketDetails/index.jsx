@@ -200,6 +200,23 @@ export default function TechTicketDetails() {
   if (!chamado || !atendimento) return <Notification type="error" message={erro || 'Não foi possível carregar o chamado.'} />;
 
   const isResolvido = atendimento.status === 'RESOLVIDO' || atendimento.status === 'FECHADO';
+  const equipamentoDaDescricao = chamado.descricaoChamado?.match(/\[Equipamento:\s*(.*?)\s*\|/)?.[1]?.trim();
+  const equipamentoExibido = atendimento.equipamentoVinculado || equipamentoDaDescricao;
+  const imagemArmazenada = localStorage.getItem(`helpdesk:chamado:${chamado.id}:imagem`);
+  let anexoLocal = null;
+
+  if (imagemArmazenada) {
+    try {
+      const anexo = JSON.parse(imagemArmazenada);
+      anexoLocal = anexo.data ? anexo : { data: imagemArmazenada, nome: 'Arquivo anexado' };
+    } catch {
+      anexoLocal = { data: imagemArmazenada, nome: 'Arquivo anexado' };
+    }
+  }
+
+  const anexo = chamado.imagemChamado
+    ? { data: chamado.imagemChamado, nome: 'Arquivo anexado' }
+    : anexoLocal;
 
   return (
     <div className="ticket-details-page">
@@ -241,41 +258,41 @@ export default function TechTicketDetails() {
             )}
           </div>
 
-          <div className="card">
-            <h3>Evidências e Anexos (Fotografias)</h3>
-            <div className="attachments-grid">
-              
-              {/* Renderização dinâmica da evidência anexada pelo usuário */}
-              {chamado.imagemChamado ? (
-                <div className="attachment-item">
-                  <span className="icon">📸</span>
-                  <span 
-                    onClick={() => abrirModal(chamado.imagemChamado)} 
-                    className="attachment-link"
-                    style={{ cursor: 'pointer', color: '#0056b3', textDecoration: 'underline' }}
-                  >
-                    Ver imagem anexada
-                  </span>
-                </div>
-              ) : (
-                <p style={{ fontSize: '14px', color: '#666' }}>Nenhuma evidência anexada neste chamado.</p>
-              )}
-              
-              {atendimento.status === 'PENDENTE_EVIDENCIA' && (
-                <div className="upload-section">
-                  <label className="upload-label">
-                    Anexar nova evidência solicitada pelo usuário:
-                  </label>
-                  <div className="upload-controls">
-                    <input type="file" accept="image/*, .pdf" className="file-input" />
-                    <button type="button" className="btn-upload">
-                      Enviar Arquivo
-                    </button>
+          {(anexo || atendimento.status === 'PENDENTE_EVIDENCIA') && (
+            <div className="card">
+              <h3>Evidências e Anexos (Fotografias)</h3>
+              <div className="attachments-grid">
+                {anexo && (
+                  <div className="attachment-item">
+                    <span className="icon">📎</span>
+                    <a
+                      href={anexo.data}
+                      download={anexo.nome}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="attachment-link"
+                    >
+                      {anexo.nome}
+                    </a>
                   </div>
-                </div>
-              )}
+                )}
+
+                {atendimento.status === 'PENDENTE_EVIDENCIA' && (
+                  <div className="upload-section">
+                    <label className="upload-label">
+                      Anexar nova evidência solicitada pelo usuário:
+                    </label>
+                    <div className="upload-controls">
+                      <input type="file" accept="image/*, .pdf" className="file-input" />
+                      <button type="button" className="btn-upload">
+                        Enviar Arquivo
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="sidebar-content">
@@ -311,7 +328,7 @@ export default function TechTicketDetails() {
               <hr className="data-divider"/>
               <div><dt>Solicitante</dt><dd>{atendimento.solicitanteNome || 'Não informado'}</dd></div>
               <div><dt>Usuário Vinculado</dt><dd>{atendimento.usuarioVinculado || 'Não vinculado'}</dd></div>
-              <div><dt>Equipamento</dt><dd>{atendimento.equipamentoVinculado || 'Não vinculado'}</dd></div>
+              <div><dt>Equipamento</dt><dd>{equipamentoExibido || 'Não vinculado'}</dd></div>
               <div><dt>Técnico Responsável</dt><dd>{atendimento.tecnicoResponsavelNome || 'Não atribuído'}</dd></div>
             </dl>
           </div>
