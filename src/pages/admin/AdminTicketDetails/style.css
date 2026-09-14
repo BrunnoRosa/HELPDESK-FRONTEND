@@ -1,0 +1,365 @@
+/* ==========================================
+   ESTILOS ISOLADOS - DETALHES DO CHAMADO
+   ========================================== */
+
+.admin-ticket-container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 1.5rem 0;
+  padding: 0 1rem;
+  color: var(--text-primary, #0f172a);
+}
+
+.admin-ticket-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.admin-ticket-title-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-ticket-title-group h2 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  letter-spacing: -0.02em;
+}
+
+/* Grid Principal em 2 colunas travadas */
+.admin-ticket-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+  gap: 1.5rem;
+  align-items: start;
+  width: 100%;
+}
+
+.admin-ticket-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.admin-ticket-sidebar {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Cards sem vazamento */
+.admin-card {
+  background-color: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-card-title {
+  margin: 0 0 1.25rem 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary, #0f172a);
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  padding-bottom: 0.75rem;
+}
+
+.admin-card-content p {
+  margin-bottom: 0.75rem;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.description-box {
+  background-color: var(--bg-primary, #f8fafc);
+  border: 1px solid var(--border-color, #e2e8f0);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Formulário Vertical perfeitamente alinhado */
+.admin-form-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.form-group select {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color, #cbd5e1);
+  background-color: var(--input-bg, #ffffff) !important;
+  color: var(--text-primary, #0f172a) !important;
+  font-size: 0.9rem;
+  outline: none;
+  cursor: pointer;
+}
+
+.btn-primary-block {
+  width: 100%;
+  margin-top: 0.5rem;
+  background-color: var(--accent-color);
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.btn-primary-block:hover {
+  opacity: 0.9;
+}
+
+.btn-danger {
+  background-color: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.btn-danger:hover {
+  background-color: rgba(239, 68, 68, 0.25);
+}
+
+/* Timeline */
+.timeline {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--border-color);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.timeline-item:last-child {
+  margin-bottom: 0;
+}
+
+.timeline-marker {
+  position: absolute;
+  left: -1.85rem;
+  top: 0.35rem;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: var(--accent-color);
+  border: 3px solid var(--bg-surface);
+}
+
+.timeline-content {
+  background-color: var(--bg-primary);
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.timeline-date {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.timeline-author {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0.25rem 0 0.5rem 0;
+}
+
+.timeline-text {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.empty-text {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-style: italic;
+  margin: 0;
+}
+
+/* Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.badge-aberto { background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.3); }
+.badge-em_triagem { background: rgba(249, 115, 22, 0.15); color: #f97316; border: 1px solid rgba(249, 115, 22, 0.3); }
+.badge-em_atendimento, .badge-em_andamento { background: rgba(14, 165, 233, 0.15); color: #0ea5e9; border: 1px solid rgba(14, 165, 233, 0.3); }
+.badge-aguardando_cliente { background: rgba(234, 179, 8, 0.15); color: #eab308; border: 1px solid rgba(234, 179, 8, 0.3); }
+.badge-resolvido { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+.badge-fechado { background: rgba(100, 116, 139, 0.15); color: #94a3b8; border: 1px solid rgba(100, 116, 139, 0.3); }
+.badge-gray { background: var(--bg-primary); color: var(--text-muted); border: 1px solid var(--border-color); }
+
+/* Mesmo mapa visual do AdminDashboard e do ClienteDashboard. */
+.badge-aberto { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+.badge-em_triagem,
+.badge-em_atendimento,
+.badge-em_andamento,
+.badge-aguardando_cliente { background: #fff7ed; color: #c2410c; border-color: #fed7aa; }
+.badge-resolvido,
+.badge-fechado { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+.badge-gray { background: #f8fafc; color: #475569; border-color: #e2e8f0; }
+
+[data-theme="dark"] .admin-ticket-title-group h2,
+[data-theme="dark"] .admin-card-title,
+[data-theme="dark"] .admin-card-content p,
+[data-theme="dark"] .timeline-author {
+  color: #f4f4f5;
+}
+
+[data-theme="dark"] .admin-card {
+  background-color: #1e1e22;
+  border-color: #2e2e34;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .description-box,
+[data-theme="dark"] .timeline-content {
+  background-color: #202023;
+  border-color: #3f3f46;
+  color: #e4e4e7;
+}
+
+[data-theme="dark"] .admin-card-title {
+  border-bottom-color: #3f3f46;
+}
+
+[data-theme="dark"] .form-group label,
+[data-theme="dark"] .timeline-date,
+[data-theme="dark"] .timeline-text {
+  color: #a1a1aa;
+}
+
+[data-theme="dark"] .form-group select {
+  background-color: #202023 !important;
+  border-color: #3f3f46;
+  color: #f4f4f5 !important;
+}
+
+[data-theme="dark"] .empty-text,
+[data-theme="dark"] .loading-state {
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .badge-aberto {
+  background: rgba(59, 130, 246, 0.16);
+  color: #60a5fa;
+  border-color: rgba(96, 165, 250, 0.3);
+}
+
+[data-theme="dark"] .badge-em_triagem,
+[data-theme="dark"] .badge-em_atendimento,
+[data-theme="dark"] .badge-em_andamento,
+[data-theme="dark"] .badge-aguardando_cliente {
+  background: rgba(249, 115, 22, 0.16);
+  color: #fb923c;
+  border-color: rgba(251, 146, 60, 0.3);
+}
+
+[data-theme="dark"] .badge-resolvido,
+[data-theme="dark"] .badge-fechado {
+  background: rgba(34, 197, 94, 0.16);
+  color: #4ade80;
+  border-color: rgba(74, 222, 128, 0.3);
+}
+
+[data-theme="dark"] .badge-gray {
+  background: rgba(148, 163, 184, 0.12);
+  color: #cbd5e1;
+  border-color: rgba(203, 213, 225, 0.2);
+}
+
+@media (max-width: 960px) {
+  .admin-ticket-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .admin-ticket-container {
+    margin: 1rem 0;
+    padding: 0 0.75rem;
+  }
+
+  .admin-ticket-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-ticket-title-group {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .admin-ticket-title-group h2 {
+    font-size: 1.5rem;
+  }
+
+  .admin-card {
+    border-radius: 12px;
+    padding: 1rem;
+  }
+}

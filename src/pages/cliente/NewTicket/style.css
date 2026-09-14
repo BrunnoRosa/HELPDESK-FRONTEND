@@ -1,0 +1,414 @@
+/* ==========================================================================
+   1. ESTRUTURA GLOBAL, CABEÇALHO & SIDEBAR (ALINHAMENTO TOPBAR)
+   ========================================================================== */
+
+/* Garante altura e alinhamento vertical unificados entre Sidebar e Topbar */
+.sidebar-header,
+.topbar-header,
+.header-container {
+  height: 64px;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+/* Barra superior da área principal (onde fica "Portal de Atendimento") */
+.topbar-header {
+  padding: 0 1.5rem;
+  background-color: var(--bg-surface, #ffffff);
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+}
+
+[data-theme="dark"] .topbar-header {
+  background-color: #18181b;
+  border-bottom-color: #27272a;
+}
+
+/* Título do Portal de Atendimento */
+.topbar-header h1,
+.topbar-header h2,
+.topbar-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin: 0;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+
+[data-theme="dark"] .topbar-header h1,
+[data-theme="dark"] .topbar-header h2,
+[data-theme="dark"] .topbar-title {
+  color: #f4f4f5;
+}
+
+
+/* ==========================================================================
+   2. NOVO CHAMADO (NEW TICKET FORM)
+   ========================================================================== */
+
+.new-ticket-container {
+  position: relative;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2.5rem 1.5rem;
+  margin-left: calc(-1 * (var(--sidebar-width, 300px) + 2rem));
+  width: 100vw;
+  max-width: none;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Card Principal */
+.new-ticket-card {
+  background: var(--bg-surface, #ffffff);
+  width: 100%;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 2.5rem;
+  border-radius: 16px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+[data-theme="dark"] .new-ticket-card {
+  background: var(--bg-surface, #27272a);
+  border-color: var(--border-color, #3f3f46);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.4);
+}
+
+.new-ticket-card h2 {
+  margin-top: 0;
+  margin-bottom: 0.35rem;
+  color: var(--text-primary, #0f172a);
+  font-size: 1.85rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+[data-theme="dark"] .new-ticket-card h2 {
+  color: #f4f4f5;
+}
+
+.new-ticket-card .subtitle {
+  color: var(--text-secondary, #64748b);
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+[data-theme="dark"] .new-ticket-card .subtitle {
+  color: #a1a1aa;
+}
+
+/* Box de Mensagem de Erro */
+.error-box {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  margin-bottom: 1.75rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  backdrop-filter: blur(8px);
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ==========================================================================
+   3. ELEMENTOS DE FORMULÁRIO & INPUTS
+   ========================================================================== */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.25rem;
+  gap: 0.4rem;
+}
+
+.form-group label {
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: var(--text-secondary, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+[data-theme="dark"] .form-group label {
+  color: #a1a1aa;
+}
+
+/* Campos de Texto, Seleção e Área de Texto */
+.form-group input,
+.form-group textarea,
+.form-group select {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color, #cbd5e1);
+  border-radius: 10px;
+  font-size: 0.95rem;
+  color: var(--text-primary, #0f172a);
+  background-color: #ffffff;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: inherit;
+}
+
+/* Tom de Cinza Escuro Neutro (#202023) da Imagem 2 */
+[data-theme="dark"] .form-group input,
+[data-theme="dark"] .form-group textarea,
+[data-theme="dark"] .form-group select {
+  background-color: #202023;
+  border-color: #3f3f46;
+  color: #f4f4f5;
+}
+
+.form-group input[type="text"],
+.form-group select {
+  height: 46px;
+}
+
+.form-group textarea {
+  min-height: 120px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .form-group input::placeholder,
+[data-theme="dark"] .form-group textarea::placeholder {
+  color: #71717a;
+}
+
+/* Efeito Azul de Foco (Light Mode) */
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
+/* Efeito Azul de Foco (Dark Mode) */
+[data-theme="dark"] .form-group input:focus,
+[data-theme="dark"] .form-group textarea:focus,
+[data-theme="dark"] .form-group select:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.25);
+}
+
+/* Input de Upload de Arquivo */
+.form-group input[type="file"] {
+  height: auto;
+  padding: 0.75rem 1rem;
+  background-color: #f8fafc;
+  border: 1.5px dashed var(--border-color, #cbd5e1);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--text-secondary, #64748b);
+}
+
+[data-theme="dark"] .form-group input[type="file"] {
+  background-color: #202023;
+  border-color: #3f3f46;
+  color: #d4d4d8;
+}
+
+.form-group input[type="file"]:hover {
+  border-color: #3b82f6;
+  background-color: #eff6ff;
+}
+
+[data-theme="dark"] .form-group input[type="file"]:hover {
+  border-color: #60a5fa;
+  background-color: rgba(59, 130, 246, 0.08);
+}
+
+/* Container de Preview de Imagem Anexada */
+.image-preview-container {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.image-preview-container img {
+  max-width: 100%;
+  max-height: 220px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  object-fit: cover;
+}
+
+[data-theme="dark"] .image-preview-container img {
+  border-color: #3f3f46;
+}
+
+.btn-remove-image {
+  background: none;
+  border: none;
+  color: #ef4444;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.btn-remove-image:hover {
+  color: #dc2626;
+  text-decoration: underline;
+}
+
+/* Organização em Colunas (Grid) */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+  align-items: start;
+}
+
+.form-row .form-group {
+  margin-bottom: 0;
+}
+
+
+/* ==========================================================================
+   4. BOTÕES DE AÇÃO
+   ========================================================================== */
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color, #f1f5f9);
+}
+
+[data-theme="dark"] .form-actions {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.btn-cancel, 
+.btn-submit {
+  height: 44px;
+  padding: 0 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+/* Botão Cancelar */
+.btn-cancel {
+  background: transparent;
+  color: var(--text-secondary, #64748b);
+  border: 1px solid var(--border-color, #cbd5e1);
+}
+
+.btn-cancel:hover:not(:disabled) {
+  background: var(--hover-bg, #f1f5f9);
+  color: var(--text-primary, #0f172a);
+}
+
+[data-theme="dark"] .btn-cancel {
+  color: #a1a1aa;
+  border-color: #3f3f46;
+}
+
+[data-theme="dark"] .btn-cancel:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f4f4f5;
+}
+
+/* Botão Enviar / Submit */
+.btn-submit {
+  background-color: #3b82f6;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+.btn-submit:hover:not(:disabled) {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 15px rgba(37, 99, 235, 0.35);
+}
+
+[data-theme="dark"] .btn-submit {
+  background-color: #3b82f6;
+}
+
+[data-theme="dark"] .btn-submit:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.btn-cancel:disabled,
+.btn-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+
+/* ==========================================================================
+   5. RESPONSIVIDADE (MOBILE)
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .new-ticket-container {
+    left: 0;
+    margin-left: 0;
+    padding: 1rem;
+    width: 100vw;
+  }
+
+  .new-ticket-card {
+    padding: 1.5rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .btn-cancel, 
+  .btn-submit {
+    width: 100%;
+  }
+}
