@@ -10,7 +10,7 @@ export default function AdminTicketDetails() {
   
   const [chamado, setChamado] = useState(null);
   const [tecnicos, setTecnicos] = useState([]);
-  const [atendimentos, setAtendimentos] = useState([]);
+  const [atendimento, setAtendimento] = useState(null);
   const [feedback, setFeedback] = useState({ type: '', message: '' });
   
   const [editData, setEditData] = useState({ status: '', prioridade: '', nivelSuporte: '', tecnicoId: '' });
@@ -21,15 +21,15 @@ export default function AdminTicketDetails() {
 
   const carregarDados = async () => {
     try {
-      const [chamadoRes, tecnicosRes, atendimentosRes] = await Promise.all([
+      const [chamadoRes, tecnicosRes, atendimentoRes] = await Promise.all([
         chamadoApi.buscar(id),
         adminApi.listarTecnicos(),
-        atendimentoApi.buscarPorChamado(id).catch(() => [])
+        atendimentoApi.buscarPorChamado(id)
       ]);
       
       setChamado(chamadoRes);
       setTecnicos(tecnicosRes);
-      setAtendimentos(Array.isArray(atendimentosRes) ? atendimentosRes : []);
+      setAtendimento(atendimentoRes);
       
       setEditData({
         status: chamadoRes.statusChamado || '',
@@ -47,7 +47,64 @@ export default function AdminTicketDetails() {
     e.preventDefault();
     setFeedback({ type: '', message: '' });
     try {
-      await chamadoApi.atualizar(id, editData);
+      const status = {
+        EM_ANDAMENTO: 'EM_ATENDIMENTO',
+        AGUARDANDO_CLIENTE: 'PENDENTE_EVIDENCIA',
+      }[editData.status] || editData.status;
+
+      if (editData.prioridade !== chamado.prioridadeChamado) {
+        await chamadoApi.atualizar(id, {
+          id: Number(id),
+          tituloChamado: chamado.tituloChamado,
+          ocorrenciaChamado: chamado.ocorrenciaChamado,
+          descricaoChamado: chamado.descricaoChamado,
+          prioridadeChamado: editData.prioridade,
+        });
+      }
+
+      const atendimentoPayload = (statusAtual, tecnicoResponsavelId = atendimento?.tecnicoResponsavelId) => ({
+        chamadoId: Number(id),
+        status: statusAtual,
+        nivelSuporte: editData.nivelSuporte,
+        usuarioVinculado: atendimento?.usuarioVinculado ?? null,
+        equipamentoVinculado: atendimento?.equipamentoVinculado ?? null,
+        tecnicoResponsavelId,
+      });
+
+      let statusAtual = atendimento.status;
+      const estadosVisitados = new Set();
+
+      while (statusAtual !== status && !estadosVisitados.has(statusAtual)) {
+        estadosVisitados.add(statusAtual);
+        const proximoStatus = {
+          EM_TRIAGEM: { ABERTO: 'EM_TRIAGEM' },
+          EM_ATENDIMENTO: { ABERTO: 'EM_TRIAGEM', EM_TRIAGEM: 'EM_ATENDIMENTO' },
+          PENDENTE_EVIDENCIA: {
+            ABERTO: 'EM_TRIAGEM',
+            EM_TRIAGEM: 'EM_ATENDIMENTO',
+            EM_ATENDIMENTO: 'PENDENTE_EVIDENCIA',
+          },
+          RESOLVIDO: {
+            ABERTO: 'EM_TRIAGEM',
+            EM_TRIAGEM: 'EM_ATENDIMENTO',
+            EM_ATENDIMENTO: 'RESOLVIDO',
+            PENDENTE_EVIDENCIA: 'RESOLVIDO',
+          },
+        }[status]?.[statusAtual];
+
+        if (!proximoStatus) break;
+        await atendimentoApi.atualizar(atendimentoPayload(proximoStatus));
+        statusAtual = proximoStatus;
+      }
+
+      if (statusAtual !== status) {
+        throw new Error(`Não foi possível avançar o status de ${statusAtual} para ${status}.`);
+      }
+
+      await atendimentoApi.atualizar(
+        atendimentoPayload(status, editData.tecnicoId ? Number(editData.tecnicoId) : null),
+      );
+
       setFeedback({ type: 'success', message: 'Chamado atualizado com sucesso pela Administração!' });
       carregarDados();
     } catch (error) {
@@ -99,25 +156,6 @@ export default function AdminTicketDetails() {
             </div>
           </div>
 
-          <div className="admin-card">
-            <h3 className="admin-card-title">Linha do Tempo (Atendimentos)</h3>
-            {atendimentos.length === 0 ? (
-              <p className="empty-text">Nenhuma interação registrada ainda.</p>
-            ) : (
-              <div className="timeline">
-                {atendimentos.map(atd => (
-                  <div key={atd.id} className="timeline-item">
-                    <div className="timeline-marker"></div>
-                    <div className="timeline-content">
-                      <span className="timeline-date">{new Date(atd.dataCriacao).toLocaleString()}</span>
-                      <p className="timeline-author">{atd.autor?.nome || 'Sistema'}</p>
-                      <p className="timeline-text">{atd.mensagem}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
         </div>
 
         <aside className="admin-ticket-sidebar">
@@ -136,7 +174,6 @@ export default function AdminTicketDetails() {
                   <option value="EM_ANDAMENTO">Em Andamento</option>
                   <option value="AGUARDANDO_CLIENTE">Aguardando Cliente</option>
                   <option value="RESOLVIDO">Resolvido</option>
-                  <option value="FECHADO">Fechado</option>
                 </select>
               </div>
 

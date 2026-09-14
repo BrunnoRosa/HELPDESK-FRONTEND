@@ -6,6 +6,7 @@ import './style.css';
 
 const initialFormData = {
   tituloChamado: '',
+  equipamentoVinculado: '',
   ocorrenciaChamado: 'INFORMATICA',
   descricaoChamado: '',
   prioridadeChamado: 'BAIXA', // Valor padrão chumbado, invisível para o cliente
@@ -15,6 +16,7 @@ const initialFormData = {
 export default function NewTicket() {
   const [formData, setFormData] = useState(initialFormData);
   const [previewImagem, setPreviewImagem] = useState('');
+  const [nomeImagem, setNomeImagem] = useState('');
   const [feedback, setFeedback] = useState({ type: '', message: '' });
   const [salvando, setSalvando] = useState(false);
 
@@ -37,6 +39,7 @@ export default function NewTicket() {
       reader.onloadend = () => {
         setFormData((prev) => ({ ...prev, imagemChamado: reader.result }));
         setPreviewImagem(reader.result);
+        setNomeImagem(file.name);
       };
       reader.readAsDataURL(file);
     }
@@ -45,6 +48,7 @@ export default function NewTicket() {
   const handleRemoveImage = () => {
     setFormData((prev) => ({ ...prev, imagemChamado: '' }));
     setPreviewImagem('');
+    setNomeImagem('');
   };
 
   const handleSubmit = async (e) => {
@@ -53,9 +57,27 @@ export default function NewTicket() {
     setSalvando(true);
 
     try {
-      await chamadoApi.criar(formData);
+      const equipamento = formData.equipamentoVinculado.trim();
+      const descricao = formData.descricaoChamado.trim();
+
+      const chamadoCriado = await chamadoApi.criar({
+        ...formData,
+        descricaoChamado: `[Equipamento: ${equipamento} | ${descricao}`,
+      });
+
+      if (chamadoCriado?.id && formData.imagemChamado) {
+        localStorage.setItem(
+          `helpdesk:chamado:${chamadoCriado.id}:imagem`,
+          JSON.stringify({
+            data: formData.imagemChamado,
+            nome: nomeImagem || 'arquivo-anexado',
+          }),
+        );
+      }
+
       setFormData(initialFormData);
       setPreviewImagem('');
+      setNomeImagem('');
       setFeedback({ type: 'success', message: 'Chamado criado com sucesso! Redirecionando...' });
       
       setTimeout(() => {
@@ -90,6 +112,19 @@ export default function NewTicket() {
               name="tituloChamado"
               placeholder="Ex: Sistema ERP travando no login" 
               value={formData.tituloChamado}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="equipamentoVinculado">Equipamento / Ativo</label>
+            <input
+              id="equipamentoVinculado"
+              type="text"
+              name="equipamentoVinculado"
+              placeholder="Ex: Notebook, impressora ou patrimônio"
+              value={formData.equipamentoVinculado}
               onChange={handleChange}
               required
             />
