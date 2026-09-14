@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../context/AuthContext';
 import { chamadoApi, adminApi, atendimentoApi } from '../../../services/api';
 import Notification from '../../../components/Notification';
 import './style.css';
@@ -7,7 +8,8 @@ import './style.css';
 export default function AdminTicketDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  
+  const { user } = useAuth();
+
   const [chamado, setChamado] = useState(null);
   const [tecnicos, setTecnicos] = useState([]);
   const [atendimento, setAtendimento] = useState(null);
@@ -53,11 +55,12 @@ export default function AdminTicketDetails() {
       }[editData.status] || editData.status;
 
       if (editData.prioridade !== chamado.prioridadeChamado) {
+        const notaPrioridade = `${user?.name ?? 'Administração'}: Prioridade alterada de ${chamado.prioridadeChamado} para ${editData.prioridade}`;
         await chamadoApi.atualizar(id, {
           id: Number(id),
           tituloChamado: chamado.tituloChamado,
           ocorrenciaChamado: chamado.ocorrenciaChamado,
-          descricaoChamado: chamado.descricaoChamado,
+          descricaoChamado: notaPrioridade, // só a nota nova — o backend concatena com o histórico existente
           prioridadeChamado: editData.prioridade,
         });
       }
