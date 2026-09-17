@@ -1,8 +1,9 @@
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'; // Ajuste para a porta do seu backend atual
 // Mantém a instância do Axios do seu projeto, apontando para a porta do backend
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080', // Ajuste para a porta do seu backend atual
+  baseURL: API_URL, // Ajuste para a porta do seu backend atual
 });
 
 // Injeta o token nas requisições (seu padrão)
