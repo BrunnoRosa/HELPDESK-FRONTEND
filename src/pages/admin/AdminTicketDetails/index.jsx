@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { chamadoApi, adminApi, atendimentoApi } from '../../../services/api';
-import Notification from '../../../components/Notification';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './style.css';
 
 export default function AdminTicketDetails() {
@@ -13,7 +14,6 @@ export default function AdminTicketDetails() {
   const [chamado, setChamado] = useState(null);
   const [tecnicos, setTecnicos] = useState([]);
   const [atendimento, setAtendimento] = useState(null);
-  const [feedback, setFeedback] = useState({ type: '', message: '' });
   
   const [editData, setEditData] = useState({ status: '', prioridade: '', nivelSuporte: '', tecnicoId: '' });
 
@@ -40,14 +40,13 @@ export default function AdminTicketDetails() {
         tecnicoId: chamadoRes.tecnicoResponsavel?.id || ''
       });
     } catch (error) {
-      setFeedback({ type: 'error', message: 'Erro ao carregar dados do chamado.' });
+      toast.error('Erro ao carregar dados do chamado.');
       navigate('/admin');
     }
   };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    setFeedback({ type: '', message: '' });
     try {
       const status = {
         EM_ANDAMENTO: 'EM_ATENDIMENTO',
@@ -108,10 +107,10 @@ export default function AdminTicketDetails() {
         atendimentoPayload(status, editData.tecnicoId ? Number(editData.tecnicoId) : null),
       );
 
-      setFeedback({ type: 'success', message: 'Chamado atualizado com sucesso pela Administração!' });
+      toast.success('Chamado atualizado com sucesso pela Administração!');
       carregarDados();
     } catch (error) {
-      setFeedback({ type: 'error', message: error.message || 'Erro ao atualizar chamado.' });
+      toast.error(error.message || 'Erro ao atualizar chamado.');
     }
   };
 
@@ -119,9 +118,10 @@ export default function AdminTicketDetails() {
     if (window.confirm('ATENÇÃO: Deseja EXCLUIR este chamado? Ação irreversível.')) {
       try {
         await chamadoApi.deletar(id);
+        toast.success('Chamado excluído com sucesso!');
         navigate('/admin');
       } catch (error) {
-        setFeedback({ type: 'error', message: error.message || 'Erro ao excluir o chamado.' });
+        toast.error(error.message || 'Erro ao excluir o chamado.');
       }
     }
   };
@@ -137,6 +137,9 @@ export default function AdminTicketDetails() {
 
   return (
     <div className="admin-ticket-container">
+      {/* COMPONENTE RESPONSÁVEL POR RENDERIZAR OS TOASTS */}
+      <ToastContainer autoClose={3000} position="top-right" />
+
       <div className="admin-ticket-header">
         <div className="admin-ticket-title-group">
           <h2>Chamado #{chamado.id}</h2>
@@ -147,8 +150,6 @@ export default function AdminTicketDetails() {
         <button className="btn-danger" onClick={handleDelete}>Excluir Chamado</button>
       </div>
 
-      {feedback.message && <Notification type={feedback.type} message={feedback.message} />}
-      
       <div className="admin-ticket-grid">
         <div className="admin-ticket-main">
           <div className="admin-card">
@@ -175,7 +176,7 @@ export default function AdminTicketDetails() {
                     </a>
                   </div>
                 ) : (
-                  <p style={{ color: '#6b7280', italic: 'true' }}>Nenhum anexo enviado para este chamado.</p>
+                  <p style={{ color: '#6b7280', fontStyle: 'italic' }}>Nenhum anexo enviado para este chamado.</p>
                 )}
               </div>
             </div>
