@@ -60,7 +60,7 @@ export default function AdminTicketDetails() {
           id: Number(id),
           tituloChamado: chamado.tituloChamado,
           ocorrenciaChamado: chamado.ocorrenciaChamado,
-          descricaoChamado: notaPrioridade, // só a nota nova — o backend concatena com o histórico existente
+          descricaoChamado: notaPrioridade,
           prioridadeChamado: editData.prioridade,
         });
       }
@@ -74,7 +74,7 @@ export default function AdminTicketDetails() {
         tecnicoResponsavelId,
       });
 
-      let statusAtual = atendimento.status;
+      let statusAtual = atendimento?.status || 'ABERTO';
       const estadosVisitados = new Set();
 
       while (statusAtual !== status && !estadosVisitados.has(statusAtual)) {
@@ -133,6 +133,8 @@ export default function AdminTicketDetails() {
 
   if (!chamado) return <div className="loading-state">Carregando...</div>;
 
+  const urlAnexo = chamado.imagemChamado || chamado.imagem_chamado;
+
   return (
     <div className="admin-ticket-container">
       <div className="admin-ticket-header">
@@ -156,9 +158,28 @@ export default function AdminTicketDetails() {
               <p><strong>Solicitante:</strong> {chamado.solicitante?.nome || 'Não informado'}</p>
               <p><strong>Descrição:</strong></p>
               <div className="description-box">{chamado.descricaoChamado}</div>
+
+              {/* ÁREA DO ANEXO / EVIDÊNCIA */}
+              <div className="attachment-section" style={{ marginTop: '20px' }}>
+                <p><strong>Anexo / Evidência:</strong></p>
+                {urlAnexo ? (
+                  <div className="attachment-preview" style={{ marginTop: '8px' }}>
+                    <img 
+                      src={urlAnexo} 
+                      alt="Anexo do Chamado" 
+                      style={{ maxWidth: '100%', maxHeight: '350px', borderRadius: '8px', border: '1px solid #ddd' }} 
+                    />
+                    <br />
+                    <a href={urlAnexo} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', marginTop: '8px', color: '#2563eb' }}>
+                      Visualizar imagem em tamanho real
+                    </a>
+                  </div>
+                ) : (
+                  <p style={{ color: '#6b7280', italic: 'true' }}>Nenhum anexo enviado para este chamado.</p>
+                )}
+              </div>
             </div>
           </div>
-
         </div>
 
         <aside className="admin-ticket-sidebar">
