@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { chamadoApi } from '../../../services/api';
-import Notification from '../../../components/Notification';
+import { notify } from '../../../components/Notification';
 import './style.css';
 
 const initialFormData = {
@@ -9,7 +9,7 @@ const initialFormData = {
   equipamentoVinculado: '',
   ocorrenciaChamado: 'INFORMATICA',
   descricaoChamado: '',
-  prioridadeChamado: 'BAIXA', // Valor padrão chumbado, invisível para o cliente
+  prioridadeChamado: 'BAIXA',
   imagemChamado: '',
 };
 
@@ -17,7 +17,6 @@ export default function NewTicket() {
   const [formData, setFormData] = useState(initialFormData);
   const [previewImagem, setPreviewImagem] = useState('');
   const [nomeImagem, setNomeImagem] = useState('');
-  const [feedback, setFeedback] = useState({ type: '', message: '' });
   const [salvando, setSalvando] = useState(false);
 
   const navigate = useNavigate();
@@ -31,10 +30,9 @@ export default function NewTicket() {
     const file = e.target.files[0];
     if (file) {
       if (file.size > 2 * 1024 * 1024) {
-        setFeedback({ type: 'error', message: 'A imagem selecionada deve ter no máximo 2MB.' });
+        notify('error', 'A imagem selecionada deve ter no máximo 2MB.');
         return;
       }
-      setFeedback({ type: '', message: '' });
       const reader = new FileReader();
       reader.onloadend = () => {
         setFormData((prev) => ({ ...prev, imagemChamado: reader.result }));
@@ -53,7 +51,6 @@ export default function NewTicket() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setFeedback({ type: '', message: '' });
     setSalvando(true);
 
     try {
@@ -78,16 +75,16 @@ export default function NewTicket() {
       setFormData(initialFormData);
       setPreviewImagem('');
       setNomeImagem('');
-      setFeedback({ type: 'success', message: 'Chamado criado com sucesso! Redirecionando...' });
+      notify('success', 'Chamado criado com sucesso! Redirecionando...');
       
       setTimeout(() => {
         navigate('/');
       }, 1500);
     } catch (error) {
-      setFeedback({
-        type: 'error',
-        message: error.message || 'Erro ao salvar chamado. Verifique seus dados e tente novamente.',
-      });
+      notify(
+        'error',
+        error.message || 'Erro ao salvar chamado. Verifique seus dados e tente novamente.'
+      );
     } finally {
       setSalvando(false);
     }
@@ -100,9 +97,6 @@ export default function NewTicket() {
         <p className="subtitle">
           Preencha os dados detalhados abaixo, incluindo informações do equipamento e evidências fotográficas.
         </p>
-
-        {/* Componente de Notificação Padronizado */}
-        <Notification type={feedback.type} message={feedback.message} />
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">

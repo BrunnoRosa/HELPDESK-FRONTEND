@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { atendimentoApi, chamadoApi } from '../../../services/api';
-import Notification from '../../../components/Notification';
+import { notify } from '../../../components/Notification';
 import './style.css';
 
 export default function ClientTicketDetails() {
@@ -28,10 +28,20 @@ export default function ClientTicketDetails() {
         chamadoApi.buscar(id),
         atendimentoApi.buscarPorChamado(id),
       ]);
+
+      if (!dadosChamado || !dadosAtendimento) {
+        const mensagem = 'Chamado não encontrado.';
+        notify('error', mensagem);
+        setErro(mensagem);
+        return;
+      }
+
       setChamado(dadosChamado);
       setAtendimento(dadosAtendimento);
     } catch (error) {
-      setErro(error.message || 'Erro ao carregar os detalhes do chamado.');
+      const mensagem = error.message || 'Erro ao carregar os detalhes do chamado.';
+      notify('error', mensagem);
+      setErro(mensagem);
     } finally {
       setCarregando(false);
     }
@@ -79,7 +89,9 @@ export default function ClientTicketDetails() {
         <button onClick={() => navigate('/')} className="btn-back">
           &larr; Voltar para Meus Chamados
         </button>
-        <Notification type="error" message={erro || 'Chamado não encontrado.'} />
+        <div className="details-card loading-state">
+          <p>{erro || 'Chamado não encontrado.'}</p>
+        </div>
       </div>
     );
   }

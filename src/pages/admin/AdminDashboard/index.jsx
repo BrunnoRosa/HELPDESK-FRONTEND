@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { chamadoApi } from '../../../services/api';
+import { notify } from '../../../components/Notification';
 import './style.css';
 
 export default function AdminDashboard() {
@@ -17,7 +18,7 @@ export default function AdminDashboard() {
       const response = await chamadoApi.listar();
       setChamados(Array.isArray(response) ? response : []);
     } catch (error) {
-      console.error('Erro ao carregar chamados', error);
+      notify('error', error.message || 'Erro ao carregar lista de chamados.');
     }
   };
 

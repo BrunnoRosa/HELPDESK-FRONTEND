@@ -1,13 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { adminApi } from '../../../services/api';
-import Notification from '../../../components/Notification';
-import './style.css'; // Pode importar o mesmo CSS do AdminDashboard ou criar um específico
+import { notify } from '../../../components/Notification';
+import './style.css';
 
 export default function AdminUsers() {
   const [activeTab, setActiveTab] = useState('LISTA_USUARIOS'); 
   const [usuarios, setUsuarios] = useState([]);
   const [ordem, setOrdem] = useState('ID');
-  const [feedback, setFeedback] = useState({ type: '', message: '' });
   const [formData, setFormData] = useState({ 
     nomeCompleto: '', 
     email: '', 
@@ -27,7 +26,7 @@ export default function AdminUsers() {
       const response = await adminApi.listarUsuarios();
       setUsuarios(Array.isArray(response) ? response : []);
     } catch (erro) {
-      console.error('Erro ao buscar usuários:', erro);
+      notify('error', erro.message || 'Erro ao buscar usuários.');
     }
   };
 
@@ -41,7 +40,6 @@ export default function AdminUsers() {
 
   const handleCreateUser = async (e) => {
     e.preventDefault();
-    setFeedback({ type: '', message: '' });
     const payload = {
       nome: formData.nomeCompleto, 
       email: formData.email,
@@ -52,15 +50,11 @@ export default function AdminUsers() {
 
     try {
       await adminApi.criarUsuario(payload);
-      setFeedback({ type: 'success', message: 'Usuário cadastrado com sucesso!' });
+      notify('success', 'Usuário cadastrado com sucesso!');
       setFormData({ nomeCompleto: '', email: '', senha: '', perfilUsuario: 'USUARIO', nivelSuporte: '' });
       setActiveTab('LISTA_USUARIOS');
     } catch (error) {
-      console.error("Erro detalhado:", error);
-      setFeedback({
-        type: 'error',
-        message: error.message || 'Erro ao cadastrar usuário. Verifique os dados ou permissões.'
-      });
+      notify('error', error.message || 'Erro ao cadastrar usuário. Verifique os dados ou permissões.');
     }
   };
 
@@ -83,8 +77,6 @@ export default function AdminUsers() {
           </button>
         </div>
       </div>
-
-      {feedback.message && <Notification type={feedback.type} message={feedback.message} />}
 
       {activeTab === 'LISTA_USUARIOS' && (
         <div className="admin-panel white-panel">

@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import TechReports from './pages/tech/TechReports';
+import { ToastContainer } from 'react-toastify';
 
 // Importação dos componentes de estrutura
 import Layout from './components/Layout';
@@ -72,6 +73,9 @@ export default function App() {
           {/* Redirecionamento para rotas inexistentes */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
+        
+        {/* Exibir notificações de toast */}
+        <ToastContainer position="top-right" autoClose={3000} />
       </AuthProvider>
     </BrowserRouter>
   );

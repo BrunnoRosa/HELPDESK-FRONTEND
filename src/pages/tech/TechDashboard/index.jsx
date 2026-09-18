@@ -1,13 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { chamadoApi, atendimentoApi } from '../../../services/api';
-import Notification from '../../../components/Notification';
+import { notify } from '../../../components/Notification';
 import './style.css';
 
 export default function TechDashboard() {
   const [chamados, setChamados] = useState([]);
   const [atendimentos, setAtendimentos] = useState([]);
-  const [erro, setErro] = useState('');
 
   useEffect(() => {
     const carregarDados = async () => {
@@ -19,7 +18,7 @@ export default function TechDashboard() {
         setChamados(Array.isArray(listaChamados) ? listaChamados : []);
         setAtendimentos(Array.isArray(listaAtendimentos) ? listaAtendimentos : []);
       } catch (error) {
-        setErro(error.message || 'Não foi possível carregar os chamados.');
+        notify('error', error.message || 'Não foi possível carregar os chamados.');
       }
     };
 
@@ -57,8 +56,6 @@ export default function TechDashboard() {
         <h2 className="page-title">Painel Operacional Técnico</h2>
         <p className="page-subtitle">Visão consolidada dos chamados em atendimento.</p>
       </div>
-
-      {erro && <Notification type="error" message={erro} />}
 
       <div className="dashboard__stats">
         <article>

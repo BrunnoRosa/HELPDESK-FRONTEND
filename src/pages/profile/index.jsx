@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import Notification from '../../components/Notification';
+import { notify } from '../../components/Notification';
 import { usuarioApi } from '../../services/api';
 import './style.css';
 
@@ -18,9 +18,8 @@ export default function Profile() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  // Estados de feedback visual
+  // Estado de carregamento
   const [loading, setLoading] = useState(false);
-  const [feedback, setFeedback] = useState({ type: '', message: '' });
 
   // Iniciais do nome para o avatar padrão
   const getUserInitials = (name) => {
@@ -35,7 +34,7 @@ export default function Profile() {
     const file = e.target.files[0];
     if (file) {
       if (file.size > 2 * 1024 * 1024) { // Limite de 2MB
-        setFeedback({ type: 'error', message: 'A imagem deve ter no máximo 2MB.' });
+        notify('error', 'A imagem deve ter no máximo 2MB.');
         return;
       }
 
@@ -46,7 +45,7 @@ export default function Profile() {
         if (user?.email) {
           localStorage.setItem(`user_avatar_${user.email}`, base64Image);
         }
-        setFeedback({ type: 'success', message: 'Foto de perfil atualizada com sucesso!' });
+        notify('success', 'Foto de perfil atualizada com sucesso!');
       };
       reader.readAsDataURL(file);
     }
@@ -54,15 +53,14 @@ export default function Profile() {
 
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
-    setFeedback({ type: '', message: '' });
 
     if (newPassword.length < 6) {
-      setFeedback({ type: 'error', message: 'A nova senha deve ter no mínimo 6 caracteres.' });
+      notify('error', 'A nova senha deve ter no mínimo 6 caracteres.');
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setFeedback({ type: 'error', message: 'A confirmação de senha não coincide.' });
+      notify('error', 'A confirmação de senha não coincide.');
       return;
     }
 
@@ -75,15 +73,15 @@ export default function Profile() {
         confirmarNovaSenha: confirmPassword
       });
 
-      setFeedback({ type: 'success', message: 'Senha alterada com sucesso!' });
+      notify('success', 'Senha alterada com sucesso!');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (err) {
-      setFeedback({ 
-        type: 'error', 
-        message: err.message || 'Erro ao alterar a senha. Verifique a senha atual.' 
-      });
+      notify(
+        'error', 
+        err.message || 'Erro ao alterar a senha. Verifique a senha atual.'
+      );
     } finally {
       setLoading(false);
     }
@@ -146,10 +144,6 @@ export default function Profile() {
       <div className="profile-card password-card">
         <h3>Segurança</h3>
         <p className="card-subtitle">Atualize sua senha de acesso ao sistema.</p>
-
-        {feedback.message && (
-          <Notification type={feedback.type} message={feedback.message} />
-        )}
 
         <form onSubmit={handlePasswordSubmit} className="password-form">
           <div className="form-group">
