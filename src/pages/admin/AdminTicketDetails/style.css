@@ -138,7 +138,7 @@
 .btn-primary-block {
   width: 100%;
   margin-top: 0.5rem;
-  background-color: var(--accent-color);
+  background-color: var(--accent-color, #2563eb);
   color: #ffffff;
   border: none;
   padding: 0.75rem 1rem;
@@ -166,6 +166,139 @@
 
 .btn-danger:hover {
   background-color: rgba(239, 68, 68, 0.25);
+}
+
+/* ==========================================
+   ANEXO E MODAL DE VISUALIZAÇÃO DA EVIDÊNCIA
+   ========================================== */
+
+.attachment-section {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color, #e2e8f0);
+}
+
+.attachment-preview {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.attachment-preview img {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.attachment-preview img:hover {
+  transform: scale(1.01);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.btn-text {
+  background: none;
+  border: none;
+  color: var(--accent-color, #2563eb);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  transition: opacity 0.2s ease;
+}
+
+.btn-text:hover {
+  opacity: 0.8;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  padding: 1rem;
+  animation: fadeInModal 0.2s ease-out;
+}
+
+/* Modal Window */
+.modal-content {
+  background-color: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  background-color: var(--bg-surface, #ffffff);
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary, #0f172a);
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.75rem;
+  line-height: 1;
+  color: var(--text-secondary, #64748b);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.close-button:hover {
+  background-color: var(--bg-primary, #f1f5f9);
+  color: var(--text-primary, #0f172a);
+}
+
+.modal-body {
+  padding: 1.25rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+  background-color: var(--bg-primary, #f8fafc);
+  max-height: calc(90vh - 70px);
+}
+
+.modal-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes fadeInModal {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* Timeline */
@@ -261,7 +394,7 @@
 .badge-fechado { background: rgba(100, 116, 139, 0.15); color: #94a3b8; border: 1px solid rgba(100, 116, 139, 0.3); }
 .badge-gray { background: var(--bg-primary); color: var(--text-muted); border: 1px solid var(--border-color); }
 
-/* Mesmo mapa visual do AdminDashboard e do ClienteDashboard. */
+/* Mapa visual do AdminDashboard e ClienteDashboard */
 .badge-aberto { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
 .badge-em_triagem,
 .badge-em_atendimento,
@@ -271,28 +404,47 @@
 .badge-fechado { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
 .badge-gray { background: #f8fafc; color: #475569; border-color: #e2e8f0; }
 
+/* ==========================================
+   SUPORTE AO MODO ESCURO (DARK MODE)
+   ========================================== */
+
 [data-theme="dark"] .admin-ticket-title-group h2,
 [data-theme="dark"] .admin-card-title,
 [data-theme="dark"] .admin-card-content p,
-[data-theme="dark"] .timeline-author {
+[data-theme="dark"] .timeline-author,
+[data-theme="dark"] .modal-header h3 {
   color: #f4f4f5;
 }
 
-[data-theme="dark"] .admin-card {
+[data-theme="dark"] .admin-card,
+[data-theme="dark"] .modal-content {
   background-color: #1e1e22;
   border-color: #2e2e34;
   box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
 }
 
 [data-theme="dark"] .description-box,
-[data-theme="dark"] .timeline-content {
+[data-theme="dark"] .timeline-content,
+[data-theme="dark"] .modal-body {
   background-color: #202023;
   border-color: #3f3f46;
   color: #e4e4e7;
 }
 
-[data-theme="dark"] .admin-card-title {
-  border-bottom-color: #3f3f46;
+[data-theme="dark"] .admin-card-title,
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .attachment-section {
+  border-color: #3f3f46;
+  background-color: #1e1e22;
+}
+
+[data-theme="dark"] .close-button {
+  color: #a1a1aa;
+}
+
+[data-theme="dark"] .close-button:hover {
+  background-color: #2d2d32;
+  color: #f4f4f5;
 }
 
 [data-theme="dark"] .form-group label,
@@ -340,6 +492,10 @@
   border-color: rgba(203, 213, 225, 0.2);
 }
 
+/* ==========================================
+   RESPONSIVIDADE (MEDIA QUERIES)
+   ========================================== */
+
 @media (max-width: 960px) {
   .admin-ticket-container > .notification-box {
     width: 100%;
@@ -374,5 +530,10 @@
   .admin-card {
     border-radius: 12px;
     padding: 1rem;
+  }
+
+  .modal-content {
+    max-width: 95vw;
+    border-radius: 12px;
   }
 }
