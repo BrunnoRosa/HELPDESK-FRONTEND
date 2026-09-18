@@ -4,7 +4,30 @@ import { useAuth } from '../../../context/AuthContext';
 import { chamadoApi, adminApi, atendimentoApi } from '../../../services/api';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import './style.css';
+import './style.css'; // Certifique-se de adicionar os estilos da modal abaixo
+
+// Componente Modal Simples
+const ImageModal = ({ imageUrl, onClose, ticketId }) => {
+  if (!imageUrl) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3>Visualização da Evidência - Chamado #{ticketId}</h3>
+          <button className="close-button" onClick={onClose}>&times;</button>
+        </div>
+        <div className="modal-body">
+          <img 
+            src={imageUrl} 
+            alt="Anexo do Chamado" 
+            className="modal-image"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function AdminTicketDetails() {
   const { id } = useParams();
@@ -15,6 +38,9 @@ export default function AdminTicketDetails() {
   const [tecnicos, setTecnicos] = useState([]);
   const [atendimento, setAtendimento] = useState(null);
   
+  // Estado para controlar a modal
+  const [selectedAttachment, setSelectedAttachment] = useState(null);
+
   const [editData, setEditData] = useState({ status: '', prioridade: '', nivelSuporte: '', tecnicoId: '' });
 
   useEffect(() => {
@@ -140,6 +166,13 @@ export default function AdminTicketDetails() {
       {/* COMPONENTE RESPONSÁVEL POR RENDERIZAR OS TOASTS */}
       <ToastContainer autoClose={3000} position="top-right" />
 
+      {/* COMPONENTE MODAL DE IMAGEM */}
+      <ImageModal 
+        imageUrl={selectedAttachment} 
+        ticketId={chamado.id} 
+        onClose={() => setSelectedAttachment(null)} 
+      />
+
       <div className="admin-ticket-header">
         <div className="admin-ticket-title-group">
           <h2>Chamado #{chamado.id}</h2>
@@ -168,12 +201,17 @@ export default function AdminTicketDetails() {
                     <img 
                       src={urlAnexo} 
                       alt="Anexo do Chamado" 
-                      style={{ maxWidth: '100%', maxHeight: '350px', borderRadius: '8px', border: '1px solid #ddd' }} 
+                      style={{ maxWidth: '100%', maxHeight: '350px', borderRadius: '8px', border: '1px solid #ddd', cursor: 'pointer' }} 
+                      onClick={() => setSelectedAttachment(urlAnexo)} // Abre a modal ao clicar na imagem
                     />
                     <br />
-                    <a href={urlAnexo} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', marginTop: '8px', color: '#2563eb' }}>
+                    <button 
+                      onClick={() => setSelectedAttachment(urlAnexo)} // Abre a modal ao clicar no botão
+                      className="btn-text"
+                      style={{ display: 'inline-block', marginTop: '8px', color: '#2563eb', padding: '0', border: 'none', background: 'none', cursor: 'pointer' }}
+                    >
                       Visualizar imagem em tamanho real
-                    </a>
+                    </button>
                   </div>
                 ) : (
                   <p style={{ color: '#6b7280', fontStyle: 'italic' }}>Nenhum anexo enviado para este chamado.</p>
@@ -184,6 +222,7 @@ export default function AdminTicketDetails() {
         </div>
 
         <aside className="admin-ticket-sidebar">
+          {/* ... formulário de intervenção permanece o mesmo ... */}
           <div className="admin-card">
             <h3 className="admin-card-title">Intervenção Administrativa</h3>
             <form onSubmit={handleUpdate} className="admin-form-vertical">
