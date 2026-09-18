@@ -1,13 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { chamadoApi } from '../../../services/api';
-import Notification from '../../../components/Notification';
+import { notify } from '../../../components/Notification';
 import './style.css';
 
 export default function ClienteDashboard() {
   const [meusChamados, setMeusChamados] = useState([]);
   const [filtroAtivo, setFiltroAtivo] = useState('TODOS');
-  const [erro, setErro] = useState('');
 
   useEffect(() => {
     const carregarChamados = async () => {
@@ -15,7 +14,8 @@ export default function ClienteDashboard() {
         const response = await chamadoApi.listar();
         setMeusChamados(Array.isArray(response) ? response : []);
       } catch (error) {
-        setErro(error.message || 'Não foi possível carregar os chamados.');
+        // Dispara o alerta flutuante caso ocorra falha na requisição
+        notify('error', error.message || 'Não foi possível carregar os chamados.');
       }
     };
     carregarChamados();
@@ -25,7 +25,6 @@ export default function ClienteDashboard() {
     if (filtroAtivo === 'TODOS') return meusChamados;
     
     return meusChamados.filter(c => {
-      // Garante que chamados antigos sem status sejam tratados como ABERTO
       const status = c?.statusChamado || 'ABERTO';
       
       if (filtroAtivo === 'EM_ANDAMENTO') {
@@ -51,7 +50,6 @@ export default function ClienteDashboard() {
     return map[status] || 'badge-gray';
   };
 
-  // Extrai o equipamento que concatenamos na descrição (ex: [Equipamento: Notebook | ...])
   const extrairEquipamento = (descricao) => {
     if (!descricao) return 'Não informado';
     const match = descricao.match(/\[Equipamento:\s*(.*?)\s*\|/);
@@ -66,8 +64,6 @@ export default function ClienteDashboard() {
           <p>Acompanhe o andamento das suas solicitações.</p>
         </div>
       </div>
-
-      {erro && <Notification type="error" message={erro} />}
 
       <div className="filter-group">
         {['TODOS', 'ABERTO', 'EM_ANDAMENTO', 'RESOLVIDO'].map(status => (

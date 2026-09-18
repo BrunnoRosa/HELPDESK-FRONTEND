@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { atendimentoApi, chamadoApi } from '../../../services/api'; 
-import Notification from '../../../components/Notification';
+import { notify } from '../../../components/Notification';
 import './style.css';
 
 export default function TechTicketDetails() {
@@ -13,8 +13,6 @@ export default function TechTicketDetails() {
   const [chamado, setChamado] = useState(null);
   const [atendimento, setAtendimento] = useState(null);
   const [descricaoAtualizacao, setDescricaoAtualizacao] = useState('');
-  const [erro, setErro] = useState('');
-  const [mensagem, setMensagem] = useState('');
   const [loading, setLoading] = useState(true);
   const [atualizando, setAtualizando] = useState(false);
 
@@ -42,7 +40,7 @@ export default function TechTicketDetails() {
       setChamado(dadosChamado);
       setAtendimento(dadosAtendimento);
     } catch (error) {
-      setErro(error.message || "Erro ao carregar os dados do chamado.");
+      notify('error', error.message || "Erro ao carregar os dados do chamado.");
     } finally {
       setLoading(false);
     }
@@ -53,8 +51,6 @@ export default function TechTicketDetails() {
   }, [id]);
 
   const atualizarAtendimento = async (alteracoes) => {
-    setErro('');
-    setMensagem('');
     setAtualizando(true);
     const payload = {
       chamadoId: atendimento?.chamadoId ?? Number(id),
@@ -75,8 +71,6 @@ export default function TechTicketDetails() {
   };
 
   const registrarHistorico = async (textoComplementar) => {
-    setErro('');
-    setMensagem('');
     try {
       const novaLinha = `${user?.name}: ${textoComplementar}`;
 
@@ -89,11 +83,11 @@ export default function TechTicketDetails() {
         imagemChamado: chamado.imagemChamado // Preserva a imagem enviando-a no PUT
       });
 
-      setMensagem('Histórico atualizado com sucesso.');
+      notify('success', 'Histórico atualizado com sucesso.');
       setDescricaoAtualizacao('');
       await carregarDados();
     } catch (error) {
-      setErro("Erro ao atualizar histórico: " + error.message);
+      notify('error', "Erro ao atualizar histórico: " + error.message);
     }
   };
 
@@ -101,8 +95,6 @@ export default function TechTicketDetails() {
     const novaPrioridade = e.target.value;
     if (!window.confirm(`Deseja alterar a prioridade para ${novaPrioridade}?`)) return;
 
-    setErro('');
-    setMensagem('');
     setAtualizando(true);
 
     try {
@@ -118,9 +110,9 @@ export default function TechTicketDetails() {
       });
 
       await carregarDados();
-      setMensagem(`Prioridade atualizada para ${novaPrioridade}.`);
+      notify('success', `Prioridade atualizada para ${novaPrioridade}.`);
     } catch (error) {
-      setErro("Erro ao mudar prioridade: " + error.message);
+      notify('error', "Erro ao mudar prioridade: " + error.message);
     } finally {
       setAtualizando(false);
     }
@@ -145,7 +137,7 @@ export default function TechTicketDetails() {
       await atualizarAtendimento({ status, nivelSuporte: proximoNivel });
       await registrarHistorico(`Chamado escalonado para ${proximoNivel}`);
     } catch (error) {
-      setErro("Erro ao escalonar: " + error.message);
+      notify('error', "Erro ao escalonar: " + error.message);
     }
   };
 
@@ -155,7 +147,7 @@ export default function TechTicketDetails() {
       await atualizarAtendimento({ status: 'RESOLVIDO' });
       await registrarHistorico("Chamado marcado como resolvido.");
     } catch (error) {
-      setErro("Erro ao resolver: " + error.message);
+      notify('error', "Erro ao resolver: " + error.message);
     }
   };
 
@@ -166,7 +158,7 @@ export default function TechTicketDetails() {
       await atualizarAtendimento(proximaEtapa);
       await registrarHistorico(proximaEtapa.mensagem);
     } catch (error) {
-      setErro(`Erro ao atualizar o chamado: ${error.message}`);
+      notify('error', `Erro ao atualizar o chamado: ${error.message}`);
     }
   };
 
@@ -192,12 +184,12 @@ export default function TechTicketDetails() {
       await registrarHistorico("O técnico assumiu o chamado. Status alterado para Em Triagem.");
       await carregarDados(); 
     } catch (error) {
-      setErro(`Erro ao assumir chamado: ${error.message}`);
+      notify('error', `Erro ao assumir chamado: ${error.message}`);
     }
   };
   
   if (loading) return <p className="loading-text">Carregando detalhes do chamado...</p>;
-  if (!chamado || !atendimento) return <Notification type="error" message={erro || 'Não foi possível carregar o chamado.'} />;
+  if (!chamado || !atendimento) return <p className="error-text">Não foi possível carregar o chamado.</p>;
 
   const isResolvido = atendimento.status === 'RESOLVIDO' || atendimento.status === 'FECHADO';
   
@@ -234,9 +226,6 @@ export default function TechTicketDetails() {
         </div>
       </div>
 
-      {erro && <Notification type="error" message={erro} />}
-      {mensagem && <Notification type="success" message={mensagem} />}
-
       <div className="details-grid">
         <div className="main-content">
           <div className="card">
@@ -265,8 +254,6 @@ export default function TechTicketDetails() {
           <div className="card">
             <h3>Evidências e Anexos (Fotografias)</h3>
             <div className="attachments-grid">
-              
-              {/* Exibição dinâmica da evidência com suporte ao modal e fallback do localStorage */}
               {anexo ? (
                 <div className="attachment-item">
                   <span className="icon">📸</span>
@@ -394,7 +381,6 @@ export default function TechTicketDetails() {
         </div>
       </div>
 
-      {/* Modal de visualização da imagem em tamanho completo */}
       {modalAberto && (
         <div 
           style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.85)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999 }}

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import ChamadoCard from '../../../components/ChamadoCard';
-import Notification from '../../../components/Notification';
+import { notify } from '../../../components/Notification';
 import { atendimentoApi, chamadoApi } from '../../../services/api';
 import './style.css';
 
@@ -9,7 +9,6 @@ export default function TechReports() {
   const [atendimentos, setAtendimentos] = useState([]);
   const [busca, setBusca] = useState('');
   const [status, setStatus] = useState('TODOS');
-  const [erro, setErro] = useState('');
   const [loading, setLoading] = useState(true);
 
   // Carrega os dados reais da API ao montar o componente
@@ -19,7 +18,9 @@ export default function TechReports() {
         setChamados(listaChamados);
         setAtendimentos(listaAtendimentos);
       })
-      .catch((error) => setErro(error.message || "Erro ao carregar os relatórios."))
+      .catch((error) => {
+        notify('error', error.message || "Erro ao carregar os relatórios.");
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -39,8 +40,6 @@ export default function TechReports() {
         <h2 className="page-title">Relatórios, SLA e Auditoria</h2>
         <p className="page-subtitle">Monitoramento de logs, cronograma de manutenção e consulta geral de chamados.</p>
       </div>
-
-      {erro && <Notification type="error" message={erro} />}
 
       {/* BLOCO 1: MANTIDO DO SEU PROJETO (Guia de Manutenção e ISO) */}
       <div className="reports-grid">
