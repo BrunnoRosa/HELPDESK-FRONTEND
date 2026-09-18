@@ -13,24 +13,24 @@ import Login from './pages/auth/Login';
 // Importação das Páginas - Geral / Configurações
 import Profile from './pages/profile';
 
-// Importação das Páginas - Cliente
-import ClienteDashboard from './pages/cliente/ClienteDashboard';
-import NewTicket from './pages/cliente/NewTicket';
-import ClientTicketDetails from './pages/cliente/ClienteTicketDetails';
+// Importação das Páginas - Módulo Chamados (antigo Cliente)
+import TicketDashboard from './pages/chamados/TicketDashboard';
+import NewTicket from './pages/chamados/NewTicket';
+import TicketDetails from './pages/chamados/TicketDetails';
 
 // Importação das Páginas - Técnico e Admin
 import TechDashboard from './pages/tech/TechDashboard';
 import TechTicketDetails from './pages/tech/TechTicketDetails';
 import AdminDashboard from './pages/admin/AdminDashboard';        
 import AdminTicketDetails from './pages/admin/AdminTicketDetails'; 
-import AdminUsers from './pages/admin/AdminUsers'; // <
+import AdminUsers from './pages/admin/AdminUsers';
 
-// 1. CORREÇÃO: Direciona automaticamente para as rotas corretas caso o usuário acesse a raiz '/'
+// Direciona automaticamente para as rotas corretas caso o usuário acesse a raiz '/'
 function IndexRouter() {
   const { user } = useAuth();
   if (user?.role === 'ADMINISTRADOR') return <Navigate to="/admin" replace />;
   if (user?.role === 'TECNICO') return <Navigate to="/tecnico" replace />;
-  return <ClienteDashboard />;
+  return <TicketDashboard />;
 }
 
 export default function App() {
@@ -53,13 +53,14 @@ export default function App() {
             <Route index element={<IndexRouter />} />
             
             {/* Rota do Perfil (Acessível a qualquer perfil logado) */}
-            <Route path="perfil" element={<Profile />} /> {/* <-- 2. ROTA ADICIONADA */}
+            <Route path="perfil" element={<Profile />} />
 
-            {/* Visão do Cliente */}
-              <Route path="cliente" element={<ClienteDashboard />} /> {/* <-- ADICIONE ESTA LINHA */}
-              <Route path="cliente/novo-chamado" element={<NewTicket />} />
-              <Route path="cliente/chamado/:id" element={<ClientTicketDetails />} />
-            {/* 2. CORREÇÃO: Removido o "/dashboard" para casar perfeitamente com o Login e Sidebar */}
+            {/* Módulo de Chamados */}
+            <Route path="chamados" element={<TicketDashboard />} />
+            <Route path="chamados/novo" element={<NewTicket />} />
+            <Route path="chamados/:id" element={<TicketDetails />} />
+
+            {/* Visão do Técnico */}
             <Route path="tecnico" element={<TechDashboard />} />
             <Route path="tecnico/chamado/:id" element={<TechTicketDetails />} />
             <Route path="tecnico/relatorios" element={<TechReports />} />
