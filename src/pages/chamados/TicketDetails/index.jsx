@@ -4,7 +4,7 @@ import { atendimentoApi, chamadoApi } from '../../../services/api';
 import { notify } from '../../../components/Notification';
 import './style.css';
 
-export default function ClientTicketDetails() {
+export default function TicketDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -86,7 +86,7 @@ export default function ClientTicketDetails() {
   if (erro || !chamado || !atendimento) {
     return (
       <div className="details-container">
-        <button onClick={() => navigate('/')} className="btn-back">
+        <button onClick={() => navigate('/chamados')} className="btn-back">
           &larr; Voltar para Meus Chamados
         </button>
         <div className="details-card loading-state">
@@ -98,7 +98,7 @@ export default function ClientTicketDetails() {
 
   return (
     <div className="details-container">
-      <button onClick={() => navigate('/')} className="btn-back">
+      <button onClick={() => navigate('/chamados')} className="btn-back">
         &larr; Voltar para Meus Chamados
       </button>
 

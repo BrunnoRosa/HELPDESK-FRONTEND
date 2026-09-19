@@ -4,7 +4,7 @@ import { chamadoApi } from '../../../services/api';
 import { notify } from '../../../components/Notification';
 import './style.css';
 
-export default function ClienteDashboard() {
+export default function TicketDashboard() {
   const [meusChamados, setMeusChamados] = useState([]);
   const [filtroAtivo, setFiltroAtivo] = useState('TODOS');
 
@@ -14,7 +14,6 @@ export default function ClienteDashboard() {
         const response = await chamadoApi.listar();
         setMeusChamados(Array.isArray(response) ? response : []);
       } catch (error) {
-        // Dispara o alerta flutuante caso ocorra falha na requisição
         notify('error', error.message || 'Não foi possível carregar os chamados.');
       }
     };
@@ -114,7 +113,7 @@ export default function ClienteDashboard() {
                       </span>
                     </td>
                     <td>
-                      <Link to={`/cliente/chamado/${chamado.id}`} className="btn-outline">
+                      <Link to={`/chamados/${chamado.id}`} className="btn-outline">
                         Visualizar
                       </Link>
                     </td>
