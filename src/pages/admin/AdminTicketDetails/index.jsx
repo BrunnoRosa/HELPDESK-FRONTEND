@@ -4,9 +4,9 @@ import { useAuth } from '../../../context/AuthContext';
 import { chamadoApi, adminApi, atendimentoApi } from '../../../services/api';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import './style.css'; // Certifique-se de adicionar os estilos da modal abaixo
+import './style.css';
 
-// Componente Modal Simples
+// Componente Modal para Visualização do Anexo / Evidência
 const ImageModal = ({ imageUrl, onClose, ticketId }) => {
   if (!imageUrl) return null;
 
@@ -38,10 +38,15 @@ export default function AdminTicketDetails() {
   const [tecnicos, setTecnicos] = useState([]);
   const [atendimento, setAtendimento] = useState(null);
   
-  // Estado para controlar a modal
+  // Estado para controlar a modal de imagem
   const [selectedAttachment, setSelectedAttachment] = useState(null);
 
-  const [editData, setEditData] = useState({ status: '', prioridade: '', nivelSuporte: '', tecnicoId: '' });
+  const [editData, setEditData] = useState({ 
+    status: '', 
+    prioridade: '', 
+    nivelSuporte: '', 
+    tecnicoId: '' 
+  });
 
   useEffect(() => {
     carregarDados();
@@ -59,11 +64,16 @@ export default function AdminTicketDetails() {
       setTecnicos(tecnicosRes);
       setAtendimento(atendimentoRes);
       
+      // Mapeia os dados atuais para o formulário
+      const statusAtual = atendimentoRes?.status || chamadoRes.statusChamado || 'ABERTO';
+      const nivelAtual = atendimentoRes?.nivelSuporte || chamadoRes.nivelSuporte || 'N1';
+      const tecAtualId = atendimentoRes?.tecnicoResponsavelId || chamadoRes.tecnicoResponsavel?.id || '';
+
       setEditData({
-        status: chamadoRes.statusChamado || '',
-        prioridade: chamadoRes.prioridadeChamado || '',
-        nivelSuporte: chamadoRes.nivelSuporte || '',
-        tecnicoId: chamadoRes.tecnicoResponsavel?.id || ''
+        status: statusAtual,
+        prioridade: chamadoRes.prioridadeChamado || 'BAIXA',
+        nivelSuporte: nivelAtual,
+        tecnicoId: tecAtualId ? String(tecAtualId) : ''
       });
     } catch (error) {
       toast.error('Erro ao carregar dados do chamado.');
@@ -74,36 +84,84 @@ export default function AdminTicketDetails() {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const status = {
+      const nomeUsuario = user?.name || user?.nome || 'Administração';
+      
+      // Formatação de data e hora local no formato [DD/MM/YYYY HH:mm]
+      const agora = new Date();
+      const dia = String(agora.getDate()).padStart(2, '0');
+      const mes = String(agora.getMonth() + 1).padStart(2, '0');
+      const ano = agora.getFullYear();
+      const horas = String(agora.getHours()).padStart(2, '0');
+      const minutos = String(agora.getMinutes()).padStart(2, '0');
+      const dataHora = `[${dia}/${mes}/${ano} ${horas}:${minutos}]`;
+
+      const logs = [];
+
+      // 1. Mapeamento e Verificação de Mudança no Status
+      const statusTarget = {
         EM_ANDAMENTO: 'EM_ATENDIMENTO',
         AGUARDANDO_CLIENTE: 'PENDENTE_EVIDENCIA',
       }[editData.status] || editData.status;
 
-      if (editData.prioridade !== chamado.prioridadeChamado) {
-        const notaPrioridade = `${user?.name ?? 'Administração'}: Prioridade alterada de ${chamado.prioridadeChamado} para ${editData.prioridade}`;
+      const statusAtual = atendimento?.status || chamado.statusChamado;
+      if (editData.status && editData.status !== statusAtual && statusTarget !== statusAtual) {
+        logs.push(`${dataHora} ${nomeUsuario}: Status alterado de ${statusAtual || 'ABERTO'} para ${editData.status}`);
+      }
+
+      // 2. Verificação de Mudança na Prioridade
+      if (editData.prioridade && editData.prioridade !== chamado.prioridadeChamado) {
+        logs.push(`${dataHora} ${nomeUsuario}: Prioridade alterada de ${chamado.prioridadeChamado || 'BAIXA'} para ${editData.prioridade}`);
+      }
+
+      // 3. Verificação de Mudança no Nível de Suporte (Fila)
+      const nivelAtual = atendimento?.nivelSuporte || chamado.nivelSuporte;
+      if (editData.nivelSuporte && editData.nivelSuporte !== nivelAtual) {
+        logs.push(`${dataHora} ${nomeUsuario}: Fila (Nível) alterada de ${nivelAtual || 'N1'} para ${editData.nivelSuporte}`);
+      }
+
+      // 4. Verificação de Mudança na Atribuição do Técnico
+      const tecAtualId = atendimento?.tecnicoResponsavelId || chamado.tecnicoResponsavel?.id;
+      if (String(editData.tecnicoId || '') !== String(tecAtualId || '')) {
+        const tecAnteriorObj = tecnicos.find(t => String(t.id) === String(tecAtualId));
+        const tecAnteriorNome = tecAnteriorObj ? tecAnteriorObj.nome : (chamado.tecnicoResponsavel?.nome || 'Fila Geral');
+        
+        const tecNovoObj = tecnicos.find(t => String(t.id) === String(editData.tecnicoId));
+        const tecNovoNome = tecNovoObj ? tecNovoObj.nome : 'Fila Geral';
+
+        logs.push(`${dataHora} ${nomeUsuario}: Atribuição alterada de "${tecAnteriorNome}" para "${tecNovoNome}"`);
+      }
+
+      // Se houve qualquer alteração, gera o log e atualiza o histórico na descrição
+      if (logs.length > 0) {
+        const novosLogsTexto = logs.join('\n');
+        const novaDescricao = chamado.descricaoChamado 
+          ? `${chamado.descricaoChamado}\n${novosLogsTexto}` 
+          : novosLogsTexto;
+
         await chamadoApi.atualizar(id, {
           id: Number(id),
           tituloChamado: chamado.tituloChamado,
           ocorrenciaChamado: chamado.ocorrenciaChamado,
-          descricaoChamado: notaPrioridade,
+          descricaoChamado: novaDescricao,
           prioridadeChamado: editData.prioridade,
         });
       }
 
-      const atendimentoPayload = (statusAtual, tecnicoResponsavelId = atendimento?.tecnicoResponsavelId) => ({
+      // Atualização no fluxo/tabela de atendimento
+      const atendimentoPayload = (statusPasso, tecnicoResponsavelId = atendimento?.tecnicoResponsavelId) => ({
         chamadoId: Number(id),
-        status: statusAtual,
+        status: statusPasso,
         nivelSuporte: editData.nivelSuporte,
         usuarioVinculado: atendimento?.usuarioVinculado ?? null,
         equipamentoVinculado: atendimento?.equipamentoVinculado ?? null,
         tecnicoResponsavelId,
       });
 
-      let statusAtual = atendimento?.status || 'ABERTO';
+      let statusAtualLoop = atendimento?.status || 'ABERTO';
       const estadosVisitados = new Set();
 
-      while (statusAtual !== status && !estadosVisitados.has(statusAtual)) {
-        estadosVisitados.add(statusAtual);
+      while (statusAtualLoop !== statusTarget && !estadosVisitados.has(statusAtualLoop)) {
+        estadosVisitados.add(statusAtualLoop);
         const proximoStatus = {
           EM_TRIAGEM: { ABERTO: 'EM_TRIAGEM' },
           EM_ATENDIMENTO: { ABERTO: 'EM_TRIAGEM', EM_TRIAGEM: 'EM_ATENDIMENTO' },
@@ -118,19 +176,15 @@ export default function AdminTicketDetails() {
             EM_ATENDIMENTO: 'RESOLVIDO',
             PENDENTE_EVIDENCIA: 'RESOLVIDO',
           },
-        }[status]?.[statusAtual];
+        }[statusTarget]?.[statusAtualLoop];
 
         if (!proximoStatus) break;
         await atendimentoApi.atualizar(atendimentoPayload(proximoStatus));
-        statusAtual = proximoStatus;
-      }
-
-      if (statusAtual !== status) {
-        throw new Error(`Não foi possível avançar o status de ${statusAtual} para ${status}.`);
+        statusAtualLoop = proximoStatus;
       }
 
       await atendimentoApi.atualizar(
-        atendimentoPayload(status, editData.tecnicoId ? Number(editData.tecnicoId) : null),
+        atendimentoPayload(statusTarget, editData.tecnicoId ? Number(editData.tecnicoId) : null),
       );
 
       toast.success('Chamado atualizado com sucesso pela Administração!');
@@ -163,10 +217,9 @@ export default function AdminTicketDetails() {
 
   return (
     <div className="admin-ticket-container">
-      {/* COMPONENTE RESPONSÁVEL POR RENDERIZAR OS TOASTS */}
       <ToastContainer autoClose={3000} position="top-right" />
 
-      {/* COMPONENTE MODAL DE IMAGEM */}
+      {/* MODAL DE VISUALIZAÇÃO DO ANEXO */}
       <ImageModal 
         imageUrl={selectedAttachment} 
         ticketId={chamado.id} 
@@ -193,28 +246,26 @@ export default function AdminTicketDetails() {
               <p><strong>Descrição:</strong></p>
               <div className="description-box">{chamado.descricaoChamado}</div>
 
-              {/* ÁREA DO ANEXO / EVIDÊNCIA */}
-              <div className="attachment-section" style={{ marginTop: '20px' }}>
+              {/* SEÇÃO DO ANEXO / EVIDÊNCIA */}
+              <div className="attachment-section">
                 <p><strong>Anexo / Evidência:</strong></p>
                 {urlAnexo ? (
-                  <div className="attachment-preview" style={{ marginTop: '8px' }}>
+                  <div className="attachment-preview">
                     <img 
                       src={urlAnexo} 
                       alt="Anexo do Chamado" 
                       style={{ maxWidth: '100%', maxHeight: '350px', borderRadius: '8px', border: '1px solid #ddd', cursor: 'pointer' }} 
-                      onClick={() => setSelectedAttachment(urlAnexo)} // Abre a modal ao clicar na imagem
+                      onClick={() => setSelectedAttachment(urlAnexo)} 
                     />
-                    <br />
                     <button 
-                      onClick={() => setSelectedAttachment(urlAnexo)} // Abre a modal ao clicar no botão
+                      onClick={() => setSelectedAttachment(urlAnexo)} 
                       className="btn-text"
-                      style={{ display: 'inline-block', marginTop: '8px', color: '#2563eb', padding: '0', border: 'none', background: 'none', cursor: 'pointer' }}
                     >
                       Visualizar imagem em tamanho real
                     </button>
                   </div>
                 ) : (
-                  <p style={{ color: '#6b7280', fontStyle: 'italic' }}>Nenhum anexo enviado para este chamado.</p>
+                  <p className="empty-text">Nenhum anexo enviado para este chamado.</p>
                 )}
               </div>
             </div>
@@ -222,12 +273,11 @@ export default function AdminTicketDetails() {
         </div>
 
         <aside className="admin-ticket-sidebar">
-          {/* ... formulário de intervenção permanece o mesmo ... */}
           <div className="admin-card">
             <h3 className="admin-card-title">Intervenção Administrativa</h3>
             <form onSubmit={handleUpdate} className="admin-form-vertical">
               <div className="form-group">
-                <label>Forçar Status:</label>
+                <label>FORÇAR STATUS:</label>
                 <select 
                   value={editData.status} 
                   onChange={(e) => setEditData({...editData, status: e.target.value})}
@@ -242,7 +292,7 @@ export default function AdminTicketDetails() {
               </div>
 
               <div className="form-group">
-                <label>Prioridade:</label>
+                <label>PRIORIDADE:</label>
                 <select 
                   value={editData.prioridade} 
                   onChange={(e) => setEditData({...editData, prioridade: e.target.value})}
@@ -255,7 +305,7 @@ export default function AdminTicketDetails() {
               </div>
 
               <div className="form-group">
-                <label>Fila (Nível):</label>
+                <label>FILA (NÍVEL):</label>
                 <select 
                   value={editData.nivelSuporte} 
                   onChange={(e) => setEditData({...editData, nivelSuporte: e.target.value})}
@@ -267,7 +317,7 @@ export default function AdminTicketDetails() {
               </div>
 
               <div className="form-group">
-                <label>Atribuição Direta:</label>
+                <label>ATRIBUIÇÃO DIRETA:</label>
                 <select 
                   value={editData.tecnicoId} 
                   onChange={(e) => setEditData({...editData, tecnicoId: e.target.value})}
