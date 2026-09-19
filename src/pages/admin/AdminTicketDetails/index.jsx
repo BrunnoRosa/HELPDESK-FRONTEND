@@ -2,8 +2,32 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { chamadoApi, adminApi, atendimentoApi } from '../../../services/api';
-import Notification from '../../../components/Notification';
-import './style.css';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './style.css'; // Certifique-se de adicionar os estilos da modal abaixo
+
+// Componente Modal Simples
+const ImageModal = ({ imageUrl, onClose, ticketId }) => {
+  if (!imageUrl) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3>Visualização da Evidência - Chamado #{ticketId}</h3>
+          <button className="close-button" onClick={onClose}>&times;</button>
+        </div>
+        <div className="modal-body">
+          <img 
+            src={imageUrl} 
+            alt="Anexo do Chamado" 
+            className="modal-image"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function AdminTicketDetails() {
   const { id } = useParams();
@@ -13,8 +37,10 @@ export default function AdminTicketDetails() {
   const [chamado, setChamado] = useState(null);
   const [tecnicos, setTecnicos] = useState([]);
   const [atendimento, setAtendimento] = useState(null);
-  const [feedback, setFeedback] = useState({ type: '', message: '' });
   
+  // Estado para controlar a modal
+  const [selectedAttachment, setSelectedAttachment] = useState(null);
+
   const [editData, setEditData] = useState({ status: '', prioridade: '', nivelSuporte: '', tecnicoId: '' });
 
   useEffect(() => {
@@ -40,14 +66,13 @@ export default function AdminTicketDetails() {
         tecnicoId: chamadoRes.tecnicoResponsavel?.id || ''
       });
     } catch (error) {
-      setFeedback({ type: 'error', message: 'Erro ao carregar dados do chamado.' });
+      toast.error('Erro ao carregar dados do chamado.');
       navigate('/admin');
     }
   };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    setFeedback({ type: '', message: '' });
     try {
       const status = {
         EM_ANDAMENTO: 'EM_ATENDIMENTO',
@@ -60,7 +85,7 @@ export default function AdminTicketDetails() {
           id: Number(id),
           tituloChamado: chamado.tituloChamado,
           ocorrenciaChamado: chamado.ocorrenciaChamado,
-          descricaoChamado: notaPrioridade, // só a nota nova — o backend concatena com o histórico existente
+          descricaoChamado: notaPrioridade,
           prioridadeChamado: editData.prioridade,
         });
       }
@@ -74,7 +99,7 @@ export default function AdminTicketDetails() {
         tecnicoResponsavelId,
       });
 
-      let statusAtual = atendimento.status;
+      let statusAtual = atendimento?.status || 'ABERTO';
       const estadosVisitados = new Set();
 
       while (statusAtual !== status && !estadosVisitados.has(statusAtual)) {
@@ -108,10 +133,10 @@ export default function AdminTicketDetails() {
         atendimentoPayload(status, editData.tecnicoId ? Number(editData.tecnicoId) : null),
       );
 
-      setFeedback({ type: 'success', message: 'Chamado atualizado com sucesso pela Administração!' });
+      toast.success('Chamado atualizado com sucesso pela Administração!');
       carregarDados();
     } catch (error) {
-      setFeedback({ type: 'error', message: error.message || 'Erro ao atualizar chamado.' });
+      toast.error(error.message || 'Erro ao atualizar chamado.');
     }
   };
 
@@ -119,9 +144,10 @@ export default function AdminTicketDetails() {
     if (window.confirm('ATENÇÃO: Deseja EXCLUIR este chamado? Ação irreversível.')) {
       try {
         await chamadoApi.deletar(id);
+        toast.success('Chamado excluído com sucesso!');
         navigate('/admin');
       } catch (error) {
-        setFeedback({ type: 'error', message: error.message || 'Erro ao excluir o chamado.' });
+        toast.error(error.message || 'Erro ao excluir o chamado.');
       }
     }
   };
@@ -133,8 +159,20 @@ export default function AdminTicketDetails() {
 
   if (!chamado) return <div className="loading-state">Carregando...</div>;
 
+  const urlAnexo = chamado.imagemChamado || chamado.imagem_chamado;
+
   return (
     <div className="admin-ticket-container">
+      {/* COMPONENTE RESPONSÁVEL POR RENDERIZAR OS TOASTS */}
+      <ToastContainer autoClose={3000} position="top-right" />
+
+      {/* COMPONENTE MODAL DE IMAGEM */}
+      <ImageModal 
+        imageUrl={selectedAttachment} 
+        ticketId={chamado.id} 
+        onClose={() => setSelectedAttachment(null)} 
+      />
+
       <div className="admin-ticket-header">
         <div className="admin-ticket-title-group">
           <h2>Chamado #{chamado.id}</h2>
@@ -145,8 +183,6 @@ export default function AdminTicketDetails() {
         <button className="btn-danger" onClick={handleDelete}>Excluir Chamado</button>
       </div>
 
-      {feedback.message && <Notification type={feedback.type} message={feedback.message} />}
-      
       <div className="admin-ticket-grid">
         <div className="admin-ticket-main">
           <div className="admin-card">
@@ -156,12 +192,37 @@ export default function AdminTicketDetails() {
               <p><strong>Solicitante:</strong> {chamado.solicitante?.nome || 'Não informado'}</p>
               <p><strong>Descrição:</strong></p>
               <div className="description-box">{chamado.descricaoChamado}</div>
+
+              {/* ÁREA DO ANEXO / EVIDÊNCIA */}
+              <div className="attachment-section" style={{ marginTop: '20px' }}>
+                <p><strong>Anexo / Evidência:</strong></p>
+                {urlAnexo ? (
+                  <div className="attachment-preview" style={{ marginTop: '8px' }}>
+                    <img 
+                      src={urlAnexo} 
+                      alt="Anexo do Chamado" 
+                      style={{ maxWidth: '100%', maxHeight: '350px', borderRadius: '8px', border: '1px solid #ddd', cursor: 'pointer' }} 
+                      onClick={() => setSelectedAttachment(urlAnexo)} // Abre a modal ao clicar na imagem
+                    />
+                    <br />
+                    <button 
+                      onClick={() => setSelectedAttachment(urlAnexo)} // Abre a modal ao clicar no botão
+                      className="btn-text"
+                      style={{ display: 'inline-block', marginTop: '8px', color: '#2563eb', padding: '0', border: 'none', background: 'none', cursor: 'pointer' }}
+                    >
+                      Visualizar imagem em tamanho real
+                    </button>
+                  </div>
+                ) : (
+                  <p style={{ color: '#6b7280', fontStyle: 'italic' }}>Nenhum anexo enviado para este chamado.</p>
+                )}
+              </div>
             </div>
           </div>
-
         </div>
 
         <aside className="admin-ticket-sidebar">
+          {/* ... formulário de intervenção permanece o mesmo ... */}
           <div className="admin-card">
             <h3 className="admin-card-title">Intervenção Administrativa</h3>
             <form onSubmit={handleUpdate} className="admin-form-vertical">

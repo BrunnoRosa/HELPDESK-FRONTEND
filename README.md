@@ -29,7 +29,7 @@ Ter o **Node.js** e o **Git** instalados na sua máquina.
    cd HELPDESK-FRONTEND
 3. **Instalar as dependências do projeto:**
    ```bash
-   npm install
+   npm i react-router-dom axios react-toastify yup react-hook-form @hookform/resolvers 
 4. **Executar a aplicação em modo de desenvolvimento:**
    ```bash
    npm run dev
