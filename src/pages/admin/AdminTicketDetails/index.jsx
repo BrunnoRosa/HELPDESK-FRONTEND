@@ -38,7 +38,6 @@ export default function AdminTicketDetails() {
   const [tecnicos, setTecnicos] = useState([]);
   const [atendimento, setAtendimento] = useState(null);
   
-  // Estado para controlar a modal de imagem
   const [selectedAttachment, setSelectedAttachment] = useState(null);
 
   const [editData, setEditData] = useState({ 
@@ -47,6 +46,35 @@ export default function AdminTicketDetails() {
     nivelSuporte: '', 
     tecnicoId: '' 
   });
+
+  // Normalização do Enum de Status
+  const normalizeStatus = (s) => {
+    if (!s) return 'ABERTO';
+    if (s === 'EM_ANDAMENTO') return 'EM_ATENDIMENTO';
+    if (s === 'AGUARDANDO_CLIENTE') return 'PENDENTE_EVIDENCIA';
+    return s;
+  };
+
+  const statusLabels = {
+    ABERTO: 'Aberto',
+    EM_TRIAGEM: 'Em Triagem',
+    EM_ATENDIMENTO: 'Em Atendimento',
+    PENDENTE_EVIDENCIA: 'Aguardando Cliente',
+    RESOLVIDO: 'Resolvido'
+  };
+
+  const nivelLabels = {
+    N1: 'N1 - Triagem e Básico',
+    N2: 'N2 - Especializado',
+    N3: 'N3 - Engenharia'
+  };
+
+  const prioridadeLabels = {
+    BAIXA: 'Baixa',
+    MEDIA: 'Média',
+    ALTA: 'Alta',
+    URGENTE: 'Urgente'
+  };
 
   useEffect(() => {
     carregarDados();
@@ -64,8 +92,7 @@ export default function AdminTicketDetails() {
       setTecnicos(tecnicosRes);
       setAtendimento(atendimentoRes);
       
-      // Mapeia os dados atuais para o formulário
-      const statusAtual = atendimentoRes?.status || chamadoRes.statusChamado || 'ABERTO';
+      const statusAtual = normalizeStatus(atendimentoRes?.status || chamadoRes.statusChamado || 'ABERTO');
       const nivelAtual = atendimentoRes?.nivelSuporte || chamadoRes.nivelSuporte || 'N1';
       const tecAtualId = atendimentoRes?.tecnicoResponsavelId || chamadoRes.tecnicoResponsavel?.id || '';
 
@@ -86,7 +113,6 @@ export default function AdminTicketDetails() {
     try {
       const nomeUsuario = user?.name || user?.nome || 'Administração';
       
-      // Formatação de data e hora local no formato [DD/MM/YYYY HH:mm]
       const agora = new Date();
       const dia = String(agora.getDate()).padStart(2, '0');
       const mes = String(agora.getMonth() + 1).padStart(2, '0');
@@ -95,59 +121,67 @@ export default function AdminTicketDetails() {
       const minutos = String(agora.getMinutes()).padStart(2, '0');
       const dataHora = `[${dia}/${mes}/${ano} ${horas}:${minutos}]`;
 
-      const logs = [];
+      const rawLogs = [];
 
-      // 1. Mapeamento e Verificação de Mudança no Status
-      const statusTarget = {
-        EM_ANDAMENTO: 'EM_ATENDIMENTO',
-        AGUARDANDO_CLIENTE: 'PENDENTE_EVIDENCIA',
-      }[editData.status] || editData.status;
+      // 1. Verificação de Mudança no Status
+      const statusAnteriorNorm = normalizeStatus(atendimento?.status || chamado?.statusChamado);
+      const statusNovoNorm = normalizeStatus(editData.status);
 
-      const statusAtual = atendimento?.status || chamado.statusChamado;
-      if (editData.status && editData.status !== statusAtual && statusTarget !== statusAtual) {
-        logs.push(`${dataHora} ${nomeUsuario}: Status alterado de ${statusAtual || 'ABERTO'} para ${editData.status}`);
+      if (statusAnteriorNorm !== statusNovoNorm) {
+        const labelAnt = statusLabels[statusAnteriorNorm] || statusAnteriorNorm;
+        const labelNovo = statusLabels[statusNovoNorm] || statusNovoNorm;
+        rawLogs.push(`${nomeUsuario}: Status alterado de "${labelAnt}" para "${labelNovo}"`);
       }
 
       // 2. Verificação de Mudança na Prioridade
-      if (editData.prioridade && editData.prioridade !== chamado.prioridadeChamado) {
-        logs.push(`${dataHora} ${nomeUsuario}: Prioridade alterada de ${chamado.prioridadeChamado || 'BAIXA'} para ${editData.prioridade}`);
+      const prioridadeAnterior = chamado?.prioridadeChamado || 'BAIXA';
+      if (editData.prioridade && editData.prioridade !== prioridadeAnterior) {
+        const labelAntPrio = prioridadeLabels[prioridadeAnterior] || prioridadeAnterior;
+        const labelNovaPrio = prioridadeLabels[editData.prioridade] || editData.prioridade;
+        rawLogs.push(`${nomeUsuario}: Prioridade alterada de "${labelAntPrio}" para "${labelNovaPrio}"`);
       }
 
       // 3. Verificação de Mudança no Nível de Suporte (Fila)
-      const nivelAtual = atendimento?.nivelSuporte || chamado.nivelSuporte;
-      if (editData.nivelSuporte && editData.nivelSuporte !== nivelAtual) {
-        logs.push(`${dataHora} ${nomeUsuario}: Fila (Nível) alterada de ${nivelAtual || 'N1'} para ${editData.nivelSuporte}`);
+      const nivelAnterior = atendimento?.nivelSuporte || chamado?.nivelSuporte || 'N1';
+      if (editData.nivelSuporte && editData.nivelSuporte !== nivelAnterior) {
+        const labelNivelAnt = nivelLabels[nivelAnterior] || nivelAnterior;
+        const labelNivelNovo = nivelLabels[editData.nivelSuporte] || editData.nivelSuporte;
+        rawLogs.push(`${nomeUsuario}: Fila (Nível) alterada de "${labelNivelAnt}" para "${labelNivelNovo}"`);
       }
 
       // 4. Verificação de Mudança na Atribuição do Técnico
-      const tecAtualId = atendimento?.tecnicoResponsavelId || chamado.tecnicoResponsavel?.id;
-      if (String(editData.tecnicoId || '') !== String(tecAtualId || '')) {
-        const tecAnteriorObj = tecnicos.find(t => String(t.id) === String(tecAtualId));
+      const tecAnteriorId = atendimento?.tecnicoResponsavelId || chamado?.tecnicoResponsavel?.id || null;
+      const tecNovoId = editData.tecnicoId ? Number(editData.tecnicoId) : null;
+
+      if (String(tecAnteriorId ?? '') !== String(tecNovoId ?? '')) {
+        const tecAnteriorObj = tecnicos.find(t => String(t.id) === String(tecAnteriorId));
         const tecAnteriorNome = tecAnteriorObj ? tecAnteriorObj.nome : (chamado.tecnicoResponsavel?.nome || 'Fila Geral');
         
-        const tecNovoObj = tecnicos.find(t => String(t.id) === String(editData.tecnicoId));
+        const tecNovoObj = tecnicos.find(t => String(t.id) === String(tecNovoId));
         const tecNovoNome = tecNovoObj ? tecNovoObj.nome : 'Fila Geral';
 
-        logs.push(`${dataHora} ${nomeUsuario}: Atribuição alterada de "${tecAnteriorNome}" para "${tecNovoNome}"`);
+        rawLogs.push(`${nomeUsuario}: Atribuição alterada de "${tecAnteriorNome}" para "${tecNovoNome}"`);
       }
 
-      // Se houve qualquer alteração, gera o log e atualiza o histórico na descrição
-      if (logs.length > 0) {
-        const novosLogsTexto = logs.join('\n');
-        const novaDescricao = chamado.descricaoChamado 
-          ? `${chamado.descricaoChamado}\n${novosLogsTexto}` 
-          : novosLogsTexto;
+      // Formatação final: A 1ª linha deixa o timestamp por conta do Backend. 
+      // As linhas seguintes adicionam o timestamp para manter a coerência visual.
+      if (rawLogs.length > 0) {
+        const logsFormatados = rawLogs.map((log, index) => {
+          return index === 0 ? log : `${dataHora} ${log}`;
+        });
+
+        const novosLogsTexto = logsFormatados.join('\n');
 
         await chamadoApi.atualizar(id, {
           id: Number(id),
           tituloChamado: chamado.tituloChamado,
           ocorrenciaChamado: chamado.ocorrenciaChamado,
-          descricaoChamado: novaDescricao,
+          descricaoChamado: novosLogsTexto,
           prioridadeChamado: editData.prioridade,
         });
       }
 
-      // Atualização no fluxo/tabela de atendimento
+      // Atualização do fluxo de atendimento
       const atendimentoPayload = (statusPasso, tecnicoResponsavelId = atendimento?.tecnicoResponsavelId) => ({
         chamadoId: Number(id),
         status: statusPasso,
@@ -157,10 +191,10 @@ export default function AdminTicketDetails() {
         tecnicoResponsavelId,
       });
 
-      let statusAtualLoop = atendimento?.status || 'ABERTO';
+      let statusAtualLoop = normalizeStatus(atendimento?.status || 'ABERTO');
       const estadosVisitados = new Set();
 
-      while (statusAtualLoop !== statusTarget && !estadosVisitados.has(statusAtualLoop)) {
+      while (statusAtualLoop !== statusNovoNorm && !estadosVisitados.has(statusAtualLoop)) {
         estadosVisitados.add(statusAtualLoop);
         const proximoStatus = {
           EM_TRIAGEM: { ABERTO: 'EM_TRIAGEM' },
@@ -176,7 +210,7 @@ export default function AdminTicketDetails() {
             EM_ATENDIMENTO: 'RESOLVIDO',
             PENDENTE_EVIDENCIA: 'RESOLVIDO',
           },
-        }[statusTarget]?.[statusAtualLoop];
+        }[statusNovoNorm]?.[statusAtualLoop];
 
         if (!proximoStatus) break;
         await atendimentoApi.atualizar(atendimentoPayload(proximoStatus));
@@ -184,7 +218,7 @@ export default function AdminTicketDetails() {
       }
 
       await atendimentoApi.atualizar(
-        atendimentoPayload(statusTarget, editData.tecnicoId ? Number(editData.tecnicoId) : null),
+        atendimentoPayload(statusNovoNorm, tecNovoId),
       );
 
       toast.success('Chamado atualizado com sucesso pela Administração!');
@@ -285,8 +319,7 @@ export default function AdminTicketDetails() {
                   <option value="ABERTO">Aberto</option>
                   <option value="EM_TRIAGEM">Em Triagem</option>
                   <option value="EM_ATENDIMENTO">Em Atendimento</option>
-                  <option value="EM_ANDAMENTO">Em Andamento</option>
-                  <option value="AGUARDANDO_CLIENTE">Aguardando Cliente</option>
+                  <option value="PENDENTE_EVIDENCIA">Aguardando Cliente</option>
                   <option value="RESOLVIDO">Resolvido</option>
                 </select>
               </div>
@@ -324,7 +357,9 @@ export default function AdminTicketDetails() {
                 >
                   <option value="">Desatribuir (Fila Geral)</option>
                   {tecnicos.map(tec => (
-                    <option key={tec.id} value={tec.id}>{tec.nome} ({tec.nivelSuporte})</option>
+                    <option key={tec.id} value={String(tec.id)}>
+                      {tec.nome} {tec.nivelSuporte ? `(${tec.nivelSuporte})` : ''}
+                    </option>
                   ))}
                 </select>
               </div>
