@@ -652,12 +652,11 @@
 
 /* Ajustes finais para manter o detalhe legível em telas intermediárias */
 .ticket-details-page {
-  max-width: 1600px !important;
   margin: 0 auto !important;
   padding: 1.25rem clamp(0.75rem, 2vw, 2rem) !important;
   position: static;
-  width: calc(100vw - var(--sidebar-width, 300px) - 4rem) !important;
-  max-width: none !important;
+  width: 100% !important;
+  max-width: 100% !important;
   flex: 0 0 auto;
   align-self: stretch;
   height: auto;

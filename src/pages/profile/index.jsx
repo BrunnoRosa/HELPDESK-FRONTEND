@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { notify } from '../../components/Notification';
 import { usuarioApi } from '../../services/api';
+import PasswordInput from '../../components/PasswordInput';
 import './style.css';
 
 export default function Profile() {
@@ -148,35 +149,36 @@ export default function Profile() {
         <form onSubmit={handlePasswordSubmit} className="password-form">
           <div className="form-group">
             <label>Senha Atual</label>
-            <input
-              type="password"
+            <PasswordInput
               required
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               placeholder="••••••••"
+              autoComplete="current-password"
             />
           </div>
 
           <div className="form-row">
             <div className="form-group">
               <label>Nova Senha</label>
-              <input
-                type="password"
+              <PasswordInput
                 required
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="Mínimo 6 caracteres"
+                autoComplete="new-password"
+                showStrength
               />
             </div>
 
             <div className="form-group">
               <label>Confirmar Nova Senha</label>
-              <input
-                type="password"
+              <PasswordInput
                 required
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Repita a nova senha"
+                autoComplete="new-password"
               />
             </div>
           </div>
