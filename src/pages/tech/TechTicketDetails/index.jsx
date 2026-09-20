@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { atendimentoApi, chamadoApi } from '../../../services/api'; 
-import { notify } from '../../../components/Notification';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './style.css';
 
 export default function TechTicketDetails() {
@@ -16,7 +17,6 @@ export default function TechTicketDetails() {
   const [loading, setLoading] = useState(true);
   const [atualizando, setAtualizando] = useState(false);
 
-  // Controle de estado para exibição do Modal da Evidência Fotográfica
   const [modalAberto, setModalAberto] = useState(false);
   const [imagemSelecionada, setImagemSelecionada] = useState(null);
 
@@ -40,7 +40,7 @@ export default function TechTicketDetails() {
       setChamado(dadosChamado);
       setAtendimento(dadosAtendimento);
     } catch (error) {
-      notify('error', error.message || "Erro ao carregar os dados do chamado.");
+      toast.error(error.message || "Erro ao carregar os dados do chamado.");
     } finally {
       setLoading(false);
     }
@@ -80,42 +80,71 @@ export default function TechTicketDetails() {
         ocorrenciaChamado: chamado.ocorrenciaChamado,
         descricaoChamado: novaLinha,
         prioridadeChamado: chamado.prioridadeChamado,
-        imagemChamado: chamado.imagemChamado // Preserva a imagem enviando-a no PUT
+        imagemChamado: chamado.imagemChamado 
       });
 
-      notify('success', 'Histórico atualizado com sucesso.');
+      toast.success('Histórico atualizado com sucesso.');
       setDescricaoAtualizacao('');
       await carregarDados();
     } catch (error) {
-      notify('error', "Erro ao atualizar histórico: " + error.message);
+      toast.error("Erro ao atualizar histórico: " + error.message);
     }
   };
 
-  const handleMudarPrioridade = async (e) => {
+  // Função auxiliar para gerar um Toast de Confirmação
+  const confirmarAcaoToast = (mensagem, acaoConfirmada) => {
+    toast.info(
+      ({ closeToast }) => (
+        <div>
+          <p style={{ marginBottom: '15px', fontWeight: 'bold' }}>{mensagem}</p>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button
+              style={{ padding: '6px 12px', background: '#0056b3', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+              onClick={() => {
+                acaoConfirmada();
+                closeToast();
+              }}
+            >
+              OK
+            </button>
+            <button
+              style={{ padding: '6px 12px', background: '#dc3545', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+              onClick={closeToast}
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      ),
+      { autoClose: false, closeOnClick: false, closeButton: false }
+    );
+  };
+
+  const handleMudarPrioridade = (e) => {
     const novaPrioridade = e.target.value;
-    if (!window.confirm(`Deseja alterar a prioridade para ${novaPrioridade}?`)) return;
-
-    setAtualizando(true);
-
-    try {
-      const novaLinha = `${user?.name}: Prioridade alterada de ${chamado.prioridadeChamado} para ${novaPrioridade}`;
-
-      await chamadoApi.atualizar(id, {
-        id: Number(id),
-        tituloChamado: chamado.tituloChamado,
-        ocorrenciaChamado: chamado.ocorrenciaChamado,
-        descricaoChamado: novaLinha,
-        prioridadeChamado: novaPrioridade,
-        imagemChamado: chamado.imagemChamado // Preserva a imagem enviando-a no PUT
-      });
-
-      await carregarDados();
-      notify('success', `Prioridade atualizada para ${novaPrioridade}.`);
-    } catch (error) {
-      notify('error', "Erro ao mudar prioridade: " + error.message);
-    } finally {
-      setAtualizando(false);
-    }
+    
+    confirmarAcaoToast(`Deseja alterar a prioridade para ${novaPrioridade}?`, async () => {
+      setAtualizando(true);
+      try {
+        const novaLinha = `${user?.name}: Prioridade alterada de ${chamado.prioridadeChamado} para ${novaPrioridade}`;
+  
+        await chamadoApi.atualizar(id, {
+          id: Number(id),
+          tituloChamado: chamado.tituloChamado,
+          ocorrenciaChamado: chamado.ocorrenciaChamado,
+          descricaoChamado: novaLinha,
+          prioridadeChamado: novaPrioridade,
+          imagemChamado: chamado.imagemChamado 
+        });
+  
+        await carregarDados();
+        toast.success(`Prioridade atualizada para ${novaPrioridade}.`);
+      } catch (error) {
+        toast.error("Erro ao mudar prioridade: " + error.message);
+      } finally {
+        setAtualizando(false);
+      }
+    });
   };
 
   const handleComentarioSubmit = (e) => {
@@ -128,27 +157,29 @@ export default function TechTicketDetails() {
     registrarHistorico(`Ferramenta utilizada: ${acao}`);
   };
 
-  const handleEscalar = async (proximoNivel) => {
-    if (!window.confirm(`Escalonar para ${proximoNivel}?`)) return;
-    try {
-      const status = atendimento.status === 'EM_TRIAGEM'
-        ? 'EM_ATENDIMENTO'
-        : atendimento.status;
-      await atualizarAtendimento({ status, nivelSuporte: proximoNivel });
-      await registrarHistorico(`Chamado escalonado para ${proximoNivel}`);
-    } catch (error) {
-      notify('error', "Erro ao escalonar: " + error.message);
-    }
+  const handleEscalar = (proximoNivel) => {
+    confirmarAcaoToast(`Escalonar para ${proximoNivel}?`, async () => {
+      try {
+        const status = atendimento.status === 'EM_TRIAGEM'
+          ? 'EM_ATENDIMENTO'
+          : atendimento.status;
+        await atualizarAtendimento({ status, nivelSuporte: proximoNivel });
+        await registrarHistorico(`Chamado escalonado para ${proximoNivel}`);
+      } catch (error) {
+        toast.error("Erro ao escalonar: " + error.message);
+      }
+    });
   };
 
-  const handleResolver = async () => {
-    if (!window.confirm('Marcar chamado como Resolvido?')) return;
-    try {
-      await atualizarAtendimento({ status: 'RESOLVIDO' });
-      await registrarHistorico("Chamado marcado como resolvido.");
-    } catch (error) {
-      notify('error', "Erro ao resolver: " + error.message);
-    }
+  const handleResolver = () => {
+    confirmarAcaoToast('Marcar chamado como Resolvido?', async () => {
+      try {
+        await atualizarAtendimento({ status: 'RESOLVIDO' });
+        await registrarHistorico("Chamado marcado como resolvido.");
+      } catch (error) {
+        toast.error("Erro ao resolver: " + error.message);
+      }
+    });
   };
 
   const handleTransicao = async (proximaEtapa) => {
@@ -158,7 +189,7 @@ export default function TechTicketDetails() {
       await atualizarAtendimento(proximaEtapa);
       await registrarHistorico(proximaEtapa.mensagem);
     } catch (error) {
-      notify('error', `Erro ao atualizar o chamado: ${error.message}`);
+      toast.error(`Erro ao atualizar o chamado: ${error.message}`);
     }
   };
 
@@ -174,18 +205,19 @@ export default function TechTicketDetails() {
     handleTransicao(proximaEtapa);
   };
 
-  const handleAssumirChamado = async () => {
-    if (!window.confirm('Deseja assumir este chamado e iniciar o atendimento?')) return;
-    try {
-      await atualizarAtendimento({ 
-        status: 'EM_TRIAGEM',
-        tecnicoResponsavelId: user?.id || user?.sub || user?.userId || user?.idUsuario
-      });
-      await registrarHistorico("O técnico assumiu o chamado. Status alterado para Em Triagem.");
-      await carregarDados(); 
-    } catch (error) {
-      notify('error', `Erro ao assumir chamado: ${error.message}`);
-    }
+  const handleAssumirChamado = () => {
+    confirmarAcaoToast('Deseja assumir este chamado e iniciar o atendimento?', async () => {
+      try {
+        await atualizarAtendimento({ 
+          status: 'EM_TRIAGEM',
+          tecnicoResponsavelId: user?.id || user?.sub || user?.userId || user?.idUsuario
+        });
+        await registrarHistorico("O técnico assumiu o chamado. Status alterado para Em Triagem.");
+        await carregarDados(); 
+      } catch (error) {
+        toast.error(`Erro ao assumir chamado: ${error.message}`);
+      }
+    });
   };
   
   if (loading) return <p className="loading-text">Carregando detalhes do chamado...</p>;
@@ -193,13 +225,9 @@ export default function TechTicketDetails() {
 
   const isResolvido = atendimento.status === 'RESOLVIDO' || atendimento.status === 'FECHADO';
   
-  // Leitura do equipamento vindo da descrição ou do atendimento
   const equipamentoDaDescricao = chamado.descricaoChamado?.match(/\[Equipamento:\s*(.*?)\s*\|/)?.[1]?.trim();
   const equipamentoExibido = atendimento.equipamentoVinculado || equipamentoDaDescricao;
 
-  // Lista de todas as fotos do chamado (a de abertura + cada evidência
-  // enviada depois). Cai para o legado em localStorage só se o chamado for
-  // antigo o bastante para nem ter a foto de abertura salva no backend.
   let evidencias = chamado.evidencias || [];
   if (evidencias.length === 0) {
     const imagemArmazenada = localStorage.getItem(`helpdesk:chamado:${chamado.id}:imagem`);
