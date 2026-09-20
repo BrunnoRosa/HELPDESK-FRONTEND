@@ -29,7 +29,7 @@ export default function Login() {
       } else if (perfilUsuario === 'TECNICO') {
         navigate('/tecnico');
       } else {
-        navigate('/');
+        navigate('/chamados');
       }
       
     } catch (error) {
