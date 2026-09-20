@@ -51,15 +51,10 @@
    ========================================================================== */
 
 .new-ticket-container {
-  position: relative;
-  left: 0;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 2.5rem 1.5rem;
-  margin-left: calc(-1 * (var(--sidebar-width, 300px) + 2rem));
-  width: calc(100% + var(--sidebar-width, 300px) + 2rem);
-  max-width: none;
+  width: 100%;
   animation: fadeIn 0.4s ease-out;
 }
 
@@ -387,13 +382,6 @@
    ========================================================================== */
 
 @media (max-width: 768px) {
-  .new-ticket-container {
-    left: 0;
-    margin-left: 0;
-    padding: 1rem;
-    width: 100%;
-  }
-
   .new-ticket-card {
     padding: 1.5rem;
   }
@@ -407,8 +395,23 @@
     flex-direction: column-reverse;
   }
 
-  .btn-cancel, 
+  .btn-cancel,
   .btn-submit {
     width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .new-ticket-card {
+    padding: 1.1rem;
+    border-radius: 12px;
+  }
+
+  .new-ticket-card h2 {
+    font-size: 1.4rem;
+  }
+
+  .image-preview-container img {
+    max-height: 160px;
   }
 }

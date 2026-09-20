@@ -116,6 +116,8 @@
   font-weight: 700;
   line-height: 1.25;
   letter-spacing: -0.02em;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 [data-theme="dark"] .details-header h2 {
@@ -208,9 +210,15 @@
   color: #e2e8f0;
 }
 
-/* Container de Evidências */
-.evidence-container {
+/* Galeria de Evidências (foto de abertura + evidências enviadas depois) */
+.evidence-gallery {
   margin-top: 0.75rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.9rem;
+}
+
+.evidence-container {
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid var(--border-color, #e2e8f0);
@@ -224,10 +232,28 @@
 
 .evidence-container img {
   width: 100%;
-  max-height: 400px;
+  height: 160px;
   object-fit: cover;
   display: block;
   transition: transform 0.4s ease;
+}
+
+.evidence-caption {
+  display: block;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary, #64748b);
+  background: var(--bg-surface, #ffffff);
+  border-top: 1px solid var(--border-color, #e2e8f0);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+[data-theme="dark"] .evidence-caption {
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.04);
+  border-top-color: #334155;
 }
 
 .evidence-container:hover img {
@@ -334,4 +360,162 @@
   background-color: rgba(148, 163, 184, 0.12);
   color: #cbd5e1;
   border-color: rgba(203, 213, 225, 0.2);
+}
+
+/* ==========================================================================
+   CHAT DE DIAGNÓSTICO (usuário continua a conversa após abrir o chamado)
+   ========================================================================== */
+.chat-form {
+  margin-top: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.chat-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color, #cbd5e1);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--text-primary, #0f172a);
+  background-color: var(--input-bg, #ffffff);
+  resize: vertical;
+}
+
+[data-theme="dark"] .chat-form textarea {
+  background-color: #202023;
+  border-color: #3f3f46;
+  color: #f4f4f5;
+}
+
+.chat-form textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
+.btn-enviar-chat {
+  align-self: flex-end;
+  padding: 0.6rem 1.25rem;
+  background-color: #3b82f6;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-enviar-chat:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.btn-enviar-chat:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   SOLICITAÇÃO DE NOVA EVIDÊNCIA (técnico pediu, usuário anexa por aqui)
+   ========================================================================== */
+.evidence-request {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-top: 1.5rem !important;
+}
+
+[data-theme="dark"] .evidence-request {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+.evidence-request-note {
+  margin: 0.35rem 0 0.9rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary, #64748b);
+}
+
+[data-theme="dark"] .evidence-request-note {
+  color: #cbd5e1;
+}
+
+.evidence-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.evidence-form .image-preview-container img {
+  max-width: 100%;
+  max-height: 220px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  object-fit: cover;
+}
+
+.btn-enviar-evidencia {
+  padding: 0.6rem 1.25rem;
+  background-color: #f59e0b;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-enviar-evidencia:hover:not(:disabled) {
+  background-color: #d97706;
+}
+
+.btn-enviar-evidencia:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE (MOBILE) - garante que nada seja cortado em telas estreitas
+   ========================================================================== */
+@media (max-width: 640px) {
+  .details-container {
+    margin: 1rem auto;
+    padding: 0 0.85rem;
+  }
+
+  .details-card {
+    padding: 1.25rem;
+    border-radius: 12px;
+  }
+
+  .details-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .details-header h2 {
+    font-size: 1.3rem;
+  }
+
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .evidence-container img {
+    max-height: 260px;
+  }
+
+  .btn-enviar-chat,
+  .btn-enviar-evidencia {
+    align-self: stretch;
+    width: 100%;
+  }
 }
