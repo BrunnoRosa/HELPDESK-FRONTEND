@@ -28,7 +28,7 @@ export default function Login() {
       } else if (perfilUsuario === 'TECNICO') {
         navigate('/tecnico');
       } else {
-        navigate('/cliente');
+        navigate('/chamados');
       }
       
     } catch (error) {
