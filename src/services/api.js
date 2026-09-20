@@ -1,12 +1,13 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080'; // Ajuste para a porta do seu backend atual
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+
 // Mantém a instância do Axios do seu projeto, apontando para a porta do backend
 const api = axios.create({
-  baseURL: API_URL, // Ajuste para a porta do seu backend atual
+  baseURL: API_URL,
 });
 
-// Injeta o token nas requisições (seu padrão)
+// Injeta o token nas requisições
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('@GLPI:token');
   if (token) {
@@ -15,7 +16,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Trata as respostas e erros (padrão do frontend)
+// Trata as respostas e erros
 api.interceptors.response.use(
   (response) => response.data, // Retorna diretamente o body (data)
   (error) => {
@@ -34,16 +35,14 @@ api.interceptors.response.use(
   }
 );
 
-// Mantém o export default para retrocompatibilidade com telas antigas
 export default api;
 
 // ==========================================
-// EXPORTAÇÕES DE ROTAS (Requisitadas pelas novas telas)
+// EXPORTAÇÕES DE ROTAS
 // ==========================================
 
 export const authApi = {
   login: (payload) => api.post('/auth/login', payload)
-  // Register removido
 };
 
 export const chamadoApi = {
@@ -64,15 +63,25 @@ export const atendimentoApi = {
 };
 
 export const adminApi = {
-  criarUsuario: (payload) => api.post('/admin/usuarios', payload), // NOVA ROTA
+  criarUsuario: (payload) => api.post('/admin/usuarios', payload),
   listarUsuarios: () => api.get('/admin/usuarios'),
   listarTecnicos: () => api.get('/admin/tecnicos'),
-  atualizarPerfil: (id, perfil) => api.put(`/admin/usuarios/${id}/perfil`, { perfil }),
+  
+  // CORREÇÃO 1: Rota de atualização alinhada com o backend (/perfil)
+  atualizarUsuario: (id, payload) => api.put(`/admin/usuarios/${id}/perfil`, payload),
+  
+  // CORREÇÃO 2: Rota de reset alinhada com o backend (/reset-senha)
+  // E enviando a chave 'novaSenha' que o seu DTO (ResetPasswordDTO) espera
+  resetarSenha: (id, payload) => api.put(`/admin/usuarios/${id}/reset-senha`, { 
+    novaSenha: payload.senha 
+  }),
+  
+  // Rota de exclusão (Esta já estava correta, igual ao backend)
   deletarUsuario: (id) => api.delete(`/admin/usuarios/${id}`),
+  
   resumo: () => api.get('/admin/relatorios/resumo')
 };
 
-// No final do seu api.js, troque para:
 export const usuarioApi = {
   alterarSenha: (payload) => api.put('/usuarios/alterar-senha', payload)
 };

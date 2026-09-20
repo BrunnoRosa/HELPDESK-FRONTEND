@@ -1,7 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import TechReports from './pages/tech/TechReports';
+
+// Importações do React Toastify
 import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // <-- CSS adicionado aqui!
 
 // Importação dos componentes de estrutura
 import Layout from './components/Layout';
