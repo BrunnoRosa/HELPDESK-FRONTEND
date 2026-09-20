@@ -50,6 +50,9 @@ export const chamadoApi = {
   buscar: (id) => api.get(`/chamados/${id}`),
   criar: (payload) => api.post('/chamados', payload),
   atualizar: (id, payload) => api.put(`/chamados/${id}`, payload),
+  // Anexa uma NOVA evidência sem apagar as fotos já enviadas antes
+  // (diferente do "atualizar", que substitui o chamado inteiro).
+  adicionarEvidencia: (id, payload) => api.post(`/chamados/${id}/evidencias`, payload),
   deletar: (id) => api.delete(`/chamados/${id}`)
 };
 

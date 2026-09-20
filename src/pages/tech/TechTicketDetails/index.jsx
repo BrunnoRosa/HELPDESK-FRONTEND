@@ -197,22 +197,21 @@ export default function TechTicketDetails() {
   const equipamentoDaDescricao = chamado.descricaoChamado?.match(/\[Equipamento:\s*(.*?)\s*\|/)?.[1]?.trim();
   const equipamentoExibido = atendimento.equipamentoVinculado || equipamentoDaDescricao;
 
-  // Lógica de recuperação de anexo local / banco de dados
-  const imagemArmazenada = localStorage.getItem(`helpdesk:chamado:${chamado.id}:imagem`);
-  let anexoLocal = null;
-
-  if (imagemArmazenada) {
-    try {
-      const anexo = JSON.parse(imagemArmazenada);
-      anexoLocal = anexo.data ? anexo : { data: imagemArmazenada, nome: 'Arquivo anexado' };
-    } catch {
-      anexoLocal = { data: imagemArmazenada, nome: 'Arquivo anexado' };
+  // Lista de todas as fotos do chamado (a de abertura + cada evidência
+  // enviada depois). Cai para o legado em localStorage só se o chamado for
+  // antigo o bastante para nem ter a foto de abertura salva no backend.
+  let evidencias = chamado.evidencias || [];
+  if (evidencias.length === 0) {
+    const imagemArmazenada = localStorage.getItem(`helpdesk:chamado:${chamado.id}:imagem`);
+    if (imagemArmazenada) {
+      try {
+        const anexo = JSON.parse(imagemArmazenada);
+        evidencias = [{ id: 'local', imagem: anexo?.data || imagemArmazenada, nomeArquivo: anexo?.nome }];
+      } catch {
+        evidencias = [{ id: 'local', imagem: imagemArmazenada, nomeArquivo: null }];
+      }
     }
   }
-
-  const anexo = chamado.imagemChamado
-    ? { data: chamado.imagemChamado, nome: 'Arquivo anexado' }
-    : anexoLocal;
 
   return (
     <div className="ticket-details-page">
@@ -252,34 +251,30 @@ export default function TechTicketDetails() {
           </div>
 
           <div className="card">
-            <h3>Evidências e Anexos (Fotografias)</h3>
+            <h3>Evidências e Anexos ({evidencias.length})</h3>
             <div className="attachments-grid">
-              {anexo ? (
-                <div className="attachment-item">
-                  <span className="icon">📸</span>
-                  <span 
-                    onClick={() => abrirModal(anexo.data)} 
-                    className="attachment-link"
-                    style={{ cursor: 'pointer', color: '#0056b3', textDecoration: 'underline' }}
-                  >
-                    Ver imagem anexada
-                  </span>
-                </div>
+              {evidencias.length > 0 ? (
+                evidencias.map((ev) => (
+                  <div key={ev.id ?? ev.imagem} className="attachment-item">
+                    <span className="icon">📸</span>
+                    <span
+                      onClick={() => abrirModal(ev.imagem)}
+                      className="attachment-link"
+                      style={{ cursor: 'pointer', color: '#0056b3', textDecoration: 'underline' }}
+                    >
+                      {ev.nomeArquivo || 'Ver imagem anexada'}
+                    </span>
+                  </div>
+                ))
               ) : (
                 <p style={{ fontSize: '14px', color: '#666' }}>Nenhuma evidência anexada neste chamado.</p>
               )}
               
               {atendimento.status === 'PENDENTE_EVIDENCIA' && (
                 <div className="upload-section">
-                  <label className="upload-label">
-                    Anexar nova evidência solicitada pelo usuário:
-                  </label>
-                  <div className="upload-controls">
-                    <input type="file" accept="image/*, .pdf" className="file-input" />
-                    <button type="button" className="btn-upload">
-                      Enviar Arquivo
-                    </button>
-                  </div>
+                  <p className="upload-waiting-note">
+                    Evidência solicitada. Aguardando o usuário anexar o arquivo na tela de acompanhamento do chamado dele.
+                  </p>
                 </div>
               )}
             </div>
@@ -371,7 +366,7 @@ export default function TechTicketDetails() {
                   }[atendimento.status]}
                 </button>
               )}
-              {['EM_ATENDIMENTO', 'PENDENTE_EVIDENCIA'].includes(atendimento.status) && (
+              {['EM_TRIAGEM', 'EM_ATENDIMENTO', 'PENDENTE_EVIDENCIA'].includes(atendimento.status) && (
                 <button onClick={handleResolver} className="btn-resolver" disabled={atualizando}>
                   Marcar como Resolvido
                 </button>

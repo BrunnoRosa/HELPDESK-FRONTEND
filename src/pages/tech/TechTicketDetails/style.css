@@ -303,6 +303,17 @@
   border-top-color: #3f3f46;
 }
 
+.upload-waiting-note {
+  margin: 0;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--text-secondary, #64748b);
+}
+
+[data-theme="dark"] .upload-waiting-note {
+  color: #a1a1aa;
+}
+
 .upload-label {
   display: block;
   margin-bottom: 0.75rem;
