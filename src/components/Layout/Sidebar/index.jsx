@@ -3,18 +3,34 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import './style.css';
 
+// Mesmo limite usado no CSS (@media max-width: 900px). Usamos matchMedia em vez
+// de comparar window.innerWidth "na mão" porque, com zoom do navegador em
+// porcentagens fracionadas (110%, 90%...), innerWidth é arredondado para um
+// inteiro e pode divergir por 1px do valor que o motor de CSS usa para decidir
+// a media query - fazendo o JS "achar" que a tela é larga (sidebar fixo) e o
+// CSS "achar" que é estreita (ou vice-versa) ao mesmo tempo. matchMedia usa
+// exatamente o mesmo cálculo que o CSS, então os dois nunca mais destoam.
+const DESKTOP_QUERY = '(min-width: 901px)';
+
 export default function Sidebar() {
   const { user, logout } = useAuth();
   const location = useLocation();
 
-  const [isOpen, setIsOpen] = useState(() => window.innerWidth > 900);
+  const [isOpen, setIsOpen] = useState(() => window.matchMedia(DESKTOP_QUERY).matches);
   const [avatarUrl, setAvatarUrl] = useState(null);
 
   useEffect(() => {
-    const handleResize = () => setIsOpen(window.innerWidth > 900);
+    const mql = window.matchMedia(DESKTOP_QUERY);
+    const handleChange = (e) => setIsOpen(e.matches);
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    // addEventListener/removeEventListener em MediaQueryList não existe em
+    // navegadores bem antigos; addListener é o fallback (ainda suportado).
+    if (mql.addEventListener) {
+      mql.addEventListener('change', handleChange);
+      return () => mql.removeEventListener('change', handleChange);
+    }
+    mql.addListener(handleChange);
+    return () => mql.removeListener(handleChange);
   }, []);
 
   // Estado para controlar o Tema (Light/Dark)
@@ -53,6 +69,14 @@ export default function Sidebar() {
   };
 
   const dashboardRoute = getDashboardRoute();
+
+  // Em telas estreitas o menu vira uma "gaveta" sobreposta; ao navegar,
+  // fecha automaticamente para não deixar o conteúdo coberto.
+  const handleNavClick = () => {
+    if (!window.matchMedia(DESKTOP_QUERY).matches) {
+      setIsOpen(false);
+    }
+  };
 
   return (
     <>
@@ -114,12 +138,20 @@ export default function Sidebar() {
         </button>
       </header>
 
+      {/* Fundo escurecido atrás da gaveta do menu em telas estreitas.
+          Clicar nele fecha o menu, evitando que ele fique "preso" cobrindo a tela. */}
+      <div
+        className={`sidebar-backdrop ${isOpen ? 'visible' : ''}`}
+        onClick={() => setIsOpen(false)}
+        aria-hidden="true"
+      />
+
       {/* Menu Lateral Deslizante */}
       <aside className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
         <nav className="sidebar-nav">
           <span className="nav-label">Menu Principal</span>
           
-          <Link to={dashboardRoute} className={`nav-item ${location.pathname === dashboardRoute ? 'active' : ''}`}>
+          <Link to={dashboardRoute} onClick={handleNavClick} className={`nav-item ${location.pathname === dashboardRoute ? 'active' : ''}`}>
             <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="3" width="7" height="7"></rect>
               <rect x="14" y="3" width="7" height="7"></rect>
@@ -130,7 +162,7 @@ export default function Sidebar() {
           </Link>
 
           {!isTech && (
-            <Link to="/chamados/novo" className={`nav-item ${location.pathname === '/chamados/novo' ? 'active' : ''}`}>
+            <Link to="/chamados/novo" onClick={handleNavClick} className={`nav-item ${location.pathname === '/chamados/novo' ? 'active' : ''}`}>
               <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -141,7 +173,7 @@ export default function Sidebar() {
 
           {user?.role === 'ADMINISTRADOR' && (
             <>
-              <Link to="/admin/usuarios" className={`nav-item ${location.pathname === '/admin/usuarios' ? 'active' : ''}`}>
+              <Link to="/admin/usuarios" onClick={handleNavClick} className={`nav-item ${location.pathname === '/admin/usuarios' ? 'active' : ''}`}>
                 <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                   <circle cx="9" cy="7" r="4"></circle>
@@ -151,7 +183,7 @@ export default function Sidebar() {
                 Gestão de Usuários
               </Link>
 
-              <Link to="/tecnico/relatorios" className={`nav-item ${location.pathname === '/tecnico/relatorios' ? 'active' : ''}`}>
+              <Link to="/tecnico/relatorios" onClick={handleNavClick} className={`nav-item ${location.pathname === '/tecnico/relatorios' ? 'active' : ''}`}>
                 <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path>
                   <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path>
@@ -164,7 +196,7 @@ export default function Sidebar() {
 
           <span className="nav-label" style={{ marginTop: '1.5rem' }}>Configurações</span>
 
-          <Link to="/perfil" className={`nav-item ${location.pathname === '/perfil' ? 'active' : ''}`}>
+          <Link to="/perfil" onClick={handleNavClick} className={`nav-item ${location.pathname === '/perfil' ? 'active' : ''}`}>
             <svg className="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
