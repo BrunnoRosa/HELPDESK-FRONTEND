@@ -9,6 +9,12 @@
   margin: 2rem 0;
   padding: 0 1rem;
   width: 100%;
+  /* Sem isso, este container (filho direto do <main> que virou flex
+     por causa da regra global "main{display:flex}") pode ser esticado
+     além da largura disponível pela tabela interna, que tem largura
+     mínima própria - e como o body tem overflow-x:hidden, o excesso
+     simplesmente é cortado (sem barra de rolagem) em vez de aparecer. */
+  min-width: 0;
 }
 
 /* Cabeçalho */
@@ -102,6 +108,11 @@
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
   overflow-x: auto;
   transition: all 0.2s ease;
+  /* Garante que a rolagem interna da tabela funcione mesmo quando o
+     container pai tenta esticar por causa da tabela (min-width:760px) -
+     sem isso o conteúdo é cortado em vez de ficar rolável. */
+  min-width: 0;
+  max-width: 100%;
 }
 
 [data-theme="dark"] .table-container {
