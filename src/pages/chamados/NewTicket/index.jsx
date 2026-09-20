@@ -78,7 +78,7 @@ export default function NewTicket() {
       notify('success', 'Chamado criado com sucesso! Redirecionando...');
       
       setTimeout(() => {
-        navigate('/');
+        navigate('/chamados');
       }, 1500);
     } catch (error) {
       notify(
@@ -166,7 +166,7 @@ export default function NewTicket() {
           </div>
 
           <div className="form-actions">
-            <button type="button" className="btn-cancel" onClick={() => navigate('/')} disabled={salvando}>
+            <button type="button" className="btn-cancel" onClick={() => navigate('/chamados')} disabled={salvando}>
               Cancelar
             </button>
             <button type="submit" className="btn-submit" disabled={salvando}>
