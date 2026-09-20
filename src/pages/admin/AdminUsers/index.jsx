@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { adminApi } from '../../../services/api';
 import { notify } from '../../../components/Notification';
+import PasswordInput from '../../../components/PasswordInput';
 import './style.css';
 
 export default function AdminUsers() {
@@ -132,7 +133,13 @@ export default function AdminUsers() {
             <input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} required />
 
             <label>Senha Temporária:</label>
-            <input type="password" value={formData.senha} onChange={(e) => setFormData({...formData, senha: e.target.value})} required />
+            <PasswordInput
+              value={formData.senha}
+              onChange={(e) => setFormData({...formData, senha: e.target.value})}
+              autoComplete="new-password"
+              showStrength
+              required
+            />
 
             <label>Perfil do Usuário:</label>
             <select value={formData.perfilUsuario} onChange={(e) => setFormData({...formData, perfilUsuario: e.target.value})}>

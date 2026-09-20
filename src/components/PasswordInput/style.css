@@ -1,0 +1,90 @@
+.password-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.password-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-input-wrapper .password-input {
+  width: 100%;
+  padding-right: 2.75rem;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  padding: 0.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-muted, #94a3b8);
+  border-radius: 6px;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.password-toggle-btn:hover {
+  color: var(--text-secondary, #475569);
+  background-color: var(--hover-bg, #e2e8f0);
+}
+
+.password-toggle-btn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* =========================================================
+   MEDIDOR DE FORÇA DA SENHA (exibido por faixa)
+   ========================================================= */
+.password-strength {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.password-strength-bar {
+  flex: 1;
+  height: 6px;
+  border-radius: 4px;
+  background-color: var(--border-color, #e2e8f0);
+  overflow: hidden;
+}
+
+.password-strength-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.25s ease, background-color 0.25s ease;
+}
+
+.password-strength-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  min-width: 72px;
+  text-align: right;
+}
+
+.password-strength[data-level="1"] .password-strength-bar span { background-color: #ef4444; }
+.password-strength[data-level="1"] .password-strength-label { color: #ef4444; }
+
+.password-strength[data-level="2"] .password-strength-bar span { background-color: #f59e0b; }
+.password-strength[data-level="2"] .password-strength-label { color: #f59e0b; }
+
+.password-strength[data-level="3"] .password-strength-bar span { background-color: #84cc16; }
+.password-strength[data-level="3"] .password-strength-label { color: #84cc16; }
+
+.password-strength[data-level="4"] .password-strength-bar span { background-color: #10b981; }
+.password-strength[data-level="4"] .password-strength-label { color: #10b981; }
